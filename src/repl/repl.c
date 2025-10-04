@@ -6,46 +6,32 @@
 /*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 16:02:03 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/04 16:17:52 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/04 16:44:52 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	repl_loop(t_shell *shell)
+int	main(int argc, char **argv, char **envp)
 {
-	char	*input;
-	t_list	*tokens;
-	t_list	*tmp;
+	t_shell	shell;
 
-	while (shell->running)
-	{
-		/* Read a line of input from the user */
-		input = read_input();
-		if (!input)
-			break;
+	(void)argc;
+	(void)argv;
 
-		if (*input)
-		{
-			/* Add input to history */
-			add_history(input);
+	// Initialize environment variables and shell status
+	shell.env = init_env(envp);
+	shell.exit_code = 0;
+	shell.running = true;
 
-			/* Tokenize the input line */
-			tokens = tokenize(input);
+	// Setup signal handlers for Ctrl-C and Ctrl-\
+	setup_signals();
 
-			/* For debugging, print all tokens */
-			tmp = tokens;
-			while (tmp)
-			{
-				printf("TOKEN: %s\n", (char *)tmp->content);
-				tmp = tmp->next;
-			}
+	// Start the REPL loop
+	repl_loop(&shell);
 
-			/* Free token list after processing */
-			ft_lstclear(&tokens, free);
-		}
+	// Free environment linked list before exiting
+	free_env(shell.env);
 
-		/* Free input line */
-		free(input);
-	}
+	return (shell.exit_code);
 }
