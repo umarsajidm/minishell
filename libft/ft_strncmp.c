@@ -6,7 +6,7 @@
 /*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 13:10:10 by musajid           #+#    #+#             */
-/*   Updated: 2025/05/21 14:17:06 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/16 19:07:11 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,20 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 
 	i = 0;
 	while (i < n && (s1[i] != '\0' || s2[i] != '\0'))
+	{
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
+		i++;
+	}
+	return (0);
+}
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	size_t	i;
+
+	i = 0;
+	while ((s1[i] != '\0' || s2[i] != '\0'))
 	{
 		if (s1[i] != s2[i])
 			return (s1[i] - s2[i]);

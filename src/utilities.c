@@ -6,26 +6,30 @@
 /*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 15:25:08 by musajid           #+#    #+#             */
-/*   Updated: 2025/08/21 15:03:11 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/16 21:12:57 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 //getting the path form environment
-static	char	**get_path(char **envp)
+
+
+
+static	char	**get_path(char **env)
 {
 	int		i;
 	char	**paths;
 
+
 	i = 0;
-	if (!envp[i])
+	if (!env[i])
 		return (NULL);
-	while (envp[i])
+	while (env[i])
 	{
-		if (strncmp(envp[i], "PATH=", 5) == 0)
+		if (strncmp(env[i], "PATH=", 5) == 0)
 		{
-			paths = ft_split((envp[i] + 5), ':');
+			paths = ft_split((env[i] + 5), ':');
 			if (!paths || !*paths)
 				freeerror(paths);
 			return (paths);
@@ -52,7 +56,7 @@ static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
 	return (NULL);
 }
 
-static	char	*pathtoexecute(char **cmd, char **envp)
+static	char	*pathtoexecute(char **cmd, char **env)
 {
 	int		i;
 	char	**paths;
@@ -62,7 +66,7 @@ static	char	*pathtoexecute(char **cmd, char **envp)
 	pathcmd = ft_strjoin("/", cmd[0]);
 	if (!pathcmd)
 		strerrornexit();
-	paths = get_path(envp);
+	paths = get_path(env);
 	if (!paths || !*paths)
 		freestrnarrexit(paths, pathcmd, 127);
 	i = 0;
@@ -86,25 +90,46 @@ static	void	checking(char *path)
 	if (access(path, X_OK))
 		errno = ENOENT;
 }
+//need serparate function for absolute path
 
-void	execution(char *cmd, char **envp)
+static void	abs_path_execution(char **cmd, char **env)
+{
+	checking(cmd[0]);
+	if (execve(cmd[0], cmd, env) == -1)
+	{
+		freearray(cmd);
+		strerrornexit();
+	}
+
+}
+
+static void	relative_path_execution(char **cmd, char **env)
 {
 	char	*path;
-	char	**splitcmd;
 
+	if (!env)
+	{
+		printf("copying environment failed");
+		exit(EXIT_FAILURE);
+	}
 	if (!cmd)
 		strerrornexit();
-	splitcmd = ft_split(cmd, ' ');
-	if (!splitcmd || !*splitcmd)
-		freeerror(splitcmd);
-	path = pathtoexecute(splitcmd, envp);
+	path = pathtoexecute(cmd, env);
 	if (path == NULL)
-		commandnotfound(splitcmd);
+		commandnotfound(cmd);
 	checking(path);
-	if (execve(path, splitcmd, envp) == -1)
+	if (execve(path, cmd, env) == -1)
 	{
-		freearray(splitcmd);
+		freearray(cmd);
 		free(path);
 		strerrornexit();
 	}
+}
+
+void	execution(char **cmd, char **env)
+{
+	if (ft_strchr(cmd[0], '/' ))
+		abs_path_execution(cmd, env);
+	else
+		relative_path_execution(cmd, env);
 }

@@ -6,7 +6,7 @@
 /*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 17:51:54 by musajid           #+#    #+#             */
-/*   Updated: 2025/10/15 18:46:12 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/16 19:39:48 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <fcntl.h>
 # include <stdio.h>
 # include <sys/wait.h>
+# include <stdlib.h>
 
 int		main(int ac, char **av, char **envp);
 void	freeerror(char **arr);
@@ -31,7 +32,9 @@ void	freearray(char **arr);
 void	freeall(char **arr, char *str, char *cmd);
 void	commandnotfound(char **arr);
 void	freestrnarrexit(char **arr, char *str, int i);
-void	execution(char *cmd, char **envp);
+void	execution(char **cmd, char **envp);
+int		is_builtin(char *cmd);
 
 
 # endif
+

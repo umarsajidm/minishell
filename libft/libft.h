@@ -6,7 +6,7 @@
 /*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 14:55:11 by INTRA_LOGIN       #+#    #+#             */
-/*   Updated: 2025/07/26 17:08:00 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/16 19:07:05 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ size_t	ft_strlcpy(char	*dst, const char	*src, size_t n);
 size_t	ft_strlcat(char *dst, const char	*src, size_t sizeofdst);
 char	*ft_strchr(const char	*str, int c);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strrchr(const char *s, int c);
 int		ft_atoi(const char	*str);
 char	*ft_substr(char const	*s, unsigned int start, size_t	len);
