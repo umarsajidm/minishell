@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 18:52:34 by musajid           #+#    #+#             */
-/*   Updated: 2025/05/23 18:52:35 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/17 18:36:45 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,26 @@ char	*ft_strnstr(const char *str, const char *to_find, size_t len)
 	{
 		j = 0;
 		while (to_find[j] && str[i + j] == to_find[j] && (i + j) < len)
+			j++;
+		if (!to_find[j])
+			return ((char *)(str + i));
+		i++;
+	}
+	return (NULL);
+}
+
+char	*ft_strstr(const char *str, const char *to_find)
+{
+	size_t	i;
+	size_t	j;
+
+	if (!*to_find)
+		return ((char *)str);
+	i = 0;
+	while (str[i])
+	{
+		j = 0;
+		while (to_find[j] && str[i + j] == to_find[j])
 			j++;
 		if (!to_find[j])
 			return ((char *)(str + i));

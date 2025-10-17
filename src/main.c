@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 18:10:37 by musajid           #+#    #+#             */
-/*   Updated: 2025/10/16 21:14:01 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/17 19:23:48 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char **copy_envp(char **envp)
+char **copy_envp(char **envp)
 {
 	char **env;
 	int		i;
@@ -73,12 +73,12 @@ int	main(int ac, char **av, char **envp)
 			free(prompt);
 			continue;
 		}
-		if (is_builtin(command[0]))
-			printf("fn to execute builtin");//functions to execute builtin
-		else
+		if (!(is_builtin(command, env)))
+		{
 			child_process(command, env);//need to check whether it is redirection or command and use fun accordingly.
-		freearray(command);
-		free(prompt);
+			freearray(command);
+			free(prompt);
+		}
 	}
 	freearray(env);
 	return 0;

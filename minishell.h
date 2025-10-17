@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 17:51:54 by musajid           #+#    #+#             */
-/*   Updated: 2025/10/16 19:39:48 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/17 18:54:23 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ void	freeall(char **arr, char *str, char *cmd);
 void	commandnotfound(char **arr);
 void	freestrnarrexit(char **arr, char *str, int i);
 void	execution(char **cmd, char **envp);
-int		is_builtin(char *cmd);
+int		is_builtin(char **cmd, char **envp);
+char    **copy_envp(char **envp);
 
 
 # endif
