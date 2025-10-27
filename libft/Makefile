@@ -6,7 +6,7 @@
 #    By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/22 18:09:48 by achowdhu          #+#    #+#              #
-#    Updated: 2025/07/20 18:02:30 by achowdhu         ###   ########.fr        #
+#    Updated: 2025/10/27 15:47:43 by achowdhu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,6 +47,10 @@ MEM_SRCS    := ft_memset.c ft_bzero.c ft_memcpy.c ft_memmove.c \
 
 FD_SRCS     := get_next_line.c ft_putchar_fd.c ft_putstr_fd.c \
                ft_putendl_fd.c ft_putnbr_fd.c ft_uputnbr_fd.c
+
+LIST_SRCS	:= ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c \
+			   ft_lstdelone.c ft_lstiter.c ft_lstlast.c ft_lstmap.c\
+			   ft_lstnew.c ft_lstsize.c
 
 CONV_SRCS   := ft_atoi.c ft_atoibool.c ft_itoa.c ft_printf.c
 
