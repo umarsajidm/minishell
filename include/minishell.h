@@ -6,7 +6,7 @@
 /*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 17:35:10 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/27 15:58:41 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/27 16:34:19 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ extern int	g_signal;
 /* ===========================
 **        Main
 ** =========================== */
-int		main(int argc, char **argv);
+int	main(int argc, char **argv, char **envp);
 
 /* ===========================
 **            REPL

@@ -6,7 +6,7 @@
 /*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 17:43:23 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/27 16:03:28 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/27 16:35:33 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
+	(void)envp;
 
 	// Initialize environment and shell status
 	shell.env = init_env(envp);
