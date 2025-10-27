@@ -6,7 +6,7 @@
 #    By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/22 18:09:48 by achowdhu          #+#    #+#              #
-#    Updated: 2025/10/27 15:47:43 by achowdhu         ###   ########.fr        #
+#    Updated: 2025/10/27 16:01:10 by achowdhu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,7 +54,7 @@ LIST_SRCS	:= ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c \
 
 CONV_SRCS   := ft_atoi.c ft_atoibool.c ft_itoa.c ft_printf.c
 
-SRCS        := $(CHAR_SRCS) $(STR_SRCS) $(MEM_SRCS) $(FD_SRCS) $(CONV_SRCS)
+SRCS        := $(CHAR_SRCS) $(STR_SRCS) $(MEM_SRCS) $(FD_SRCS) $(LIST_SRCS) $(CONV_SRCS)
 OBJS        := $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))
 
 # ========================================
