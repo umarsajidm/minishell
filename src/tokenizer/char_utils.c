@@ -6,7 +6,7 @@
 /*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/30 15:01:11 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/04 16:45:48 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/04 19:56:42 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  */
 int is_operator_char(char c)
 {
-    return (c == '|' || c == '<' || c == '>');
+	return (c == '|' || c == '<' || c == '>');
 }
 
 /* 
@@ -27,19 +27,19 @@ int is_operator_char(char c)
  */
 char *dup_word(const char *str, int start, int end)
 {
-    char *word;
-    int len = end - start;
-    int i = 0;
+	char *word;
+	int len = end - start;
+	int i = 0;
 
-    word = malloc(len + 1); // +1 for null terminator
-    if (!word)
-        return (NULL);
-
-    while (start < end)
-        word[i++] = str[start++];
-    word[i] = '\0';  // Null-terminate the string
-
-    return (word);
+	if (len < 0)
+		return (NULL);
+	word = malloc(len + 1); // +1 for null terminator
+	if (!word)
+		return (NULL);
+	while (start < end)
+		word[i++] = str[start++];
+	word[i] = '\0';  // Null-terminate the string
+	return (word);
 }
 
 /* 
@@ -48,7 +48,7 @@ char *dup_word(const char *str, int start, int end)
  */
 int skip_spaces(char *s, int i)
 {
-    while (s[i] && (s[i] == ' ' || s[i] == '\t'))
-        i++;
-    return (i);
+	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
+		i++;
+	return (i);
 }

@@ -6,32 +6,48 @@
 /*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 16:02:03 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/04 16:44:52 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/04 19:56:45 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	main(int argc, char **argv, char **envp)
+/* Main read–eval–print loop of minishell
+ * - reads input
+ * - tokenizes input
+ * - prints tokens (debug)
+ * - frees memory in all cases to avoid leaks
+ */
+void	repl_loop(t_shell *shell)
 {
-	t_shell	shell;
+	char	*input;
+	t_list	*tokens;
 
-	(void)argc;
-	(void)argv;
+	while (shell->running)
+	{
+		input = read_input();
+		if (!input) /* EOF (Ctrl-D) */
+			break;
 
-	// Initialize environment variables and shell status
-	shell.env = init_env(envp);
-	shell.exit_code = 0;
-	shell.running = true;
+		if (*input)
+		{
+			/* Tokenize the input; tokenize returns NULL on error */
+			tokens = tokenize(input);
+			if (!tokens)
+			{
+				/* Tokenization failed (unmatched quote or malloc fail) */
+				/* We skip execution and continue; input must be freed */
+				free(input);
+				continue;
+			}
 
-	// Setup signal handlers for Ctrl-C and Ctrl-\
-	setup_signals();
+			/* Debug: print tokens */
+			for (t_list *tmp = tokens; tmp; tmp = tmp->next)
+				printf("TOKEN: %s\n", (char *)tmp->content);
 
-	// Start the REPL loop
-	repl_loop(&shell);
-
-	// Free environment linked list before exiting
-	free_env(shell.env);
-
-	return (shell.exit_code);
+			/* Free token list after processing */
+			ft_lstclear(&tokens, free);
+		}
+		free(input);
+	}
 }
