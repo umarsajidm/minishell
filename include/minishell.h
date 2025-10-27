@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 17:35:10 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/27 16:34:19 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/28 00:05:10 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <stdbool.h>
 # include <signal.h>
 # include <sys/types.h>
-# include <sys/wait.h>
+// # include <sys/wait.h>
 # include <fcntl.h>
 # include <dirent.h>
 # include <sys/stat.h>
