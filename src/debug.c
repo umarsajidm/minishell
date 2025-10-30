@@ -6,7 +6,7 @@
 /*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 15:23:10 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/30 15:45:34 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/30 19:55:50 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,29 @@
  */
 static void	print_redir(t_redir *r)
 {
+	char	*type_str;
+	char	*target;
+
 	while (r)
 	{
-		ft_printf("    REDIR: %s -> %s\n", 
-			(r->type == R_INPUT) ? "<" : 
-			(r->type == R_OUTPUT) ? ">" : 
-			(r->type == R_APPEND) ? ">>" : "<<",
-			r->target ? r->target : "(null)");     // print type and target
+		type_str = NULL;
+		if (r->type == R_INPUT)
+			type_str = "<";
+		else if (r->type == R_OUTPUT)
+			type_str = ">";
+		else if (r->type == R_APPEND)
+			type_str = ">>";
+		else
+			type_str = "<<";
+
+		if (r->target)
+			target = r->target;
+		else
+			target = "(null)";
+
+		ft_printf("    REDIR: %s -> %s\n",
+			type_str,
+			target);                                 // print type and target
 		r = r->next;                               // move to next redirection
 	}
 }
@@ -38,6 +54,7 @@ void	dbg_print_tokens(t_list *tokens)
 {
 	int		i;                                      // token index
 	t_token *tok;                                  // current token
+	char	*type_str;
 
 	ft_printf("\n---- DEBUG TOKENS ----\n");       // blank line before
 	i = 0;
@@ -45,9 +62,16 @@ void	dbg_print_tokens(t_list *tokens)
 	{
 		tok = tokens->content;                     // cast content to token
 		if (tok && tok->str)
-			ft_printf("[%d] \"%s\" (%s)\n", i, tok->str, 
-				(tok->type == T_WORD) ? "WORD" :
-				(tok->type == T_QUOTE) ? "QUOTE" : "OPERATOR"); // print string + type
+		{
+			if (tok->type == T_WORD)
+				type_str = "WORD";
+			else if (tok->type == T_QUOTE)
+				type_str = "QUOTE";
+			else
+				type_str = "OPERATOR";
+
+			ft_printf("[%d] \"%s\" (%s)\n", i, tok->str, type_str);
+		}
 		else
 			ft_printf("[%d] (null)\n", i);         // null token
 
