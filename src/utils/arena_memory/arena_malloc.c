@@ -14,15 +14,6 @@
 
 void	*allocation(t_arena **arena, size_t size); //prototype of arena malloc
 
-
-
-typedef struct s_arena {
-	void	*memory_block; // start of memory/pointer to the start of memory block
-	size_t	buffer;	// total size of memory_block
-	size_t	offset; //position from the starting point of memory_block
-	t_arena	*next;
-}               t_arena;
-
 #define GROWTH_FACTOR 2
 
 t_arena *init_arena(size_t size)
@@ -44,17 +35,17 @@ t_arena *init_arena(size_t size)
 t_arena	*new_bigger_arena(t_arena *current_arena, size_t size)
 {
 	size_t	new_size;
-	t_arena	*new_bigge_arena;
+	t_arena	*new_bigger_arena;
 	
 	new_size = size * GROWTH_FACTOR;
 	if (new_size < size)
 		new_size = size;
-	new_bigge_arena = init_arena(new_size);
+	new_bigger_arena = init_arena(new_size);
 	if (!new_bigger_arena)
 		return (NULL);
 	while (current_arena->next)
 		current_arena = current_arena->next;
-	current_arena->next = new_bigge_arena;
+	current_arena->next = new_bigger_arena;
 	return (new_bigger_arena);
 	
 }

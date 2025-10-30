@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   repl.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 16:02:03 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/04 19:56:45 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/30 13:54:32 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
  * - prints tokens (debug)
  * - frees memory in all cases to avoid leaks
  */
-void	repl_loop(t_shell *shell)
+ 
+void	repl_loop(t_shell *shell, char **env)
 {
 	char	*input;
 	t_list	*tokens;
+	t_list	*temp;
 
 	while (shell->running)
 	{
@@ -42,8 +44,13 @@ void	repl_loop(t_shell *shell)
 			}
 
 			/* Debug: print tokens */
-			for (t_list *tmp = tokens; tmp; tmp = tmp->next)
-				printf("TOKEN: %s\n", (char *)tmp->content);
+			// for (t_list *tmp = tokens; tmp; tmp = tmp->next)
+			// 	printf("TOKEN: %s\n", (char *)tmp->content);
+			temp = tokens;
+			while (temp)
+			{
+				child_process(temp->content, env);
+			}
 
 			/* Free token list after processing */
 			ft_lstclear(&tokens, free);

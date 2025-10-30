@@ -6,7 +6,7 @@
 /*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 17:35:10 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/28 00:05:10 by musajid          ###   ########.fr       */
+/*   Updated: 2025/10/30 14:21:20 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <stdbool.h>
 # include <signal.h>
 # include <sys/types.h>
+# include <sys/wait.h>
 // # include <sys/wait.h>
 # include <fcntl.h>
 # include <dirent.h>
@@ -53,6 +54,15 @@ typedef struct s_shell
 	bool	running;
 }	t_shell;
 
+typedef struct s_arena {
+	void	*memory_block; // start of memory/pointer to the start of memory block
+	size_t	buffer;	// total size of memory_block
+	size_t	offset; //position from the starting point of memory_block
+	struct	s_arena	*next;
+}  				t_arena;
+
+#define GROWTH_FACTOR 2
+
 /* ===========================
 **        Global Variables
 ** =========================== */
@@ -66,7 +76,7 @@ int	main(int argc, char **argv, char **envp);
 /* ===========================
 **            REPL
 ** =========================== */
-void	repl_loop(t_shell *shell);
+void	repl_loop(t_shell *shell, char **env);
 char	*read_input(void);
 char	*read_heredoc(const char *delimiter);
 
@@ -84,6 +94,11 @@ void	shell_error(const char *msg);
 t_env	*init_env(char **envp);
 void	free_env(t_env *env);
 char	*get_env_value(t_env *env, const char *key);
+//arena_malloc
+void	*allocation(t_arena **arena, size_t size);
+t_arena *init_arena(size_t size);
+t_arena	*new_bigger_arena(t_arena *current_arena, size_t size);
+void	free_arena(t_arena **arena);
 
 /* ===========================
 **         Tokenizer
@@ -105,7 +120,16 @@ void	expand_variables(t_list *tokens, t_shell *shell);
 /* ===========================
 **        Executor
 ** =========================== */
-void	execute_command(t_shell *shell, t_list *cmd);
+//void	execute_command(t_shell *shell, t_list *cmd);
+//execution.c
+void	child_process(t_list *tokens, char **env);
+//execution_utilities
+void	strerrornexit(void);
+void	freearray(char **arr);
+void	freestrnarrexit(char **arr, char *str, int i);
+void	freeerror(char **arr);
+void	freeall(char **arr, char *str, char *cmd);
+void	commandnotfound(char **arr);
 
 /* ===========================
 **        Builtins
