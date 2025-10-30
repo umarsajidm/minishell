@@ -6,71 +6,59 @@
 /*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/04 16:02:00 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/04 19:58:19 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/10/28 19:08:14 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* Read a single line of input from the user and add it to history
- * Caller must free returned string. Returns NULL on EOF (Ctrl-D). */
-char	*read_input(void)
+/* Read a single line of input from user and duplicate into arena
+ * - Adds non-empty lines to history
+ * - Returns pointer in arena memory
+ */
+char *read_input(t_arena **arena)
 {
-	char	*line;
+    char *line;                                 // line from readline
 
-	line = readline("minishell$ "); // display prompt and read input
-	if (!line)
-		return (NULL);
-	if (*line)
-		add_history(line); // store non-empty lines in history
-	return (line); // caller must free the returned string
+    line = readline("minishell$ ");             // display prompt and read input
+    if (!line)
+        return (NULL);                          // Ctrl-D returns NULL
+    if (*line)
+        add_history(line);                      // store non-empty lines in history
+    return (arena_strdup(arena, line));         // duplicate line into arena
 }
 
-/* Helper: append a line to existing heredoc content, safely handling memory.
- * Returns new content (malloc'd), or NULL on allocation failure. */
-static char	*append_line(char *content, char *line)
+/* Read multiple lines for a heredoc until delimiter is reached
+ * - Each line duplicated into arena
+ * - Returns heredoc content or NULL if EOF
+ */
+char *read_heredoc(t_arena **arena, const char *delimiter)
 {
-	char	*tmp;
-	char	*new_content;
-	size_t	size;
+    char    *line;                               // current heredoc line
+    char    *content;                            // accumulated content
+    size_t  len;                                 // length of current line
+    size_t  cur_len;                             // current total length
 
-	if (!content)
-		return (strdup(line)); // first line, just duplicate
-	tmp = content;
-	/* +1 for '\n' and +1 for '\0' */
-	size = strlen(content) + strlen(line) + 2;
-	new_content = malloc(size);
-	if (!new_content)
-	{
-		free(tmp); // free previous content to avoid leak
-		return (NULL);
-	}
-	/* safe concatenation into allocated buffer */
-	sprintf(new_content, "%s\n%s", tmp, line);
-	free(tmp);
-	return (new_content);
-}
+    content = arena_alloc(arena, 1);             // start with empty string
+    if (!content)
+        return (NULL);                            // allocation failed
+    content[0] = '\0';                           // initialize empty string
+    cur_len = 0;                                 // no bytes yet
 
-/* Read heredoc input until delimiter is matched.
- * Returns a malloc'd string with heredoc contents (including newlines),
- * or NULL on allocation failure. Caller must free the result. */
-char	*read_heredoc(const char *delimiter)
-{
-	char	*line;
-	char	*content = NULL;
+    while (true)
+    {
+        line = readline("> ");                   // prompt for heredoc line
+        if (!line || strcmp(line, delimiter) == 0)
+            break;                               // reached delimiter or EOF
 
-	while (1)
-	{
-		line = readline("> "); // heredoc prompt
-		if (!line || strcmp(line, delimiter) == 0)
-		{
-			free(line);
-			break;
-		}
-		content = append_line(content, line);
-		free(line);
-		if (!content)
-			return (NULL); /* allocation failure, caller must handle NULL */
-	}
-	return (content); /* may be NULL (no lines read) or malloc'd content */
+        len = strlen(line);                      // length of new line
+        content = arena_realloc(arena, content, cur_len, cur_len + len + 2); // +\n+\0
+        if (!content)
+            return (NULL);                       // realloc failed
+        memcpy(content + cur_len, line, len);    // append line bytes
+        cur_len += len;                          // advance cursor
+        content[cur_len++] = '\n';               // append newline
+        content[cur_len] = '\0';                 // null terminate
+    }
+    return (content);                            // return full heredoc in arena
 }
