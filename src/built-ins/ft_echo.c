@@ -1,3 +1,5 @@
+#include "minishell.h"
+
 int	ft_echo(char **argv)
 {
 	int	i;
@@ -10,6 +12,6 @@ int	ft_echo(char **argv)
 		newline = 0;
 	else
 		newline = 1;
-	
+	(void)newline;	
 	return (0);
 }

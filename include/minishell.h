@@ -118,10 +118,10 @@ int		exec_builtins(t_shell *shell, t_cmd *cmd);
 ** =========================== */
 int		builtin_echo(t_list *args);
 int		builtin_cd(t_shell *shell, t_list *args);
-int		builtin_pwd(void);
+int		ft_pwd(void);
 int		builtin_export(t_shell *shell, t_list *args);
 int		builtin_unset(t_shell *shell, t_list *args);
-int		builtin_env(t_shell *shell);
+int		ft_env(char **env);
 int		builtin_exit(t_shell *shell, t_list *args);
 
 /* ===========================
