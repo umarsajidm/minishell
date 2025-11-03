@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/29 17:35:10 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/10/31 10:36:44 by musajid          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-=======
->>>>>>> main
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -25,10 +10,6 @@
 # include <signal.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-<<<<<<< HEAD
-// # include <sys/wait.h>
-=======
->>>>>>> main
 # include <fcntl.h>
 # include <dirent.h>
 # include <sys/stat.h>
@@ -47,12 +28,7 @@
 ** =========================== */
 # include "minishell_types.h"
 
-typedef struct s_arena {
-	void	*memory_block; // start of memory/pointer to the start of memory block
-	size_t	buffer;	// total size of memory_block
-	size_t	offset; //position from the starting point of memory_block
-	struct	s_arena	*next;
-}  				t_arena;
+# include "execution.h"
 
 #define GROWTH_FACTOR 2
 
@@ -74,15 +50,9 @@ int		main(int argc, char **argv, char **envp);
 /* ===========================
 **            REPL
 ** =========================== */
-<<<<<<< HEAD
-void	repl_loop(t_shell *shell, char **env);
-char	*read_input(void);
-char	*read_heredoc(const char *delimiter);
-=======
-void	repl_loop(t_shell *shell, t_arena **arena);
+void	repl_loop(t_shell *shell, t_arena **arena, char **envp);
 char	*read_input(t_arena **arena);
 char	*read_heredoc(t_arena **arena, const char *delimiter);
->>>>>>> main
 
 /* ===========================
 **        Signals
@@ -135,23 +105,13 @@ t_redir_type	get_redir_type(const char *tok);
 /* ===========================
 **        Executor
 ** =========================== */
-<<<<<<< HEAD
 //void	execute_command(t_shell *shell, t_list *cmd);
 //execution.c
-void	child_process(t_list *tokens, char **env);
 //execution_utilities
-void	strerrornexit(void);
-void	freearray(char **arr);
-void	freestrnarrexit(char **arr, char *str, int i);
-void	freeerror(char **arr);
-void	freeall(char **arr, char *str, char *cmd);
-void	commandnotfound(char **arr);
-=======
 void	execute_command(t_shell *shell, t_cmd *cmds);
 int		exec_single_cmd(t_shell *shell, t_cmd *cmd);
 char	*find_executable(char *cmd, t_env *env);
 int		exec_builtins(t_shell *shell, t_cmd *cmd);
->>>>>>> main
 
 /* ===========================
 **        Builtins

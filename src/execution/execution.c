@@ -6,7 +6,7 @@
 /*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 15:25:08 by musajid           #+#    #+#             */
-/*   Updated: 2025/10/30 14:20:35 by musajid          ###   ########.fr       */
+/*   Updated: 2025/11/03 18:07:58 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,46 +133,29 @@ void	execution(char **cmd, char **env)
 	else
 		relative_path_execution(cmd, env);
 }
-static int list_size(t_list *lst)
-{
-    int i = 0;
-    while (lst)
-    {
-        i++;
-        lst = lst->next;
-    }
-    return (i);
-}
-
-static char **list_to_array(t_list *lst)
-{
-    int len = list_size(lst);
-    char **arr = malloc(sizeof(char *) * (len + 1));
-    int i = 0;
-
-    if (!arr)
-        return (NULL);
-    while (lst)
-    {
-        arr[i++] = lst->content;
-        lst = lst->next;
-    }
-    arr[i] = NULL;
-    return (arr);
-}
+// static int list_size(t_list *lst)
+// {
+//     int i = 0;
+//     while (lst)
+//     {
+//         i++;
+//         lst = lst->next;
+//     }
+//     return (i);
+// }
 
 
-
-void	child_process(t_list *tokens, char **env)
+void	child_process(t_cmd *parsed_cmd, char **envp)
 {
 	pid_t	pid;
 	int status;
-	char **command = list_to_array(tokens);
+	
+	char **env = copy_envp(envp);
 
 	pid = fork();
 	if (pid == 0)
 	{
-		execution(command, env);
+		execution(parsed_cmd->argv, env);
 		perror("Minishell$ ");
 		exit(EXIT_FAILURE);
 	}
