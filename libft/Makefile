@@ -6,7 +6,7 @@
 #    By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/22 18:09:48 by achowdhu          #+#    #+#              #
-#    Updated: 2025/10/27 15:57:00 by achowdhu         ###   ########.fr        #
+#    Updated: 2025/11/01 16:19:27 by achowdhu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,7 @@ CHAR_SRCS   := ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c \
                ft_isprint.c ft_toupper.c ft_tolower.c
 
 STR_SRCS    := ft_strlen.c ft_strlcpy.c ft_strlcat.c ft_strchr.c \
-               ft_strrchr.c ft_strncmp.c ft_strnstr.c ft_strdup.c \
+               ft_strrchr.c ft_strcmp.c ft_strncmp.c ft_strnstr.c ft_strdup.c \
                ft_substr.c ft_strjoin.c ft_strtrim.c ft_split.c \
                ft_strmapi.c ft_striteri.c ft_strrev.c ft_strtok.c
 
