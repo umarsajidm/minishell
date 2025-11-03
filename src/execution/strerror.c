@@ -1,26 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*   strerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/22 19:11:16 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/08/09 18:44:46 by achowdhu         ###   ########.fr       */
+/*   Created: 2025/10/05 19:01:40 by musajid           #+#    #+#             */
+/*   Updated: 2025/10/30 13:57:20 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-int	ft_putstr_fd(char *str, int fd)
+void	strerrornexit(void)
 {
-	int	write_result;
-
-
-	if (!str || fd < 0)
-		return (0);
-	write_result = write(fd, str, ft_strlen(str));
-	if (write_result < 0)
-		return (-1);
-	return (write_result);
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+	exit(EXIT_FAILURE);
 }

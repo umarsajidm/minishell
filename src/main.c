@@ -1,5 +1,24 @@
 #include "minishell.h"
 
+
+char **copy_envp(char **envp)
+{
+	int i = 0;
+	char **env;
+	
+	while (envp[i])
+		i++;
+	env = malloc(sizeof(i + 1));
+	i = 0;
+	while (envp[i])
+	{
+		env[i] = ft_strdup(envp[i]);
+		i++;
+	}
+	env[i] = NULL;
+	return (env);
+}
+
 /* 
  * Entry point of minishell.
  * - Initializes environment, arena, signal handlers
@@ -12,12 +31,7 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	(void)envp;
 
-	/* initialize shell state */
-	shell.env = NULL;
-	shell.exit_code = 0;
-	shell.running = true;
 
 	/* initialize arena */
 	arena = init_arena(1024);       // 1 KB initial arena
@@ -27,24 +41,14 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	}
 
-	/* initialize environment (disabled for now) */
-	// shell.env = init_env(envp);
-	// if (!shell.env)
-	// {
-	//     ft_printf("minishell: failed to initialize environment\n");
-	//     free_arena(&arena);
-	//     return (1);
-	// }
 
 	setup_signals();                 // setup signal handlers
 
-	repl_loop(&shell, &arena);       // start main REPL loop
+	repl_loop(&shell, &arena, envp);       // start main REPL loop
 
 	dbg_print_exit_code(shell.exit_code); // debug: print final exit code
 
 	/* cleanup */
-	// free_env(shell.env);          // disabled while env functions are not present
 	free_arena(&arena);              // free all arena memory
-
 	return (shell.exit_code);        // return shell exit code
 }

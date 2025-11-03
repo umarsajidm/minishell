@@ -28,6 +28,10 @@
 ** =========================== */
 # include "minishell_types.h"
 
+# include "execution.h"
+
+#define GROWTH_FACTOR 2
+
 /* ===========================
 **        Arena core functions
 ** =========================== */
@@ -46,7 +50,7 @@ int		main(int argc, char **argv, char **envp);
 /* ===========================
 **            REPL
 ** =========================== */
-void	repl_loop(t_shell *shell, t_arena **arena);
+void	repl_loop(t_shell *shell, t_arena **arena, char **envp);
 char	*read_input(t_arena **arena);
 char	*read_heredoc(t_arena **arena, const char *delimiter);
 
@@ -64,6 +68,11 @@ void	shell_error(const char *msg);
 t_env	*init_env(char **envp);
 void	free_env(t_env *env);
 char	*get_env_value(t_env *env, const char *key);
+//arena_malloc
+void	*allocation(t_arena **arena, size_t size);
+t_arena *init_arena(size_t size);
+t_arena	*new_bigger_arena(t_arena *current_arena, size_t size);
+void	free_arena(t_arena **arena);
 
 /* ===========================
 **         Tokenizer
@@ -96,6 +105,9 @@ t_redir_type	get_redir_type(const char *tok);
 /* ===========================
 **        Executor
 ** =========================== */
+//void	execute_command(t_shell *shell, t_list *cmd);
+//execution.c
+//execution_utilities
 void	execute_command(t_shell *shell, t_cmd *cmds);
 int		exec_single_cmd(t_shell *shell, t_cmd *cmd);
 char	*find_executable(char *cmd, t_env *env);
