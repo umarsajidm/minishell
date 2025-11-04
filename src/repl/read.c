@@ -36,14 +36,14 @@ char *read_heredoc(t_arena **arena, const char *delimiter)
     while (true)
     {
         line = readline("> ");                   // prompt for heredoc line
-        if (!line || strcmp(line, delimiter) == 0)
+        if (!line || ft_strcmp(line, delimiter) == 0)
             break;                               // reached delimiter or EOF
 
-        len = strlen(line);                      // length of new line
+        len = ft_strlen(line);                      // length of new line
         content = arena_realloc(arena, content, cur_len, cur_len + len + 2); // +\n+\0
         if (!content)
             return (NULL);                       // realloc failed
-        memcpy(content + cur_len, line, len);    // append line bytes
+        ft_memcpy(content + cur_len, line, len);    // append line bytes
         cur_len += len;                          // advance cursor
         content[cur_len++] = '\n';               // append newline
         content[cur_len] = '\0';                 // null terminate
