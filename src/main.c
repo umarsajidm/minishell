@@ -1,54 +1,53 @@
 #include "minishell.h"
 
-
-char **copy_envp(char **envp)
-{
-	int i = 0;
-	char **env;
-	
-	while (envp[i])
-		i++;
-	env = malloc(sizeof(i + 1));
-	i = 0;
-	while (envp[i])
-	{
-		env[i] = ft_strdup(envp[i]);
-		i++;
-	}
-	env[i] = NULL;
-	return (env);
-}
-
 /* 
- * Entry point of minishell.
- * - Initializes environment, arena, signal handlers
+ * Entry point of minishell
+ * - Initializes shell state, arena, and environment
+ * - Sets up signal handlers
  * - Starts the REPL loop
  */
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell		shell;   // shell state (env, exit_code, running)
+	t_shell		shell;   // shell state: env, exit_code, running
 	t_arena		*arena;  // arena memory allocator
 
 	(void)argc;
 	(void)argv;
 
+	/* initialize shell state */
+	shell.env = NULL;          // env will be initialized below
+	shell.exit_code = 0;
+	shell.running = true;
 
 	/* initialize arena */
-	arena = init_arena(1024);       // 1 KB initial arena
+	arena = init_arena(1024);  // 1 KB initial arena
 	if (!arena)
 	{
 		ft_printf("minishell: failed to initialize memory arena\n");
 		return (1);
 	}
 
+	/* initialize environment from envp */
+	shell.env = init_env(envp); // malloc-based env list
+	if (!shell.env)
+	{
+		ft_printf("minishell: failed to initialize environment\n");
+		free_arena(&arena);
+		return (1);
+	}
 
-	setup_signals();                 // setup signal handlers
+	/* setup signal handlers */
+	setup_signals();
 
-	repl_loop(&shell, &arena, envp);       // start main REPL loop
+	/* start REPL loop */
+	repl_loop(&shell, &arena);
 
-	dbg_print_exit_code(shell.exit_code); // debug: print final exit code
+	/* debug: print final exit code */
+	dbg_print_exit_code(shell.exit_code);
 
 	/* cleanup */
-	free_arena(&arena);              // free all arena memory
-	return (shell.exit_code);        // return shell exit code
+	free_env(shell.env);       // free malloc'd env list
+	free_arena(&arena);        // free all arena memory
+
+	return (shell.exit_code);  // return shell exit code
 }

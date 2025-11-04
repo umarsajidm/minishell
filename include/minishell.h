@@ -28,10 +28,6 @@
 ** =========================== */
 # include "minishell_types.h"
 
-# include "execution.h"
-
-#define GROWTH_FACTOR 2
-
 /* ===========================
 **        Arena core functions
 ** =========================== */
@@ -50,7 +46,7 @@ int		main(int argc, char **argv, char **envp);
 /* ===========================
 **            REPL
 ** =========================== */
-void	repl_loop(t_shell *shell, t_arena **arena, char **envp);
+void	repl_loop(t_shell *shell, t_arena **arena);
 char	*read_input(t_arena **arena);
 char	*read_heredoc(t_arena **arena, const char *delimiter);
 
@@ -62,17 +58,13 @@ void	handle_sigint(int sig);
 void	handle_sigquit(int sig);
 
 /* ===========================
-**           Utils
+**        Environment
 ** =========================== */
-void	shell_error(const char *msg);
 t_env	*init_env(char **envp);
 void	free_env(t_env *env);
 char	*get_env_value(t_env *env, const char *key);
-//arena_malloc
-void	*allocation(t_arena **arena, size_t size);
-t_arena *init_arena(size_t size);
-t_arena	*new_bigger_arena(t_arena *current_arena, size_t size);
-void	free_arena(t_arena **arena);
+int		set_env_var(t_shell *shell, const char *key, const char *value);
+void	dbg_print_env(t_env *env);
 
 /* ===========================
 **         Tokenizer
@@ -91,13 +83,9 @@ void	free_tokens(t_list **tokens); /* optional, mostly for debug */
 ** =========================== */
 t_cmd	*parse_tokens(t_list *tokens, t_arena **arena);
 void	expand_variables(t_list *tokens, t_shell *shell);
-
-/* parser helpers (arena-based) */
 t_cmd	*create_cmd_node(t_arena **arena);
 int		add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena);
 int		add_redirection(t_cmd *cmd, t_redir_type type, const char *target, t_arena **arena);
-
-/* parser token helpers */
 int		is_pipe_token(const char *tok);
 int		is_redir_token(const char *tok);
 t_redir_type	get_redir_type(const char *tok);
@@ -105,9 +93,6 @@ t_redir_type	get_redir_type(const char *tok);
 /* ===========================
 **        Executor
 ** =========================== */
-//void	execute_command(t_shell *shell, t_list *cmd);
-//execution.c
-//execution_utilities
 void	execute_command(t_shell *shell, t_cmd *cmds);
 int		exec_single_cmd(t_shell *shell, t_cmd *cmd);
 char	*find_executable(char *cmd, t_env *env);
@@ -118,10 +103,10 @@ int		exec_builtins(t_shell *shell, t_cmd *cmd);
 ** =========================== */
 int		builtin_echo(t_list *args);
 int		builtin_cd(t_shell *shell, t_list *args);
-int		ft_pwd(void);
+int		builtin_pwd(void);
 int		builtin_export(t_shell *shell, t_list *args);
 int		builtin_unset(t_shell *shell, t_list *args);
-int		ft_env(char **env);
+int		builtin_env(t_shell *shell);
 int		builtin_exit(t_shell *shell, t_list *args);
 
 /* ===========================
