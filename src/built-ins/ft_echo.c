@@ -5,13 +5,25 @@ int	ft_echo(char **argv)
 	int	i;
 	int	newline;
 
-	i = 0;
-	while (ft_strcmp("echo", argv[i]))
-		i++;
-	if (!ft_strncmp("-n", argv[++i], 3))
+	i = 1;
+	if (argv[1] && ft_strcmp("-n", argv[1]) == 0)
+	{
 		newline = 0;
+		i = 2;
+	}
 	else
 		newline = 1;
-	(void)newline;	
+	while (argv[i])
+	{
+		if (printf("%s", argv[i]) < 0)
+			return (1);
+		i++;
+		if (argv[i])
+			if (printf(" ") < 0)
+				return (1);
+	}
+	if (newline)
+		if (printf("\n") < 0)
+			return (1);
 	return (0);
 }
