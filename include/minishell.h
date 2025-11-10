@@ -18,6 +18,10 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+
+#define BUFFER_SIZE_FOR_ARENA 1024
+
+
 /* ===========================
 **        Libft (types like t_list)
 ** =========================== */
@@ -27,6 +31,9 @@
 **        Minishell Types
 ** =========================== */
 # include "minishell_types.h"
+
+// execution
+# include "execution.h"
 
 /* ===========================
 **        Arena core functions
@@ -42,6 +49,8 @@ char	*arena_strdup(t_arena **arena, const char *s);
 **            Main
 ** =========================== */
 int		main(int argc, char **argv, char **envp);
+// shell
+int init_shell(char **envp);
 
 /* ===========================
 **            REPL

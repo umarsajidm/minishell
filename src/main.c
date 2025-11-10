@@ -8,33 +8,12 @@
  */
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell		shell;   // shell state: env, exit_code, running
-	t_arena		*arena;  // arena memory allocator
-
+	t_shell		shell;   // shell state: env, exit_code, run
 	(void)argc;
 	(void)argv;
 
-	/* initialize shell state */
-	shell.env = NULL;          // env will be initialized below
-	shell.exit_code = 0;
-	shell.running = true;
-
-	/* initialize arena */
-	arena = init_arena(1024);  // 1 KB initial arena
-	if (!arena)
-	{
-		ft_printf("minishell: failed to initialize memory arena\n");
-		return (1);
-	}
-
-	/* initialize environment from envp */
-	shell.env = init_env(envp); // malloc-based env list
-	if (!shell.env)
-	{
-		ft_printf("minishell: failed to initialize environment\n");
-		free_arena(&arena);
-		return (1);
-	}
+	ft_bzero(&shell, sizeof(t_shell));
+	init_shell(envp);
 
 	/* setup signal handlers */
 	setup_signals();
@@ -44,10 +23,9 @@ int	main(int argc, char **argv, char **envp)
 
 	/* debug: print final exit code */
 	dbg_print_exit_code(shell.exit_code);
-
 	/* cleanup */
 	free_env(shell.env);       // free malloc'd env list
-	free_arena(&arena);        // free all arena memory
+	//free_arena(&arena);        // free all arena memory
 
 	return (shell.exit_code);  // return shell exit code
 }

@@ -6,37 +6,21 @@
 /*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 15:25:08 by musajid           #+#    #+#             */
-/*   Updated: 2025/11/03 18:07:58 by musajid          ###   ########.fr       */
+/*   Updated: 2025/11/10 18:52:14 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//getting the path form environment
-
-
-
-static	char	**get_path(char **env)
+static char **get_path(t_env *env, const char *key)
 {
-	int		i;
+	char	*path;
 	char	**paths;
-
-
-	i = 0;
-	if (!env[i])
-		return (NULL);
-	while (env[i])
-	{
-		if (strncmp(env[i], "PATH=", 5) == 0)
-		{
-			paths = ft_split((env[i] + 5), ':');
-			if (!paths || !*paths)
-				freeerror(paths);
-			return (paths);
-		}
-		i++;
-	}
-	return (NULL);
+	path = get_env_value(env, "PATH");
+	paths = ft_split(path, ':');
+	if (!paths || !*paths)
+		freeerror(paths);
+	return (paths);
 }
 
 static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
@@ -56,7 +40,7 @@ static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
 	return (NULL);
 }
 
-static	char	*pathtoexecute(char **cmd, char **env)
+static	char	*pathtoexecute(char **cmd, t_env *env)
 {
 	int		i;
 	char	**paths;
@@ -66,7 +50,7 @@ static	char	*pathtoexecute(char **cmd, char **env)
 	pathcmd = ft_strjoin("/", cmd[0]);
 	if (!pathcmd)
 		strerrornexit();
-	paths = get_path(env);
+	paths = get_path(env, "PATH");
 	if (!paths || !*paths)
 		freestrnarrexit(paths, pathcmd, 127);
 	i = 0;
@@ -100,7 +84,6 @@ static void	abs_path_execution(char **cmd, char **env)
 		freearray(cmd);
 		strerrornexit();
 	}
-
 }
 
 static void	relative_path_execution(char **cmd, char **env)
@@ -133,17 +116,6 @@ void	execution(char **cmd, char **env)
 	else
 		relative_path_execution(cmd, env);
 }
-// static int list_size(t_list *lst)
-// {
-//     int i = 0;
-//     while (lst)
-//     {
-//         i++;
-//         lst = lst->next;
-//     }
-//     return (i);
-// }
-
 
 void	child_process(t_cmd *parsed_cmd, char **envp)
 {
