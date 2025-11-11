@@ -1,41 +1,26 @@
 #include "minishell.h"
 
-typedef struct s_env
-{
-	char			*key;   /* environment variable key */
-	char			*value; /* environment variable value */
-	struct s_env	*next;  /* next env node */
-}	t_env;
-
-typedef struct s_shell
-{
-	t_env	*env;        /* environment variables linked list */
-	int		exit_code;   /* last exit code */
-	bool	running;     /* shell running flag */
-}	t_shell;
-
 
 static size_t sizeoflist(t_env *env);
+static char *copyfromlisttoarr(t_env *env);
 
 
 //making the envp from linked list of env for execve func
-char **envp(t_shell **shell)
+char **envp_arr(t_shell *shell)
 {
     t_env *env;
     int i;
     env = shell->env;
     i = 0;
-    char **envp = ft_calloc(sizeoflist(shell->env) + 1, sizeof(char *));
+    char **envp = ft_calloc(sizeoflist(shell->env) + 1, sizeof(char*));
     if (!envp)
         return NULL; //update with exit status and error message
     while (env)
     {   
-        envp[i] = ft_strdup(copyfromlisttoarr(env));
-        if (env->next)
-            i++;
+        envp[i++] = ft_strdup(copyfromlisttoarr(env));
         env = env->next;
     }
-    envp[i] = '\0';
+    envp[i] = NULL;
     return (envp);
 }
 
@@ -52,7 +37,7 @@ static size_t sizeoflist(t_env *env)
             i++;
         cur = cur->next;
     }
-    return (1);
+    return (i);
 }
 
 static char *copyfromlisttoarr(t_env *env)
@@ -63,11 +48,11 @@ static char *copyfromlisttoarr(t_env *env)
 
     keylen = ft_strlen(env->key);
     valuelen = ft_strlen(env->value);
-    dest = ft_calloc(keylen + valuelen + 2);
+    dest = ft_calloc(keylen + valuelen + 2, sizeof(char *));
     ft_memcpy(dest, env->key, keylen);
     dest[keylen] = '=';
     ft_memcpy(dest + keylen + 1, env->value, valuelen);
-    dest[valuelen] = '\0';
+    dest[keylen + valuelen + 1] = '\0';
     return (dest);
 }
 

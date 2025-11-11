@@ -1,26 +1,25 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   execution.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 15:25:08 by musajid           #+#    #+#             */
-/*   Updated: 2025/11/10 18:52:14 by musajid          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
-static char **get_path(t_env *env, const char *key)
+static  char    **get_path(char **envp_arr)
 {
-	char	*path;
-	char	**paths;
-	path = get_env_value(env, "PATH");
-	paths = ft_split(path, ':');
-	if (!paths || !*paths)
-		freeerror(paths);
-	return (paths);
+	int             i;
+	char    **paths;
+
+	i = 0;
+	if (!envp_arr[i])
+			return (NULL);
+	while (envp_arr[i])
+	{
+		if (strncmp(envp_arr[i], "PATH=", 5) == 0)
+		{
+			paths = ft_split((envp_arr[i] + 5), ':');
+			if (!paths || !*paths)
+					freeerror(paths);
+			return (paths);
+		}
+		i++;
+	}
+	return (NULL);
 }
 
 static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
@@ -40,7 +39,7 @@ static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
 	return (NULL);
 }
 
-static	char	*pathtoexecute(char **cmd, t_env *env)
+static	char	*pathtoexecute(char **cmd, char **env)
 {
 	int		i;
 	char	**paths;
@@ -50,7 +49,7 @@ static	char	*pathtoexecute(char **cmd, t_env *env)
 	pathcmd = ft_strjoin("/", cmd[0]);
 	if (!pathcmd)
 		strerrornexit();
-	paths = get_path(env, "PATH");
+	paths = get_path(env);
 	if (!paths || !*paths)
 		freestrnarrexit(paths, pathcmd, 127);
 	i = 0;
@@ -117,12 +116,14 @@ void	execution(char **cmd, char **env)
 		relative_path_execution(cmd, env);
 }
 
-void	child_process(t_cmd *parsed_cmd, char **envp)
+void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 {
 	pid_t	pid;
 	int status;
 	
-	char **env = copy_envp(envp);
+	char **env;
+	
+	env = envp_arr(shell);
 
 	pid = fork();
 	if (pid == 0)
@@ -132,7 +133,10 @@ void	child_process(t_cmd *parsed_cmd, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	else if (pid > 0)
+	{
 		waitpid(pid, &status, 0);
+		freearray(env);
+	}
 	else
 		perror("fork");
 }

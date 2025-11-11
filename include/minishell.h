@@ -49,8 +49,6 @@ char	*arena_strdup(t_arena **arena, const char *s);
 **            Main
 ** =========================== */
 int		main(int argc, char **argv, char **envp);
-// shell
-int init_shell(char **envp);
 
 /* ===========================
 **            REPL
