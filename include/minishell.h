@@ -123,4 +123,7 @@ void	dbg_print_tokens(t_list *tokens);
 void	dbg_print_cmds(t_cmd *cmds);
 void	dbg_print_exit_code(int exit_code);
 
+//cleanup
+void general_cleanup(t_shell *shell, t_arena **arena);
+
 #endif /* MINISHELL_H */
