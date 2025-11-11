@@ -1,7 +1,11 @@
 #ifndef EXECUTION_H
 #define EXECUTION_H
 
-void	child_process(t_cmd *parsed_cmd, char **env);
+#include "minishell.h"
+void	child_process(t_cmd *parsed_cmd, t_shell *shell);
+
+//envp.c
+char **envp_arr(t_shell *shell);
 
 //utils
 void	strerrornexit(void);
@@ -11,7 +15,6 @@ void	freeerror(char **arr);
 void	freeall(char **arr, char *str, char *cmd);
 void	commandnotfound(char **arr);
 
-//might delete this later
-char **copy_envp(char **envp);
+int init_shell(t_shell *shell, char **envp, t_arena **arena);
 
 #endif

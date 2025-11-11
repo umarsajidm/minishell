@@ -13,7 +13,9 @@ char *read_input(t_arena **arena)
         return (NULL);                          // Ctrl-D returns NULL
     if (*line)
         add_history(line);                      // store non-empty lines in history
-    return (arena_strdup(arena, line));         // duplicate line into arena
+    char *dup = arena_strdup(arena, line);       // duplicate line into arena
+    free(line);
+    return(dup);
 }
 
 /* Read multiple lines for a heredoc until delimiter is reached

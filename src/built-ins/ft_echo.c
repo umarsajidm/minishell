@@ -49,8 +49,8 @@ int	ft_echo(char **av)
 	return (0);
 }
 
-int main(int ac, char **av)
-{
-	ft_echo(av);
-	return (0);
-}
+// int main(int ac, char **av)
+// {
+// 	ft_echo(av);
+// 	return (0);
+// }

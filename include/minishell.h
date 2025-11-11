@@ -18,6 +18,10 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+
+#define BUFFER_SIZE_FOR_ARENA 1024
+
+
 /* ===========================
 **        Libft (types like t_list)
 ** =========================== */
@@ -27,6 +31,9 @@
 **        Minishell Types
 ** =========================== */
 # include "minishell_types.h"
+
+// execution
+# include "execution.h"
 
 /* ===========================
 **        Arena core functions
@@ -61,7 +68,7 @@ void	handle_sigquit(int sig);
 **        Environment
 ** =========================== */
 t_env	*init_env(char **envp);
-void	free_env(t_env *env);
+void	free_env(t_env *env, char **array);
 char	*get_env_value(t_env *env, const char *key);
 int		set_env_var(t_shell *shell, const char *key, const char *value);
 void	dbg_print_env(t_env *env);
@@ -115,5 +122,8 @@ int		builtin_exit(t_shell *shell, t_list *args);
 void	dbg_print_tokens(t_list *tokens);
 void	dbg_print_cmds(t_cmd *cmds);
 void	dbg_print_exit_code(int exit_code);
+
+//cleanup
+void general_cleanup(t_shell *shell, t_arena **arena);
 
 #endif /* MINISHELL_H */

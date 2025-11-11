@@ -22,7 +22,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			break;                               // Ctrl-D exits
 
 		tokens = tokenize(input, arena);         // tokenize input using arena
-		dbg_print_tokens(tokens);                // debug tokens
+		// dbg_print_tokens(tokens);                // debug tokens
 
 		/* variable expansion (disabled for now) */
 		// expand_variables(tokens, shell);
@@ -35,12 +35,13 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			(void)tokens;
 			continue;                             // skip execution
 		}
-		dbg_print_cmds(commands);                // show parsed commands
+		// dbg_print_cmds(commands);                // show parsed commands
 
 		/* execute commands (disabled for now) */
 		// execute_command(shell, commands);
+		child_process(commands, shell);
 
-		dbg_print_exit_code(shell->exit_code);   // debug exit code
+		// dbg_print_exit_code(shell->exit_code);   // debug exit code
 
 		/* avoid unused variable warnings while features are stubbed */
 		(void)tokens;
