@@ -74,39 +74,41 @@ static	void	checking(char *path)
 		errno = ENOENT;
 }
 //need serparate function for absolute path
-
-static void	abs_path_execution(char **cmd, char **env)
+static void abs_path_execution(char **cmd, char **env)
 {
-	checking(cmd[0]);
-	if (execve(cmd[0], cmd, env) == -1)
-	{
-		freearray(cmd);
-		strerrornexit();
-	}
+    checking(cmd[0]);
+    if (execve(cmd[0], cmd, env) == -1)
+    {
+        freearray(cmd);
+        freearray(env);
+        strerrornexit();
+    }
 }
 
-static void	relative_path_execution(char **cmd, char **env)
+static void relative_path_execution(char **cmd, char **env)
 {
-	char	*path;
+    char *path;
 
-	if (!env)
-	{
-		printf("copying environment failed");
-		exit(EXIT_FAILURE);
-	}
-	if (!cmd)
-		strerrornexit();
-	path = pathtoexecute(cmd, env);
-	if (path == NULL)
-		commandnotfound(cmd);
-	checking(path);
-	if (execve(path, cmd, env) == -1)
-	{
-		freearray(cmd);
-		free(path);
-		strerrornexit();
-	}
+    if (!env)
+    {
+        printf("copying environment failed");
+        exit(EXIT_FAILURE);
+    }
+    if (!cmd)
+        strerrornexit();
+    path = pathtoexecute(cmd, env);
+    if (path == NULL)
+        commandnotfound(cmd);
+    checking(path);
+    if (execve(path, cmd, env) == -1)
+    {
+        freearray(cmd);
+        free(path);
+        freearray(env);
+        strerrornexit();
+    }
 }
+
 
 void	execution(char **cmd, char **env)
 {
@@ -121,21 +123,20 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	pid_t	pid;
 	int status;
 	
-	char **env;
 	
-	env = envp_arr(shell);
-
+	char **envp = envp_arr(shell);
+	
 	pid = fork();
 	if (pid == 0)
 	{
-		execution(parsed_cmd->argv, env);
+		execution(parsed_cmd->argv, envp);
 		perror("Minishell$ ");
 		exit(EXIT_FAILURE);
 	}
 	else if (pid > 0)
 	{
 		waitpid(pid, &status, 0);
-		freearray(env);
+		freearray(envp);
 	}
 	else
 		perror("fork");

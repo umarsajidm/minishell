@@ -40,6 +40,7 @@ typedef struct s_env
 typedef struct s_shell
 {
 	t_env	*env;        /* environment variables linked list */
+	char	**envp;		//environment array for execve
 	int		exit_code;   /* last exit code */
 	bool	running;     /* shell running flag */
 }	t_shell;

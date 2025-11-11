@@ -48,7 +48,7 @@ t_env	*init_env(char **envp)
  * Free the environment linked list
  * - Frees key, value, and node memory
  */
-void	free_env(t_env *env)
+void	free_env(t_env *env, char **array)
 {
 	t_env	*tmp;
 
@@ -62,6 +62,7 @@ void	free_env(t_env *env)
 		free(env);                                // free node
 		env = tmp;                                // move to next node
 	}
+	freearray(array);
 }
 
 /* 

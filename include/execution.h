@@ -15,6 +15,6 @@ void	freeerror(char **arr);
 void	freeall(char **arr, char *str, char *cmd);
 void	commandnotfound(char **arr);
 
-int init_shell(t_shell *shell, char **envp);
+int init_shell(t_shell *shell, char **envp, t_arena **arena);
 
 #endif

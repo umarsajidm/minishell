@@ -14,21 +14,8 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 
 	ft_bzero(&shell, sizeof(t_shell));
-	arena = init_arena(BUFFER_SIZE_FOR_ARENA);
-    if (!arena)
-    {
-        ft_putstr_fd("minishell: failed to initialize memory arena\n", 2);
-        return (1);
-    }
-	shell.running = true;
-    shell.env = init_env(envp);
-    if (!shell.env)
-    {
-        ft_putstr_fd("minishell: failed to initialize the enviroment\n", 2);
-        return (1);
-    }
-
-
+	
+	init_shell(&shell, envp, &arena);
 	/* setup signal handlers */
 	setup_signals();
 
@@ -38,8 +25,8 @@ int	main(int argc, char **argv, char **envp)
 	/* debug: print final exit code */
 	// dbg_print_exit_code(shell.exit_code);
 	/* cleanup */
-	free_env(shell.env);       // free malloc'd env list
+	free_env(shell.env, NULL);       // free malloc'd env list
 	free_arena(&arena);        // free all arena memory
-
+	rl_clear_history();
 	return (shell.exit_code);  // return shell exit code
 }

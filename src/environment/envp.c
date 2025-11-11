@@ -6,7 +6,7 @@ static char *copyfromlisttoarr(t_env *env);
 
 
 //making the envp from linked list of env for execve func
-char **envp_arr(t_shell *shell)
+char    **envp_arr(t_shell *shell)
 {
     t_env *env;
     int i;
@@ -17,7 +17,8 @@ char **envp_arr(t_shell *shell)
         return NULL; //update with exit status and error message
     while (env)
     {   
-        envp[i++] = ft_strdup(copyfromlisttoarr(env));
+        if (env->value)
+            envp[i++] = copyfromlisttoarr(env);
         env = env->next;
     }
     envp[i] = NULL;
@@ -48,7 +49,7 @@ static char *copyfromlisttoarr(t_env *env)
 
     keylen = ft_strlen(env->key);
     valuelen = ft_strlen(env->value);
-    dest = ft_calloc(keylen + valuelen + 2, sizeof(char *));
+    dest = ft_calloc(keylen + valuelen + 2, sizeof(char));
     ft_memcpy(dest, env->key, keylen);
     dest[keylen] = '=';
     ft_memcpy(dest + keylen + 1, env->value, valuelen);
