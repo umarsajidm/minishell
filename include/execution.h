@@ -20,7 +20,7 @@ void	commandnotfound(char **arr);
 int init_shell(t_shell *shell, char **envp, t_arena **arena);
 
 //pipeline.c
-void execution_pipeline(t_cmd *command);
-void pipeline(t_cmd	*command, t_shell *shell);
+void execution_pipeline(t_cmd *command, t_shell *shell);
+// void pipeline(t_cmd	*command, t_shell *shell);
 
 #endif

@@ -39,7 +39,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 
 		/* execute commands (disabled for now) */
 		// execute_command(shell, commands);
-		pipeline(commands, shell);
+		execution_pipeline(commands, shell);
 
 		// dbg_print_exit_code(shell->exit_code);   // debug exit code
 

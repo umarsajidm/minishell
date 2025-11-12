@@ -44,6 +44,7 @@ exit
 
 
 */
+static void pipeline(t_cmd	*command, t_shell *shell);
 
 static int	is_builtin(char *cmd)
 {
@@ -53,31 +54,33 @@ static int	is_builtin(char *cmd)
 	return (0); //need to think about this statement
 }
 
-// void execution_pipeline(t_cmd *command)
-// {
-//     char	**cmd;
-// 	t_cmd	*t_command;
-// 	int		i;
-// 	int		pipe_number;
+void execution_pipeline(t_cmd *command, t_shell *shell)
+{
+   
+	t_cmd	*t_command;
+	int		i;
+	int		pipe_number;
 	
-// 	i = 0;
-// 	t_command = command;
-//     while(t_command)
-// 	{
-// 		if (t_command->argv)
-// 			i++;
-// 		t_command = t_command->next;
-// 	}
-// 	pipe_number = i - 1;
-// 	// if (!pipe_number)
-// 		//either redirections or binary or builtin
-// 	pipeline()
-// }
+	i = 0;
+	t_command = command;
+    while(t_command)
+	{
+		if (t_command->argv)
+			i++;
+		t_command = t_command->next;
+	}
+	pipe_number = i - 1;
+	if (!pipe_number)
+		pipeline(command, shell);
+}
+void pipe_execution(t_cmd	*command)
+{
+	int	fd[2]
+}
 
-void pipeline(t_cmd	*command, t_shell *shell)
+
+static void pipeline(t_cmd	*command, t_shell *shell)
 {
 	if (!is_builtin(command->argv[0]))
-	{
 		child_process(command, shell);
-	}
 }
