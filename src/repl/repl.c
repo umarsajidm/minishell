@@ -48,3 +48,25 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		(void)commands;
 	}
 }
+
+// typedef enum e_redir_type
+// {
+// 	R_INPUT,
+// 	R_OUTPUT,
+// 	R_APPEND,
+// 	R_HEREDOC
+// }	t_redir_type;
+
+// typedef struct s_redir
+// {
+// 	t_redir_type	type;   /* type of redirection */
+// 	char			*target;/* file or heredoc target */
+// 	struct s_redir	*next;  /* next redirection */
+// }	t_redir;
+
+// typedef struct s_cmd
+// {
+// 	char			**argv;  /* argument vector */
+// 	t_redir			*redirs; /* redirections */
+// 	struct s_cmd	*next;   /* next command */
+// }	t_cmd;
