@@ -22,7 +22,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			break;                               // Ctrl-D exits
 
 		tokens = tokenize(input, arena);         // tokenize input using arena
-		// dbg_print_tokens(tokens);                // debug tokens
+		dbg_print_tokens(tokens);                // debug tokens
 
 		/* variable expansion (disabled for now) */
 		// expand_variables(tokens, shell);
@@ -35,11 +35,11 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			(void)tokens;
 			continue;                             // skip execution
 		}
-		// dbg_print_cmds(commands);                // show parsed commands
+		dbg_print_cmds(commands);                // show parsed commands
 
 		/* execute commands (disabled for now) */
 		// execute_command(shell, commands);
-		child_process(commands, shell);
+		execution_pipeline(commands, shell);
 
 		// dbg_print_exit_code(shell->exit_code);   // debug exit code
 
@@ -48,3 +48,25 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		(void)commands;
 	}
 }
+
+// typedef enum e_redir_type
+// {
+// 	R_INPUT,
+// 	R_OUTPUT,
+// 	R_APPEND,
+// 	R_HEREDOC
+// }	t_redir_type;
+
+// typedef struct s_redir
+// {
+// 	t_redir_type	type;   /* type of redirection */
+// 	char			*target;/* file or heredoc target */
+// 	struct s_redir	*next;  /* next redirection */
+// }	t_redir;
+
+// typedef struct s_cmd
+// {
+// 	char			**argv;  /* argument vector */
+// 	t_redir			*redirs; /* redirections */
+// 	struct s_cmd	*next;   /* next command */
+// }	t_cmd;
