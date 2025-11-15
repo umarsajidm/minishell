@@ -78,132 +78,205 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 		t_command = t_command->next;
 	}
 	pipe_number = i - 1;
-	if (!pipe_number && !is_builtin(command->argv[0]))//if there is no pipe and cmd is binary
+	if (!pipe_number && !(command->redirs) && !is_builtin(command->argv[0]))//if there is no pipe and cmd is binary
 		child_process(command, shell);
 	else	
 		pipe_execution(command, shell);
 }
-static void pipe_execution(t_cmd	*command, t_shell *shell)
+
+static void init_fd(t_fd	*fd)
 {
-	int		fd[2];
-	int		prev_fd = -1;
-	pid_t	pid;
-	t_cmd	*t_command;
-	int		cmdno;
-	//int		i;
-	
-	// prev_fd = -1;
-	cmdno = 0;
-	t_command = command;
-    while(t_command)
-	{
-		if (t_command->argv)
-			cmdno++;
-		t_command = t_command->next;
-	}
-	char **envp = envp_arr(shell);
-	while(command)
-	{
-		pipe(fd);
-		pid = fork();
-		if (pid == 0)
-		{
-			if (prev_fd != -1) //if this is not first command, then read from prev.
-				dup2(prev_fd, STDIN_FILENO);
-			if (command->next != NULL)
-				dup2(fd[1], STDOUT_FILENO);
-			if (prev_fd != -1)
-				close(prev_fd);
-			if (cmdno > 1)
-			{
-				close(fd[1]);
-				close(fd[0]);
-			}
-			execution(command->argv, envp);
-		}
-		if (prev_fd != -1)
-			close(prev_fd);
-		if (cmdno > 1)
-		{
-			close(fd[1]);
-			prev_fd = fd[0];
-		}
-		waitpid(pid, NULL, 0);
-		command = command->next;
-		cmdno--;
-	}
-
-
-	close(fd[0]);
-	close(fd[1]);
-	close(prev_fd);
-	waitpid(pid, NULL, 0);
-	freearray(envp);
+	fd->fd[0] = -1;
+	fd->fd[1] = -1;
+	fd->prev_fd = -1;
 }
 
-
-// static void pipeline(t_cmd	*command, t_shell *shell)
+// static void close_fd(t_fd	*fd)
 // {
-// 	if (!is_builtin(command->argv[0]))
-// 		child_process(command, shell);
+// 	close(fd->fd[0]);
+// 	close(fd->fd[1]);
+// 	close(fd->prev_fd);
 // }
 
-// static void init_fd(int fd[2])
+// static size_t cmdno(t_cmd *cmd)
 // {
-// 	fd[0] = -1;
-// 	fd[1] = -1;
-// }
+// 	size_t	i;
 
-// static void close_fd(int fd[2])
-// {
-// 	close(&fd[0]);
-// 	close(&fd[1]);
-// }
-
-// static void pipe_execution(t_cmd *command, t_shell *shell)
-// {
-// 	int		fd[2];
-// 	pid_t	pid1;
-// 	pid_t	pid2;
-
-// 	fd[0] = -1;
-// 	fd[1] = -1;
-// 	//first command: cmd->argv[0] = command name and else is arg.
-// 	//changing the stdout (that is terminal) to the writing end of pipe
-// 	char **envp = envp_arr(shell);
-// 	pipe(fd);
-	
-// 	while (command)
+// 	i = 0;
+// 	while(cmd)
 // 	{
-// 		pid1 = fork();
-// 		if (pid1 == 0)
-// 		{
-// 			dup2(fd[1], STDOUT_FILENO);
-// 			close(fd[0]);
-// 			close(fd[1]);
-// 			execution(command->argv, envp);
-// 		}
-// 		pid2 = fork();
-// 		if (pid2 == 0)
-// 		{
-// 			command = command->next;
-// 			dup2(fd[0], STDIN_FILENO);
-// 			if (command->next != NULL)
-// 				dup2(fd[1], STDOUT_FILENO);
-// 			close(fd[0]);
-// 			close(fd[1]);
-// 			execution(command->argv, envp);
-// 		}
-		
+// 		if (cmd->argv)
+// 			i++;
+// 		cmd = cmd->next;
 // 	}
-
-// 	close(fd[0]);
-// 	close(fd[1]);
-// 	waitpid(pid1, NULL, 0);
-// 	waitpid(pid2, NULL, 0);
+// 	return (i);
 // }
+// static void pipe_execution(t_cmd	*command, t_shell *shell)
+// {
+// 	pid_t	pid;
+// 	size_t		n;
+// 	t_fd	fd;
+// 	int		open_fd;
+	
+// 	n = cmdno(command);
+// 	char **envp = envp_arr(shell);
+// 	init_fd(&fd);
+// 	while(command)
+// 	{
+// 		pipe(fd.fd);
+// 		pid = fork();
+// 		if (pid == 0)
+// 		{
+// 			if (command->redirs)
+// 			{
+// 				t_redir *r = command->redirs;
+// 				while (r)
+// 				{
+// 					if (r->target)
+// 					{
+// 					if (r->type == 0)
+// 						open_fd = open(r->target, O_RDONLY);
+// 					if (r->type == 1)
+// 						open_fd = open(r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+// 					if (open_fd < 0)
+// 							perror("openfd");
+// 					if (r->type == 0)
+// 						dup2(open_fd, STDIN_FILENO);
+// 					if (r->type == 1)
+// 						dup2(open_fd, STDOUT_FILENO);
+// 					close(open_fd);
+// 					}
+// 					r = r->next;
+// 				}
+				
+// 			}
+			
+// 			if (fd.prev_fd != -1) //if this is not first command, then read from prev.
+// 				dup2(fd.prev_fd, STDIN_FILENO);
+// 			if (command->next != NULL)
+// 				dup2(fd.fd[1], STDOUT_FILENO);
+// 			if (fd.prev_fd != -1)
+// 				close(fd.prev_fd);
+// 			if (n > 1)
+// 			{
+// 				close(fd.fd[1]);
+// 				close(fd.fd[0]);
+// 			}
+// 			execution(command->argv, envp);
+// 		}
+// 		if (fd.prev_fd != -1)
+// 			close(fd.prev_fd);
+// 		if (n > 1)
+// 		{
+// 			close(fd.fd[1]);
+// 			fd.prev_fd = fd.fd[0];
+// 		}
+// 		waitpid(pid, NULL, 0);
+// 		command = command->next;
+// 		n--;
+// 	}
+// 	close_fd(&fd);
+// 	waitpid(pid, NULL, 0);
+// 	freearray(envp);
+// }
+static void pipe_execution(t_cmd *command, t_shell *shell)
+{
+    pid_t pid;
+    t_fd fd;
+    // size_t n = cmdno(command);
+    char **envp = envp_arr(shell);
 
-/*
-what is status in waitpid
-what is WIFEXITED, WIFSIGNALED, WIFEXITSTATUS, WTERMSIG
-*/
+    init_fd(&fd);
+    // n = cmdno(command);
+
+    while (command)
+    {
+        pipe(fd.fd);
+
+        pid = fork();
+        if (pid == 0) // child
+        {
+            int in_fd = -1;
+            int out_fd = -1;
+
+            // Handle multiple redirections: only last of each type matters
+            if (command->redirs)
+            {
+                t_redir *r = command->redirs;
+                while (r)
+                {
+                    if (r->target)
+                    {
+                        if (r->type == R_INPUT)
+                        {
+                            if (in_fd != -1)
+                                close(in_fd);
+                            in_fd = open(r->target, O_RDONLY);
+                            if (in_fd < 0)
+                                perror("open input");
+                        }
+                        else if (r->type == R_OUTPUT)
+                        {
+                            if (out_fd != -1)
+                                close(out_fd);
+                            out_fd = open(r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                            if (out_fd < 0)
+                                perror("open output");
+                        }
+                        else if (r->type == R_APPEND)
+                        {
+                            if (out_fd != -1)
+                                close(out_fd);
+                            out_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+                            if (out_fd < 0)
+                                perror("open append");
+                        }
+                    }
+                    r = r->next;
+                }
+            }
+
+            // Connect input
+            if (fd.prev_fd != -1)
+                dup2(fd.prev_fd, STDIN_FILENO);
+            if (in_fd != -1)
+                dup2(in_fd, STDIN_FILENO);
+
+            // Connect output
+            if (command->next != NULL && out_fd == -1)
+                dup2(fd.fd[1], STDOUT_FILENO);
+            if (out_fd != -1)
+                dup2(out_fd, STDOUT_FILENO);
+
+            // Close all unnecessary fds
+            if (fd.prev_fd != -1)
+                close(fd.prev_fd);
+            close(fd.fd[0]);
+            close(fd.fd[1]);
+            if (in_fd != -1)
+                close(in_fd);
+            if (out_fd != -1)
+                close(out_fd);
+
+            execution(command->argv, envp);
+        }
+
+        // Parent closes previous fd
+        if (fd.prev_fd != -1)
+            close(fd.prev_fd);
+
+        // Keep current read end for next command
+        if (command->next != NULL)
+            fd.prev_fd = fd.fd[0];
+        else
+            fd.prev_fd = -1;
+
+        // Close write end in parent
+        close(fd.fd[1]);
+
+        waitpid(pid, NULL, 0);
+        command = command->next;
+    }
+
+    freearray(envp);
+}
