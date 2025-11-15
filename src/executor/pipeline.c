@@ -86,73 +86,59 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 static void pipe_execution(t_cmd	*command, t_shell *shell)
 {
 	int		fd[2];
-	pid_t	pid1;
-	pid_t	pid2;
+	int		prev_fd = -1;
+	pid_t	pid;
 	t_cmd	*t_command;
-	int		i;
-	int		pipe_number;
+	int		cmdno;
+	//int		i;
 	
-	i = 0;
+	// prev_fd = -1;
+	cmdno = 0;
 	t_command = command;
     while(t_command)
 	{
 		if (t_command->argv)
-			i++;
+			cmdno++;
 		t_command = t_command->next;
 	}
-	pipe_number = i - 1;
-
-	fd[0] = -1;
-	fd[1] = -1;
-	int fdsec[2];
-	fdsec[0] = -1;
-	fdsec[1] = -1;
-	i = 0;
-	//first command: cmd->argv[0] = command name and else is arg.
-	//changing the stdout (that is terminal) to the writing end of pipe
 	char **envp = envp_arr(shell);
-	pipe(fd);
-	while(pipe_number > 0)
+	while(command)
 	{
-		pid1 = fork();
-		if (pid1 == 0)
+		pipe(fd);
+		pid = fork();
+		if (pid == 0)
 		{
-			if (i == 0)
+			if (prev_fd != -1) //if this is not first command, then read from prev.
+				dup2(prev_fd, STDIN_FILENO);
+			if (command->next != NULL)
 				dup2(fd[1], STDOUT_FILENO);
-			else if (i > 0)
+			if (prev_fd != -1)
+				close(prev_fd);
+			if (cmdno > 1)
 			{
-				dup2(fdsec[0], STDIN_FILENO);
-				close(fdsec[0]);
-				close(fdsec[1]);
+				close(fd[1]);
+				close(fd[0]);
 			}
-			
-			close(fd[0]);
-			close(fd[1]);
 			execution(command->argv, envp);
 		}
-		pid2 = fork();
-		if (pid2 == 0)
+		if (prev_fd != -1)
+			close(prev_fd);
+		if (cmdno > 1)
 		{
-			command = command->next;
-			dup2(fd[0], STDIN_FILENO);
-			close(fd[0]);
 			close(fd[1]);
-			if (pipe_number > 1)
-			{
-				pipe(fdsec);
-				dup2(fdsec[0], STDOUT_FILENO);
-				close(fdsec[0]);
-				close(fdsec[1]);
-				i++;
-			}
-			execution(command->argv, envp);
+			prev_fd = fd[0];
 		}
-		pipe_number--;
+		waitpid(pid, NULL, 0);
+		command = command->next;
+		cmdno--;
 	}
+
+
 	close(fd[0]);
 	close(fd[1]);
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, NULL, 0);
+	close(prev_fd);
+	waitpid(pid, NULL, 0);
+	freearray(envp);
 }
 
 
