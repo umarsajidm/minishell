@@ -20,6 +20,14 @@ void	commandnotfound(char **arr);
 int init_shell(t_shell *shell, char **envp, t_arena **arena);
 
 //pipeline.c
+
+typedef struct s_fd
+{
+    int fd[2];
+    int prev_fd;
+}   t_fd;
+
+
 void execution_pipeline(t_cmd *command, t_shell *shell);
 // void pipeline(t_cmd	*command, t_shell *shell);
 

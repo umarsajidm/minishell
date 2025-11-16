@@ -70,3 +70,14 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 // 	t_redir			*redirs; /* redirections */
 // 	struct s_cmd	*next;   /* next command */
 // }	t_cmd;
+
+// if (cmd->redir->type)
+// 	{
+// 		if(cmd->redir->type == in)
+// 			{//check access
+// 			int open_fd = open(cmd->redir->target, O_RDONLY);
+// 			dup2(fd[0], open_fd);
+// 			execution_pipeline
+// 		}
+// 	}
+// have to handle redire for built in as well 
