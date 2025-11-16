@@ -193,41 +193,41 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
 
     freearray(envp);
 }
+//need to handle this case
+//  if (command->redirs)
+//             {
+//                 t_redir *r = command->redirs;
+//                 while (r)
+//                 {
+//                     if (r->target)
+//                     {
+//                         if (r->type == R_INPUT)
+//                         {
+//                             if (in_fd != -1)
+//                                 close(in_fd);
+//                             in_fd = open(r->target, O_RDONLY);
+//                             if (in_fd < 0)
+//                                 perror("open input");
+//                         }
+//                         else if (r->type == R_OUTPUT)
+//                         {
+//                             if (out_fd != -1)
+//                                 close(out_fd);
+//                             out_fd = open(r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+//                             if (out_fd < 0)
+//                                 perror("open output");
+//                         }
+//                         else if (r->type == R_APPEND)
+//                         {
+//                             if (out_fd != -1)
+//                                 close(out_fd);
+//                             out_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+//                             if (out_fd < 0)
+//                                 perror("open append");
+//                         }
+//                     }
+//                     r = r->next;
+//                 }
+//             }
 
- if (command->redirs)
-            {
-                t_redir *r = command->redirs;
-                while (r)
-                {
-                    if (r->target)
-                    {
-                        if (r->type == R_INPUT)
-                        {
-                            if (in_fd != -1)
-                                close(in_fd);
-                            in_fd = open(r->target, O_RDONLY);
-                            if (in_fd < 0)
-                                perror("open input");
-                        }
-                        else if (r->type == R_OUTPUT)
-                        {
-                            if (out_fd != -1)
-                                close(out_fd);
-                            out_fd = open(r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-                            if (out_fd < 0)
-                                perror("open output");
-                        }
-                        else if (r->type == R_APPEND)
-                        {
-                            if (out_fd != -1)
-                                close(out_fd);
-                            out_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-                            if (out_fd < 0)
-                                perror("open append");
-                        }
-                    }
-                    r = r->next;
-                }
-            }
-
-static void 
+// static void 
