@@ -1,6 +1,4 @@
-//#include "minishell.h"
-#include <stdio.h>
-#include <string.h>
+#include "minishell.h"
 
 static int	is_flag(const char *s)
 {
@@ -48,9 +46,3 @@ int	ft_echo(char **av)
 			return (1);
 	return (0);
 }
-
-// int main(int ac, char **av)
-// {
-// 	ft_echo(av);
-// 	return (0);
-// }
