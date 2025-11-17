@@ -30,7 +30,7 @@ long	ft_atol(const char *s, int *error)
 
 static char	*skip_whitespace(const char *s)
 {
-	while (*s == ' ' || *s == '\t')
+	while (*s && (*s == ' ' || *s == '\t'))
 		s++;
 	return ((char *)s);
 }

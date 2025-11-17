@@ -12,7 +12,7 @@ int	ft_exit(char **av, t_shell *shell)
 
 	ft_putstr_fd("exit\n", 2);
 	if (!av[1])
-		exit_code = shell->exit_code;
+		return (exit_code = shell->exit_code, exit_code & 0xFF);
 	else if (get_ac(av) > 2)
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);

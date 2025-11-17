@@ -2,13 +2,14 @@
 
 int	ft_export(t_cmd *cmds, t_shell *shell)
 {
-	int	i;
+	(void)shell;
+	//int	i;
 
 	if (!cmds->argv[1])
 		// print env in asciibetical order
-		// return 0
+		return (0);
 
-	i = 1;
+	//i = 1;
 	// while (cmds->argv[i])
 		// if !valid_syntax
 			// return 0
