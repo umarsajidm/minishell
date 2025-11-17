@@ -53,15 +53,6 @@ static void pipe_execution(t_cmd	*command, t_shell *shell);
 
 void	execution(char **cmd, char **env);
 
-static int	is_builtin(char *cmd)
-{
-	//just a prototype , have to discuss with jonathen if we can move up with it
-	// need to ponder over, whether we can apply redirections here or not
-	if (!ft_strcmp(cmd, "cd"))
-		return (1);
-	return (0); //need to think about this statement
-}
-
 void execution_pipeline(t_cmd *command, t_shell *shell)
 {
    
@@ -78,7 +69,7 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 		t_command = t_command->next;
 	}
 	pipe_number = i - 1;
-	if (!pipe_number && !(command->redirs) && !is_builtin(command->argv[0]))//if there is no pipe and cmd is binary
+	if (!pipe_number && !(command->redirs) && !is_builtin(command))//if there is no pipe and cmd is binary
 		child_process(command, shell);
 	else	
 		pipe_execution(command, shell);
