@@ -37,8 +37,10 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		}
 		dbg_print_cmds(commands);                // show parsed commands
 
-		/* execute commands (disabled for now) */
+		/* tests for built-in commands (for now) */
 		//test_builtin(commands, shell);
+
+		/* execute commands */
 		execution_pipeline(commands, shell);
 
 		// dbg_print_exit_code(shell->exit_code);   // debug exit code
