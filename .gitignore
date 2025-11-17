@@ -5,6 +5,7 @@
 *.d
 
 # Object files
+obj/
 *.o
 *.ko
 *.obj
@@ -32,6 +33,7 @@
 *.dylib
 
 # Executables
+minishell
 *.exe
 *.out
 *.app

@@ -108,11 +108,15 @@ int		exec_builtins(t_shell *shell, t_cmd *cmd);
 /* ===========================
 **        Builtins
 ** =========================== */
-int		is_built_in(t_cmd *cmd);
-int		run_built_in(t_shell *shell, t_cmd *cmds);
+int		is_builtin(t_cmd *cmd);
+void	run_builtin(t_cmd *cmds, t_shell *shell);
+long	ft_atol(const char *s, int *error);
 int		ft_env(t_env *head);
 int		ft_echo(char **av);
 int		ft_pwd(void);
+int		ft_exit(char **av, t_shell *shell);
+
+void	test_builtin(t_cmd *commands, t_shell *shell);
 /* ===========================
 **        Debug
 ** =========================== */
