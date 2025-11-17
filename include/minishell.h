@@ -109,13 +109,15 @@ int		exec_builtins(t_shell *shell, t_cmd *cmd);
 **        Builtins
 ** =========================== */
 int		is_builtin(t_cmd *cmd);
-void	run_builtin(t_cmd *cmds, t_shell *shell);
+int		run_builtin(t_cmd *cmds, t_shell *shell);
 long	ft_atol(const char *s, int *error);
 int		ft_env(t_env *head);
 int		ft_echo(char **av);
 int		ft_pwd(void);
 int		ft_exit(char **av, t_shell *shell);
+int		ft_unset(t_cmd *cmd, t_shell *shell);
 
+t_env	*find_env_node(const char *str, t_env *head);
 void	test_builtin(t_cmd *commands, t_shell *shell);
 /* ===========================
 **        Debug
