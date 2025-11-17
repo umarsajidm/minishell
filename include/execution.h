@@ -25,10 +25,17 @@ typedef struct s_fd
 {
     int fd[2];
     int prev_fd;
+    int in_fd;
+    int out_fd;
 }   t_fd;
 
 
 void execution_pipeline(t_cmd *command, t_shell *shell);
 // void pipeline(t_cmd	*command, t_shell *shell);
+
+//pipeline_utils.c
+void applying_redir(t_redir *r, int *in_fd, int *out_fd);
+
+
 
 #endif
