@@ -1,23 +1,24 @@
 #include "minishell.h"
 
-void	run_builtin(t_cmd *cmds, t_shell *shell)
+int	run_builtin(t_cmd *cmds, t_shell *shell)
 {
-	(void)shell;
 	char	*command;
 
 	command = cmds->argv[0];
 	if (ft_strcmp(command, "echo") == 0)
-		ft_echo(cmds->argv);
+		return (ft_echo(cmds->argv));
 	else if (ft_strcmp(command, "cd") == 0)
-		return ;
+		return (0);
 	else if (ft_strcmp(command, "pwd") == 0)
-		ft_pwd();
+		return (ft_pwd());
 	else if (ft_strcmp(command, "export") == 0)
-		return ;
+		return (0);
 	else if (ft_strcmp(command, "unset") == 0)
-		return ;
+		return (ft_unset(cmds, shell));
 	else if (ft_strcmp(command, "env") == 0)
-		ft_env(shell->env);
+		return (ft_env(shell->env));
 	else if (ft_strcmp(command, "exit") == 0)
-		ft_exit(cmds->argv, shell);
+		return (ft_exit(cmds->argv, shell));
+	printf("Could not execute built-in\n");
+	return (1);
 }
