@@ -7,9 +7,8 @@ typedef struct redir_pipeline
 	t_redir	*redir;
 }	redir_pipeline;
 
-static void applying_input_redir(t_redir *r, int *in_fd)
+static void	applying_input_redir(t_redir *r, int *in_fd)
 {
-
 	if (*in_fd >= 0)
 		close(*in_fd);
 	*in_fd = open(r->target, O_RDONLY);
@@ -17,7 +16,7 @@ static void applying_input_redir(t_redir *r, int *in_fd)
 		perror("opening of input redirection");
 }
 
-static void applying_outside_redir(t_redir *r, int *out_fd)
+static void	applying_outside_redir(t_redir *r, int *out_fd)
 {
 	if (*out_fd >= 0)
 		close(*out_fd);
@@ -26,12 +25,8 @@ static void applying_outside_redir(t_redir *r, int *out_fd)
 		perror("opening of out redirection or heredoc");
 }
 
-void applying_redir(t_redir *r, int *in_fd, int *out_fd)
+void	applying_redir(t_redir *r, int *in_fd, int *out_fd)
 {
-
-	// *in_fd = -1;
-	// *out_fd = -1;
-
 	while(r)
 	{
 		if (r->target)
@@ -44,5 +39,3 @@ void applying_redir(t_redir *r, int *in_fd, int *out_fd)
 		r = r->next;
 	}	
 }
-
-

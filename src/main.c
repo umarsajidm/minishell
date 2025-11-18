@@ -8,14 +8,13 @@
  */
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell		shell;   // shell state: env, exit_code, run
+	t_shell		shell;
 	t_arena		*arena;
 	(void)argc;
 	(void)argv;
 
 	ft_bzero(&shell, sizeof(t_shell));
-	
-	init_shell(&shell, envp, &arena);
+	init_shell(&shell, envp, &arena); //env and arena initializaion
 	/* setup signal handlers */
 	setup_signals();
 

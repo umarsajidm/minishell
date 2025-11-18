@@ -10,11 +10,13 @@ char    **envp_arr(t_shell *shell)
 {
     t_env *env;
     int i;
+    char **envp;
+
     env = shell->env;
-    i = 0;
-    char **envp = ft_calloc(sizeoflist(shell->env) + 1, sizeof(char*));
+    envp = ft_calloc(sizeoflist(shell->env) + 1, sizeof(char*));
     if (!envp)
-        return NULL; //update with exit status and error message
+        return (NULL); //update with exit status and error message
+    i = 0;
     while (env)
     {   
         if (env->value)
@@ -25,7 +27,7 @@ char    **envp_arr(t_shell *shell)
     return (envp);
 }
 
-static size_t sizeoflist(t_env *env)
+static size_t   sizeoflist(t_env *env)
 {
     t_env   *cur;
     size_t  i;

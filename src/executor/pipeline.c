@@ -47,15 +47,12 @@ int dup2(int oldfd, int newfd);
        indicate the error.
 */
 
-static void pipe_execution(t_cmd	*command, t_shell *shell);
-
-//static void pipeline(t_cmd	*command, t_shell *shell);
+static void	pipe_execution(t_cmd	*command, t_shell *shell);
 
 void	execution(char **cmd, char **env);
 
-void execution_pipeline(t_cmd *command, t_shell *shell)
+void	execution_pipeline(t_cmd *command, t_shell *shell)
 {
-   
 	t_cmd	*t_command;
 	int		i;
 	int		pipe_number;
@@ -83,6 +80,7 @@ static void init_fd(t_fd	*fd)
 	fd->in_fd = -1;
 	fd->out_fd = -1;
 }
+
 static void close_fd(t_fd *fd)
 {
 	if (fd->fd[0] == -1)
@@ -97,109 +95,6 @@ static void close_fd(t_fd *fd)
 		close(fd->out_fd);
 }
 
-
-// static void pipe_execution(t_cmd *command, t_shell *shell)
-// {
-//     pid_t pid;
-//     t_fd fd;
-//     // size_t n = cmdno(command);
-//     char **envp = envp_arr(shell);
-
-//     init_fd(&fd);
-//     // n = cmdno(command);
-
-//     while (command)
-//     {
-//         pipe(fd.fd);
-
-//         pid = fork();
-//         if (pid == 0) // child
-//         {
-//             int in_fd = -1;
-//             int out_fd = -1;
-
-//             // Handle multiple redirections: only last of each type matters
-//             if (command->redirs)
-//             {
-//                 t_redir *r = command->redirs;
-//                 while (r)
-//                 {
-//                     if (r->target)
-//                     {
-//                         if (r->type == R_INPUT)
-//                         {
-//                             if (in_fd != -1)
-//                                 close(in_fd);
-//                             in_fd = open(r->target, O_RDONLY);
-//                             if (in_fd < 0)
-//                                 perror("open input");
-//                         }
-//                         else if (r->type == R_OUTPUT)
-//                         {
-//                             if (out_fd != -1)
-//                                 close(out_fd);
-//                             out_fd = open(r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-//                             if (out_fd < 0)
-//                                 perror("open output");
-//                         }
-//                         else if (r->type == R_APPEND)
-//                         {
-//                             if (out_fd != -1)
-//                                 close(out_fd);
-//                             out_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-//                             if (out_fd < 0)
-//                                 perror("open append");
-//                         }
-//                     }
-//                     r = r->next;
-//                 }
-//             }
-
-//             // Connect input
-//             if (fd.prev_fd != -1)
-//                 dup2(fd.prev_fd, STDIN_FILENO);
-//             if (in_fd != -1)
-//                 dup2(in_fd, STDIN_FILENO);
-
-//             // Connect output
-//             if (command->next != NULL && out_fd == -1)
-//                 dup2(fd.fd[1], STDOUT_FILENO);
-//             if (out_fd != -1)
-//                 dup2(out_fd, STDOUT_FILENO);
-
-//             // Close all unnecessary fds
-//             if (fd.prev_fd != -1)
-//                 close(fd.prev_fd);
-//             close(fd.fd[0]);
-//             close(fd.fd[1]);
-//             if (in_fd != -1)
-//                 close(in_fd);
-//             if (out_fd != -1)
-//                 close(out_fd);
-
-//             execution(command->argv, envp);
-//         }
-
-//         // Parent closes previous fd
-//         if (fd.prev_fd != -1)
-//             close(fd.prev_fd);
-
-//         // Keep current read end for next command
-//         if (command->next != NULL)
-//             fd.prev_fd = fd.fd[0];
-//         else
-//             fd.prev_fd = -1;
-
-//         // Close write end in parent
-//         close(fd.fd[1]);
-
-//         waitpid(pid, NULL, 0);
-//         command = command->next;
-//     }
-
-//     freearray(envp);
-// }
-
 static void parent_loop(t_cmd *cmd, t_fd *fd)
 {
 	//parent closes the prev 
@@ -211,10 +106,10 @@ static void parent_loop(t_cmd *cmd, t_fd *fd)
         fd->prev_fd = fd->fd[0];
     else
         fd->prev_fd = -1;
-
         // Close write end in parent
     close(fd->fd[1]);
 }
+
 static void	execute_pipe(t_cmd *cmd, t_fd *fd, char **arr)
 {
 	if (cmd->redirs)
@@ -242,6 +137,8 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
     {
         pipe(fd.fd);
         pid = fork();
+		if (pid < 0)
+			perror("fork failed in child process");
         if (pid == 0)
 			execute_pipe(command, &fd, envp);
 		parent_loop(command, &fd);
