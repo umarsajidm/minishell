@@ -8,7 +8,7 @@ int	run_builtin(t_cmd *cmds, t_shell *shell)
 	if (ft_strcmp(command, "echo") == 0)
 		return (ft_echo(cmds->argv));
 	else if (ft_strcmp(command, "cd") == 0)
-		return (0);
+		return (ft_cd(cmds, shell));
 	else if (ft_strcmp(command, "pwd") == 0)
 		return (ft_pwd());
 	else if (ft_strcmp(command, "export") == 0)
