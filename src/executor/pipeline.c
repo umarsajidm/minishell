@@ -72,6 +72,7 @@ void	execution_pipeline(t_cmd *command, t_shell *shell)
 		child_process(command, shell);
 	else	
 		pipe_execution(command, shell);
+	
 }
 
 static void init_fd(t_fd	*fd)
@@ -146,7 +147,7 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
 		parent_loop(command, &fd);
         command = command->next;
     }
-	waitstatus(pid, shell);
+	// waitstatus(pid, shell);
     freearray(envp);
 }
 void waitstatus(pid_t pid,  t_shell *shell)

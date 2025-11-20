@@ -19,7 +19,7 @@ int	main(int argc, char **argv, char **envp)
 	/* start REPL loop */
 	repl_loop(&shell, &arena);
 	/* debug: print final exit code */
-	dbg_print_exit_code(shell.exit_code);
+	//dbg_print_exit_code(shell.exit_code);
 	/* cleanup */
 	printf("testing");
 	general_cleanup(&shell, &arena);	

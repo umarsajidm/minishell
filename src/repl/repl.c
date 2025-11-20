@@ -20,7 +20,9 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		input = read_input(arena);               // read user input into arena
 		if (!input)
 			break;                               // Ctrl-D exits
-		tokens = tokenize(input, arena);         // tokenize input using arena
+		tokens = tokenize(input, arena);       // tokenize input using arena
+		if (!tokens)
+			break;
 		//dbg_print_tokens(tokens);                // debug tokens
 
 
@@ -40,6 +42,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		/* execute commands */
 		if (commands->argv != NULL)
 			execution_pipeline(commands, shell);
+		dbg_print_exit_code(shell->exit_code);
 		// dbg_print_exit_code(shell->exit_code);   // debug exit code
 		(void)tokens;
 		(void)commands;

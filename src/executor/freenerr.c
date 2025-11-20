@@ -50,7 +50,9 @@ void	freeall(char **arr, char *str, char *cmd)
 
 void	commandnotfound(char **arr)
 {
+	//t_shell *shell;
 	freearray(arr);
 	errno = ENOENT;
-	exit(127);
+	// shell->exit_code = 127;
+	// exit;
 }
