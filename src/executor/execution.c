@@ -85,7 +85,7 @@ static void abs_path_execution(char **cmd, char **env)
     }
 }
 
-static void relative_path_execution(char **cmd, char **env)
+static void relative_path_execution(char **cmd, char **env, t_shell *shell)
 {
     char *path;
 
@@ -98,7 +98,7 @@ static void relative_path_execution(char **cmd, char **env)
         strerrornexit();
     path = pathtoexecute(cmd, env);
     if (path == NULL)
-        commandnotfound(cmd);
+        commandnotfound(cmd, shell);
     checking(path);
     if (execve(path, cmd, env) == -1)
     {
@@ -110,12 +110,12 @@ static void relative_path_execution(char **cmd, char **env)
 }
 
 
-void	execution(char **cmd, char **env)
+void	execution(char **cmd, char **env, t_shell *shell)
 {
 	if (ft_strchr(cmd[0], '/' ))
 		abs_path_execution(cmd, env);
 	else
-		relative_path_execution(cmd, env);
+		relative_path_execution(cmd, env, shell);
 }
 
 void	child_process(t_cmd *parsed_cmd, t_shell *shell)
@@ -129,7 +129,7 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
-		execution(parsed_cmd->argv, envp);
+		execution(parsed_cmd->argv, envp, shell);
 		perror("Minishell$ ");
 		exit(EXIT_FAILURE);
 	}

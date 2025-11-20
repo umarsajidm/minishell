@@ -73,6 +73,7 @@ void	execution_pipeline(t_cmd *command, t_shell *shell)
 	else	
 		pipe_execution(command, shell);
 	
+	
 }
 
 static void init_fd(t_fd	*fd)
@@ -144,6 +145,7 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
 			perror("fork failed in child process");
         if (pid == 0)
 			execute_pipe(command, &fd, envp);
+		waitstatus(pid, shell);	
 		parent_loop(command, &fd);
         command = command->next;
     }

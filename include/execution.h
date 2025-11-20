@@ -14,7 +14,7 @@ void	freearray(char **arr);
 void	freestrnarrexit(char **arr, char *str, int i);
 void	freeerror(char **arr);
 void	freeall(char **arr, char *str, char *cmd);
-void	commandnotfound(char **arr);
+void	commandnotfound(char **arr, t_shell *shell);
 
 //shell.c
 int init_shell(t_shell *shell, char **envp, t_arena **arena);
