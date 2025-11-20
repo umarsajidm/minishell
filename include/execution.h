@@ -31,6 +31,7 @@ typedef struct s_fd
 
 
 void execution_pipeline(t_cmd *command, t_shell *shell);
+void waitstatus(pid_t pid,  t_shell *shell);
 // void pipeline(t_cmd	*command, t_shell *shell);
 
 //pipeline_utils.c

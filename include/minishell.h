@@ -14,7 +14,6 @@
 # include <dirent.h>
 # include <sys/stat.h>
 # include <string.h>
-# include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
@@ -22,18 +21,11 @@
 #define BUFFER_SIZE_FOR_ARENA 1024
 
 
-/* ===========================
-**        Libft (types like t_list)
-** =========================== */
 # include "libft.h"
-
-/* ===========================
-**        Minishell Types
-** =========================== */
 # include "minishell_types.h"
-
-// execution
 # include "execution.h"
+# include "errors.h"
+//
 
 /* ===========================
 **        Arena core functions

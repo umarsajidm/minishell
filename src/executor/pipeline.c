@@ -51,6 +51,8 @@ static void	pipe_execution(t_cmd	*command, t_shell *shell);
 
 void	execution(char **cmd, char **env);
 
+void waitstatus(pid_t pid,  t_shell *shell);
+
 void	execution_pipeline(t_cmd *command, t_shell *shell)
 {
 	t_cmd	*t_command;
@@ -142,8 +144,16 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
         if (pid == 0)
 			execute_pipe(command, &fd, envp);
 		parent_loop(command, &fd);
-        waitpid(pid, NULL, 0);
+        waitstatus(pid, shell);
         command = command->next;
     }
     freearray(envp);
+}
+void waitstatus(pid_t pid,  t_shell *shell)
+{
+	int	status;
+
+	waitpid(pid, &staus, 0);
+	if WIFEXITED(status)
+		shell->exit_code = WEXITSTATUS(status);
 }
