@@ -144,16 +144,16 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
         if (pid == 0)
 			execute_pipe(command, &fd, envp);
 		parent_loop(command, &fd);
-        waitstatus(pid, shell);
         command = command->next;
     }
+	waitstatus(pid, shell);
     freearray(envp);
 }
 void waitstatus(pid_t pid,  t_shell *shell)
 {
 	int	status;
 
-	waitpid(pid, &staus, 0);
+	waitpid(pid, &status, 0);
 	if WIFEXITED(status)
 		shell->exit_code = WEXITSTATUS(status);
 }

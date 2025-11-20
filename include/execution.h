@@ -31,12 +31,11 @@ typedef struct s_fd
 
 
 void execution_pipeline(t_cmd *command, t_shell *shell);
-void waitstatus(pid_t pid,  t_shell *shell);
 // void pipeline(t_cmd	*command, t_shell *shell);
 
 //pipeline_utils.c
 void applying_redir(t_redir *r, int *in_fd, int *out_fd);
-
+void waitstatus(pid_t pid,  t_shell *shell);
 
 
 #endif

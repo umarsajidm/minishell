@@ -14,6 +14,7 @@
 # include <dirent.h>
 # include <sys/stat.h>
 # include <string.h>
+# include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
@@ -92,10 +93,10 @@ t_redir_type	get_redir_type(const char *tok);
 /* ===========================
 **        Executor
 ** =========================== */
-void	execute_command(t_shell *shell, t_cmd *cmds);
-int		exec_single_cmd(t_shell *shell, t_cmd *cmd);
-char	*find_executable(char *cmd, t_env *env);
-int		exec_builtins(t_shell *shell, t_cmd *cmd);
+// void	execute_command(t_shell *shell, t_cmd *cmds);
+// int		exec_single_cmd(t_shell *shell, t_cmd *cmd);
+// char	*find_executable(char *cmd, t_env *env);
+// int		exec_builtins(t_shell *shell, t_cmd *cmd);
 
 /* ===========================
 **        Builtins
