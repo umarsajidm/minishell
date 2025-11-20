@@ -2,7 +2,8 @@
 
 static int	print_export_vars(t_env *head);
 static int	valid_syntax(const char *str);
-static void	print_export_error(const char *str);
+static void	print_export_error(char *str);
+static int	add_to_env(const char *str, t_shell *shell);
 
 int	ft_export(t_cmd *cmds, t_shell *shell)
 {
@@ -29,14 +30,18 @@ int	ft_export(t_cmd *cmds, t_shell *shell)
 
 static int	print_export_vars(t_env *head)
 {
-
+	(void)head;
+	// if head == NULL
+		return (0);
+	// print exported vars list in aciibetical order
+	return (0);
 }
 
-static void	print_export_error(const char *str)
+static void	print_export_error(char *str)
 {
 	ft_putstr_fd("minishell: export: ", 2);
 	ft_putstr_fd(str, 2);
-	ft_putstr_fd(": not a valid indentifier", 2);
+	ft_putstr_fd(": not a valid indentifier\n", 2);
 }
 
 static int	valid_syntax(const char *str)
@@ -53,4 +58,18 @@ static int	valid_syntax(const char *str)
 		i++;
 	}
 	return (1);
+}
+
+static int	add_to_env(const char *str, t_shell *shell)
+{
+	(void)str;
+	(void)shell;
+	// if str exists in env
+		// update value
+	// else
+		// add key-value node to the end of the list
+		// check malloc fail
+			// if fail
+				// return 1
+	return (0);
 }
