@@ -62,14 +62,14 @@ static int	valid_syntax(const char *str)
 
 static int	add_to_env(const char *str, t_shell *shell)
 {
-	(void)str;
-	(void)shell;
-	// if str exists in env
-		// update value
-	// else
-		// add key-value node to the end of the list
-		// check malloc fail
-			// if fail
-				// return 1
+	if (!str || !*str)
+		return (0);
+	if (find_env_node(str, shell->env))
+		return (update_env_node(str, shell));
+	else
+	{
+		if (!add_env_node(str, shell))
+			return (1);
+	}
 	return (0);
 }
