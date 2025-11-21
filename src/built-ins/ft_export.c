@@ -68,7 +68,7 @@ static int	add_to_env(const char *str, t_shell *shell)
 		return (update_env_node(str, shell));
 	else
 	{
-		if (!add_env_node(str, shell))
+		if (add_env_node(str, shell))
 			return (1);
 	}
 	return (0);
