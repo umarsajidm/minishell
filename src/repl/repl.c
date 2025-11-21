@@ -20,12 +20,11 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		input = read_input(arena);               // read user input into arena
 		if (!input)
 			break;                               // Ctrl-D exits
+		tokens = tokenize(input, arena);       // tokenize input using arena
+		if (!tokens)
+			break;
+		//dbg_print_tokens(tokens);                // debug tokens
 
-		tokens = tokenize(input, arena);         // tokenize input using arena
-		dbg_print_tokens(tokens);                // debug tokens
-
-		/* variable expansion (disabled for now) */
-		// expand_variables(tokens, shell);
 
 		/* parse tokens into commands */
 		commands = parse_tokens(tokens, arena);  // build command structures
@@ -35,17 +34,16 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			(void)tokens;
 			continue;                             // skip execution
 		}
-		dbg_print_cmds(commands);                // show parsed commands
+		//dbg_print_cmds(commands);                // show parsed commands
 
 		/* tests for built-in commands (for now) */
 		//test_builtin(commands, shell);
 
 		/* execute commands */
-		execution_pipeline(commands, shell);
-
+		if (commands->argv != NULL)
+			execution_pipeline(commands, shell);
+		dbg_print_exit_code(shell->exit_code);
 		// dbg_print_exit_code(shell->exit_code);   // debug exit code
-
-		/* avoid unused variable warnings while features are stubbed */
 		(void)tokens;
 		(void)commands;
 	}

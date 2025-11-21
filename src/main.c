@@ -8,23 +8,20 @@
  */
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell		shell;   // shell state: env, exit_code, run
+	t_shell		shell;
 	t_arena		*arena;
 	(void)argc;
 	(void)argv;
 
 	ft_bzero(&shell, sizeof(t_shell));
-	
-	init_shell(&shell, envp, &arena);
-	/* setup signal handlers */
+	init_shell(&shell, envp, &arena); //env and arena initializaion
 	setup_signals();
-
 	/* start REPL loop */
 	repl_loop(&shell, &arena);
-
 	/* debug: print final exit code */
-	// dbg_print_exit_code(shell.exit_code);
+	//dbg_print_exit_code(shell.exit_code);
 	/* cleanup */
+	printf("testing");
 	general_cleanup(&shell, &arena);	
 	return (shell.exit_code);  // return shell exit code
 }

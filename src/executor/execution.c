@@ -140,4 +140,5 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	}
 	else
 		perror("fork");
+	waitstatus(pid, shell);
 }
