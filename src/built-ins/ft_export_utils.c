@@ -11,8 +11,6 @@ int	update_env_node(const char *str, t_shell *shell)
 	match = find_env_node(str, shell->env);
 	value = ft_strchr(str, '=');
 	value++;
-	if (!*value)
-		return (1); 
 	if (match->value)
 	{
 		free(match->value);
@@ -20,30 +18,27 @@ int	update_env_node(const char *str, t_shell *shell)
 	}
 	match->value = ft_strdup(value);
 	if (!match->value)
-			return (1);
-	return (0);
+			return (0);
+	return (1);
 }
 
 int	add_env_node(const char *str, t_shell *shell)
 {
-	if (!shell->env)
+	t_env	*current;
+
+	current = shell->env;
+	if (!current)
 	{
-		shell->env = alloc_node(str);
-		if (!shell->env)
-		{
-			perror("add_env_node");
-			return (1);
-		}
+		current = alloc_node(str);
+		if (!current)
+			return (0);
 	}
-	while (shell->env->next)
-		shell->env = shell->env->next;
-	shell->env->next = alloc_node(str);
-	if (!shell->env->next)
-	{
-		perror("alloc_node fail");
-		return (1);
-	}
-	return (0);
+	while (current->next)
+		current = current->next;
+	current->next = alloc_node(str);
+	if (!current->next)
+		return (0);
+	return (1);
 }
 
 static t_env	*alloc_node(const char *str)
@@ -51,20 +46,15 @@ static t_env	*alloc_node(const char *str)
 	t_env	*new;
 	char	*value;
 
-	new = (t_env *)malloc(sizeof(t_env));
+	new = (t_env *)ft_calloc(1, sizeof(t_env));
 	if (!new)
 		return (NULL);
-	new->next = NULL;
-	value = ft_strchr(str, '=');
-	if (!value)
-	{
-		new->key = ft_substr(str, 0, env_strlen(str));
-		if (!new->key)
-			return (free(new), NULL);
-	}
 	new->key = ft_substr(str, 0, env_strlen(str));
 	if (!new->key)
 		return (free(new), NULL);
+	value = ft_strchr(str, '=');
+	if (!value)
+		return (free_env_node(new), NULL);
 	value++;
 	if (!*value)
 	{
@@ -73,11 +63,7 @@ static t_env	*alloc_node(const char *str)
 	}
 	new->value = ft_strdup(value);
 	if (!new->value)
-	{
-		free(new->key);
-		free(new);
-		return (NULL);
-	}
+		return (free_env_node(new), NULL);
 	return (new);
 }
 
@@ -93,5 +79,16 @@ static size_t	env_strlen(const char *str)
 	return (i);
 }
 
+static void	free_env_node(t_env *node)
+{
+	if (node)
+	{
+		if (node->value)
+			free(node->value);
+		if (node->key)
+			free(node->key);
+		free(node);
+	}
+}
 
 wasd=

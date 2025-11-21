@@ -22,7 +22,10 @@ int	ft_export(t_cmd *cmds, t_shell *shell)
 			ret = 1;
 		}
 		else
-			add_to_env(cmds->argv[i], shell);
+		{
+			if (!add_to_env(cmds->argv[i], shell))
+				ft_putstr_fd("minishell: export: malloc fail\n", 2);
+		}
 		i++;
 	}
 	return (ret);
@@ -65,11 +68,14 @@ static int	add_to_env(const char *str, t_shell *shell)
 	if (!str || !*str)
 		return (0);
 	if (find_env_node(str, shell->env))
-		return (update_env_node(str, shell));
+	{
+		if (!update_env_node(str, shell))
+			return (0);
+	}
 	else
 	{
-		if (add_env_node(str, shell))
-			return (1);
+		if (!add_env_node(str, shell))
+			return (0);
 	}
-	return (0);
+	return (1);
 }
