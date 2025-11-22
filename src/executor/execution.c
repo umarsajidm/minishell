@@ -85,17 +85,17 @@ static void abs_path_execution(char **cmd, char **env)
     }
 }
 
-static void	notfound(t_shell *shell)
+static void	notfound()
 {
 	// void(arr);
 	// freearray(arr);
 	errno = ENOENT;
-	shell->exit_code = 127;
+	// shell->exit_code = 127;
 
 	exit(EXIT_FAILURE);
 }
 
-static void relative_path_execution(char **cmd, char **env, t_shell *shell)
+static void relative_path_execution(char **cmd, char **env)
 {
     char *path;
 
@@ -109,7 +109,7 @@ static void relative_path_execution(char **cmd, char **env, t_shell *shell)
         strerrornexit();
     path = pathtoexecute(cmd, env);
     if (path == NULL)
-        notfound(shell);
+        notfound();
     checking(path);
     if (execve(path, cmd, env) == -1)
     {
@@ -121,12 +121,12 @@ static void relative_path_execution(char **cmd, char **env, t_shell *shell)
 }
 
 
-void	execution(char **cmd, char **env, t_shell *shell)
+void	execution(char **cmd, char **env)
 {
 	if (ft_strchr(cmd[0], '/' ))
 		abs_path_execution(cmd, env);
 	else
-		relative_path_execution(cmd, env, shell);
+		relative_path_execution(cmd, env);
 }
 
 void	child_process(t_cmd *parsed_cmd, t_shell *shell)
@@ -140,7 +140,7 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
-		execution(parsed_cmd->argv, envp, shell);
+		execution(parsed_cmd->argv, envp);
 		perror("Minishell$ ");
 		exit(EXIT_FAILURE);
 	}
@@ -151,5 +151,5 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	}
 	else
 		perror("fork");
-	waitstatus(pid, shell);
+// waitstatus(pid, shell);
 }

@@ -26,7 +26,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		tokens = tokenize(input, arena);       // tokenize input using arena
 		if (!tokens)
 			break;
-		//dbg_print_tokens(tokens);                // debug tokens
+		// dbg_print_tokens(tokens);                // debug tokens
 
 
 		/* parse tokens into commands */
@@ -39,7 +39,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			(void)tokens;
 			continue;                             // skip execution
 		}
-		//dbg_print_cmds(commands);                // show parsed commands
+		// dbg_print_cmds(commands);                // show parsed commands
 
 		/* tests for built-in commands (for now) */
 		//test_builtin(commands, shell);
