@@ -35,33 +35,33 @@ char *read_input(t_arena **arena)
  * - Each line duplicated into arena
  * - Returns heredoc content or NULL if EOF
  */
-char *read_heredoc(t_arena **arena, const char *delimiter)
-{
-    char    *line;                               // current heredoc line
-    char    *content;                            // accumulated content
-    size_t  len;                                 // length of current line
-    size_t  cur_len;                             // current total length
+// char *read_heredoc(t_arena **arena, const char *delimiter)
+// {
+//     char    *line;                               // current heredoc line
+//     char    *content;                            // accumulated content
+//     size_t  len;                                 // length of current line
+//     size_t  cur_len;                             // current total length
 
-    content = arena_alloc(arena, 1);             // start with empty string
-    if (!content)
-        return (NULL);                            // allocation failed
-    content[0] = '\0';                           // initialize empty string
-    cur_len = 0;                                 // no bytes yet
+//     content = arena_alloc(arena, 1);             // start with empty string
+//     if (!content)
+//         return (NULL);                            // allocation failed
+//     content[0] = '\0';                           // initialize empty string
+//     cur_len = 0;                                 // no bytes yet
 
-    while (true)
-    {
-        line = readline("> ");                   // prompt for heredoc line
-        if (!line || ft_strcmp(line, delimiter) == 0)
-            break;                               // reached delimiter or EOF
+//     while (true)
+//     {
+//         line = readline("> ");                   // prompt for heredoc line
+//         if (!line || ft_strcmp(line, delimiter) == 0)
+//             break;                               // reached delimiter or EOF
 
-        len = ft_strlen(line);                      // length of new line
-        content = arena_realloc(arena, content, cur_len, cur_len + len + 2); // +\n+\0
-        if (!content)
-            return (NULL);                       // realloc failed
-        ft_memcpy(content + cur_len, line, len);    // append line bytes
-        cur_len += len;                          // advance cursor
-        content[cur_len++] = '\n';               // append newline
-        content[cur_len] = '\0';                 // null terminate
-    }
-    return (content);                            // return full heredoc in arena
-}
+//         len = ft_strlen(line);                      // length of new line
+//         content = arena_realloc(arena, content, cur_len, cur_len + len + 2); // +\n+\0
+//         if (!content)
+//             return (NULL);                       // realloc failed
+//         ft_memcpy(content + cur_len, line, len);    // append line bytes
+//         cur_len += len;                          // advance cursor
+//         content[cur_len++] = '\n';               // append newline
+//         content[cur_len] = '\0';                 // null terminate
+//     }
+//     return (content);                            // return full heredoc in arena
+// }

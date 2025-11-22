@@ -15,6 +15,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 	t_list  *tokens;    // token list (arena nodes)
 	t_cmd   *commands;  // parsed commands (arena nodes)
 
+	int i = 0;
 	while (shell->running)
 	{
 		// printf("before anything");
@@ -47,8 +48,9 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		/* execute commands */
 		if (commands->argv != NULL)
 			execution_pipeline(commands, shell);
+		printf("\nnumber of commands %d\n", i++);
 		dbg_print_exit_code(shell->exit_code);
-		// dbg_print_exit_code(shell->exit_code);   // debug exit code
+		
 		(void)tokens;
 		(void)commands;
 	}

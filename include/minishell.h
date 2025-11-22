@@ -48,7 +48,7 @@ int		main(int argc, char **argv, char **envp);
 ** =========================== */
 void	repl_loop(t_shell *shell, t_arena **arena);
 char	*read_input(t_arena **arena);
-char	*read_heredoc(t_arena **arena, const char *delimiter);
+// char	*read_heredoc(t_arena **arena, const char *delimiter);
 
 /* ===========================
 **        Signals

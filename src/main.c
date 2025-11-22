@@ -22,7 +22,7 @@ int	main(int argc, char **argv, char **envp)
 	/* debug: print final exit code */
 	//dbg_print_exit_code(shell.exit_code);
 	/* cleanup */
-	printf("testing");
+	// printf("testing");
 	general_cleanup(&shell, &arena);	
 	return (shell.exit_code);  // return shell exit code
 }

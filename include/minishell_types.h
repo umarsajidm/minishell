@@ -44,6 +44,7 @@ typedef struct s_shell
 	int		exit_code;   /* last exit code */
 	pid_t	pid;
 	bool	running;     /* shell running flag */
+	t_arena	*arena;
 }	t_shell;
 
 /* ===========================

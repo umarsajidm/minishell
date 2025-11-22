@@ -66,6 +66,7 @@ static	char	*pathtoexecute(char **cmd, char **env)
 
 static	void	checking(char *path)
 {
+	// printf("\ni am setting the status here\n");
 	if ((access(path, F_OK) == 0) && (access(path, X_OK) == -1))
 		errno = EACCES;
 	if (access(path, X_OK) == 0)
@@ -90,9 +91,7 @@ static void	notfound()
 	// void(arr);
 	// freearray(arr);
 	errno = ENOENT;
-	// shell->exit_code = 127;
-
-	exit(EXIT_FAILURE);
+	// shell->exit_code = 127
 }
 
 static void relative_path_execution(char **cmd, char **env)
@@ -113,7 +112,7 @@ static void relative_path_execution(char **cmd, char **env)
     checking(path);
     if (execve(path, cmd, env) == -1)
     {
-        freearray(cmd);
+        // freearray(cmd);
         free(path);
         freearray(env);
         strerrornexit();
@@ -151,5 +150,5 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	}
 	else
 		perror("fork");
-// waitstatus(pid, shell);
+	waitstatus(pid, shell);
 }
