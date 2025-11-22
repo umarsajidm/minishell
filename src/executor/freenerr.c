@@ -48,11 +48,12 @@ void	freeall(char **arr, char *str, char *cmd)
 	ft_putstr_fd(": command not found\n", 2);
 }
 
-void	commandnotfound(char **arr, t_shell *shell)
+void	commandnotfound(char **arr)
 {
-	// t_shell *shell;
+	// void(arr);
 	freearray(arr);
-	// errno = ENOENT;
-	shell->exit_code = 127;
-	// exit;
+	errno = ENOENT;
+	// shell->exit_code = 127;
+
+	exit(EXIT_FAILURE);
 }

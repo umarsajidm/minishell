@@ -17,7 +17,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 
 	while (shell->running)
 	{
-		printf("before anything");
+		// printf("before anything");
 		input = read_input(arena);               // read user input into arena
 	
 		if (!input)
