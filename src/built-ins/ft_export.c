@@ -33,10 +33,13 @@ int	ft_export(t_cmd *cmds, t_shell *shell)
 
 static int	print_export_vars(t_env *head)
 {
-	(void)head;
-	// if head == NULL
+	t_env	*current;
+
+	current = head;
+	if (current == NULL)
 		return (0);
 	// print exported vars list in aciibetical order
+	
 	return (0);
 }
 

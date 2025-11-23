@@ -90,5 +90,3 @@ static void	free_env_node(t_env *node)
 		free(node);
 	}
 }
-
-wasd=
