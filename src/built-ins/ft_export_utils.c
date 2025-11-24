@@ -2,6 +2,7 @@
 
 static t_env	*alloc_node(const char *str);
 static size_t	env_strlen(const char *str);
+static void		free_env_node(t_env *node);
 
 int	update_env_node(const char *str, t_shell *shell)
 {

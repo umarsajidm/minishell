@@ -33,13 +33,23 @@ int	ft_export(t_cmd *cmds, t_shell *shell)
 
 static int	print_export_vars(t_env *head)
 {
+	t_env	**env_strings;
 	t_env	*current;
+	int		len;
 
 	current = head;
 	if (current == NULL)
 		return (0);
-	// print exported vars list in aciibetical order
-	
+	len = get_env_length(current);
+	env_strings = alloc_assign(len, current);
+	if (!env_strings)
+	{
+		ft_putstr_fd("minishell: export: malloc fail\n", 2);
+		return (1);
+	}
+	sort_env(&env_strings);
+	print_export(env_strings);
+	free(env_strings);
 	return (0);
 }
 
