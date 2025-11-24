@@ -30,9 +30,10 @@ int	add_env_node(const char *str, t_shell *shell)
 	current = shell->env;
 	if (!current)
 	{
-		current = alloc_node(str);
-		if (!current)
+		shell->env = alloc_node(str);
+		if (!shell->env)
 			return (0);
+		current = shell->env;
 	}
 	while (current->next)
 		current = current->next;
@@ -55,7 +56,7 @@ static t_env	*alloc_node(const char *str)
 		return (free(new), NULL);
 	value = ft_strchr(str, '=');
 	if (!value)
-		return (free_env_node(new), NULL);
+		return (new);
 	value++;
 	if (!*value)
 	{

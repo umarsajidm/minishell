@@ -24,7 +24,10 @@ int	ft_export(t_cmd *cmds, t_shell *shell)
 		else
 		{
 			if (!add_to_env(cmds->argv[i], shell))
+			{
 				ft_putstr_fd("minishell: export: malloc fail\n", 2);
+				ret = 1;
+			}
 		}
 		i++;
 	}
