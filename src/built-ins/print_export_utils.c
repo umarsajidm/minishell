@@ -19,7 +19,7 @@ t_env	**alloc_assign(int len, t_env *head)
 	int		i;
 
 	i = 0;
-	strings = (t_env **)malloc(len * sizeof(t_env *));
+	strings = (t_env **)malloc((len + 1) * sizeof(t_env *));
 	if (!strings)
 		return (NULL);
 	strings[len] = NULL;
@@ -64,14 +64,15 @@ void	print_export(t_env **arr)
 	i = 0;
 	while (arr[i])
 	{
-		printf("declare -x %s", arr[i]->key);
 		if (arr[i]->value)
 		{
-			printf("=");
-			if (arr[i]->value == 0)
-				printf("""\n");
-			printf("%s\n", arr[i]->value);
+			if (!*(arr[i]->value))
+				printf("declare -x %s=\"\"\n", arr[i]->key);
+			else
+				printf("declare -x %s=%s\n", arr[i]->key, arr[i]->value);
 		}
+		else
+			printf("declare -x %s\n", arr[i]->key);
 		i++;
 	}
 }

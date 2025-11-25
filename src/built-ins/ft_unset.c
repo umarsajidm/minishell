@@ -23,6 +23,14 @@ int	ft_unset(t_cmd *cmd, t_shell *shell)
 
 t_env	*find_env_node(const char *str, t_env *head)
 {
+	char	*sign;
+	size_t	len;
+
+	sign = ft_strchr(str, '=');
+	if (!sign)
+		len = ft_strlen(str);
+	else
+		len =
 	while (head)
 	{
 		if (ft_strcmp(str, head->key) == 0)
@@ -57,8 +65,10 @@ static void	unset_node(t_shell *shell, t_env *match)
 
 static void	free_env_node(t_env *node)
 {
-	free(node->key);
-	free(node->value);
+	if (node->key)
+		free(node->key);
+	if (node->value)
+		free(node->value);
 	free(node);
 	node = NULL;
 }

@@ -11,7 +11,10 @@ int	update_env_node(const char *str, t_shell *shell)
 
 	match = find_env_node(str, shell->env);
 	value = ft_strchr(str, '=');
+	if (!value)
+		return (1);
 	value++;
+	printf("in update_env_node \n");
 	if (match->value)
 	{
 		free(match->value);
