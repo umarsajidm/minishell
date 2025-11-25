@@ -30,7 +30,8 @@ t_env	*find_env_node(const char *str, t_env *head)
 	if (!sign)
 		len = ft_strlen(str);
 	else
-		len =
+		len = ft_strlen(str);
+	(void)len;
 	while (head)
 	{
 		if (ft_strcmp(str, head->key) == 0)
