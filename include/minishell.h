@@ -48,7 +48,7 @@ int		main(int argc, char **argv, char **envp);
 ** =========================== */
 void	repl_loop(t_shell *shell, t_arena **arena);
 char	*read_input(t_arena **arena);
-// char	*read_heredoc(t_arena **arena, const char *delimiter);
+char	*read_heredoc(t_arena **arena, const char *delimiter);
 
 /* ===========================
 **        Signals
@@ -109,8 +109,16 @@ int		ft_echo(char **av);
 int		ft_pwd(void);
 int		ft_exit(char **av, t_shell *shell);
 int		ft_unset(t_cmd *cmd, t_shell *shell);
+int		ft_export(t_cmd *cmds, t_shell *shell);
+int		ft_cd(t_cmd *cmds, t_shell *shell);
 
 t_env	*find_env_node(const char *str, t_env *head);
+int		get_env_length(t_env *head);
+t_env	**alloc_assign(int len, t_env *head);
+void	sort_env(t_env ***arr);
+int		update_env_node(const char *str, t_shell *shell);
+int		add_env_node(const char *str, t_shell *shell);
+void	print_export(t_env **arr);
 void	test_builtin(t_cmd *commands, t_shell *shell);
 /* ===========================
 **        Debug

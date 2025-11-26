@@ -1,6 +1,7 @@
 #include "minishell.h"
 #include <stdint.h>
 
+static void	run_exit(t_shell *shell);
 static int	get_ac(char **av);
 static int	num_error(char *str);
 
@@ -12,7 +13,7 @@ int	ft_exit(char **av, t_shell *shell)
 
 	ft_putstr_fd("exit\n", 2);
 	if (!av[1])
-		exit_code = shell->exit_code;
+		run_exit(shell);
 	else if (get_ac(av) > 2)
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
@@ -24,6 +25,14 @@ int	ft_exit(char **av, t_shell *shell)
 	else
 		exit_code = result;
 	//TODO: clean_up_shell(shell);
+	exit(exit_code & 0xFF);
+}
+
+static void	run_exit(t_shell *shell)
+{
+	long	exit_code;
+
+	exit_code = shell->exit_code;
 	exit(exit_code & 0xFF);
 }
 
