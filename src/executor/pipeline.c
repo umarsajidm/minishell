@@ -49,28 +49,28 @@ int dup2(int oldfd, int newfd);
 
 static void	pipe_execution(t_cmd	*command, t_shell *shell);
 
-void	execution(char **cmd, char **env);
+// void	execution(char **cmd, char **env);
 
 void waitstatus(pid_t pid,  t_shell *shell);
 
 void	execution_pipeline(t_cmd *command, t_shell *shell)
 {
-	t_cmd	*t_command;
-	int		i;
-	int		pipe_number;
+	// t_cmd	*t_command;
+	// int		i;
+	// int		pipe_number;
 	
-	i = 0;
-	t_command = command;
-    while(t_command)
-	{
-		if (t_command->argv)
-			i++;
-		t_command = t_command->next;
-	}
-	pipe_number = i - 1;
-	if (!pipe_number && !(command->redirs) && !is_builtin(command))//if there is no pipe and cmd is binary
-		child_process(command, shell);
-	else	
+	// i = 0;
+	// t_command = command;
+    // while(t_command)
+	// {
+	// 	if (t_command->argv)
+	// 		i++;
+	// 	t_command = t_command->next;
+	// }
+	// pipe_number = i - 1;
+	// if (!pipe_number && !(command->redirs) && !is_builtin(command))//if there is no pipe and cmd is binary
+	// 	child_process(command, shell);
+	// else	
 		pipe_execution(command, shell);
 	
 }
@@ -86,15 +86,15 @@ static void init_fd(t_fd	*fd)
 
 static void close_fd(t_fd *fd)
 {
-	if (fd->fd[0] == -1)
+	if (fd->fd[0] >= -1)
 		close(fd->fd[0]);
-	if (fd->fd[1] == -1)
+	if (fd->fd[1] >= -1)
 		close(fd->fd[1]);
-	if (fd->prev_fd == -1)
+	if (fd->prev_fd >= -1)
 		close(fd->prev_fd);
-	if (fd->in_fd == -1)
+	if (fd->in_fd >= -1)
 		close(fd->in_fd);
-	if (fd->out_fd == -1)
+	if (fd->out_fd >= -1)
 		close(fd->out_fd);
 }
 
@@ -147,7 +147,7 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
 		parent_loop(command, &fd);
         command = command->next;
     }
-	// waitstatus(pid, shell);
+	waitstatus(pid, shell);
     freearray(envp);
 }
 void waitstatus(pid_t pid,  t_shell *shell)

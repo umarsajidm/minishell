@@ -10,6 +10,7 @@ int init_shell(t_shell *shell, char **envp, t_arena **arena)
         ft_putstr_fd("minishell: failed to initialize memory arena\n", 2);
         return (1);
     }
+    shell->arena = *arena;
     shell->env = init_env(envp);
     if (!shell->env)
     {

@@ -17,11 +17,12 @@ int	main(int argc, char **argv, char **envp)
 	init_shell(&shell, envp, &arena); //env and arena initializaion
 	setup_signals();
 	/* start REPL loop */
+	//  printf("hello");
 	repl_loop(&shell, &arena);
 	/* debug: print final exit code */
 	//dbg_print_exit_code(shell.exit_code);
 	/* cleanup */
-	printf("testing");
+	// printf("testing");
 	general_cleanup(&shell, &arena);	
 	return (shell.exit_code);  // return shell exit code
 }

@@ -15,35 +15,42 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 	t_list  *tokens;    // token list (arena nodes)
 	t_cmd   *commands;  // parsed commands (arena nodes)
 
+	int i = 0;
 	while (shell->running)
 	{
+		// printf("before anything");
 		input = read_input(arena);               // read user input into arena
+	
 		if (!input)
 			break;                               // Ctrl-D exits
+	
 		tokens = tokenize(input, arena);       // tokenize input using arena
 		if (!tokens)
 			break;
-		//dbg_print_tokens(tokens);                // debug tokens
+		// dbg_print_tokens(tokens);                // debug tokens
 
 
 		/* parse tokens into commands */
+	
 		commands = parse_tokens(tokens, arena);  // build command structures
+		
 		if (!commands && tokens)                 // parse failed (syntax or alloc)
 		{
 			// parsing error already printed by parse_tokens()
 			(void)tokens;
 			continue;                             // skip execution
 		}
-		//dbg_print_cmds(commands);                // show parsed commands
+		// dbg_print_cmds(commands);                // show parsed commands
 
 		/* tests for built-in commands (for now) */
 		//test_builtin(commands, shell);
-
+		
 		/* execute commands */
 		if (commands->argv != NULL)
 			execution_pipeline(commands, shell);
+		printf("\nnumber of commands %d\n", i++);
 		dbg_print_exit_code(shell->exit_code);
-		// dbg_print_exit_code(shell->exit_code);   // debug exit code
+		
 		(void)tokens;
 		(void)commands;
 	}
