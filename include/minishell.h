@@ -280,6 +280,7 @@ int		ft_unset(t_cmd *cmd, t_shell *shell);
 int		ft_export(t_cmd *cmds, t_shell *shell);
 int		ft_cd(t_cmd *cmds, t_shell *shell);
 
+void	update_cd_node(char *value, t_env *node);
 t_env	*find_env_node(const char *str, t_env *head);
 int		get_env_length(t_env *head);
 t_env	**alloc_assign(int len, t_env *head);
