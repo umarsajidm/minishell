@@ -18,30 +18,30 @@ int	is_operator_char(char c)
  */
 char	*dup_word(t_arena **arena, const char *str, int start, int end)
 {
-	char	*word;                                   // duplicated substring
-	int		i;                                       // index
-	int		len;                                     // substring length
+	char	*word;                                   // result buffer
+	int		i;                                       // loop index
+	int		len;                                     // number of chars
 
 	if (!arena || !*arena)
-		return (NULL);                              // invalid arena
+		return (NULL);                              // invalid arena ptr
 
 	len = end - start;
 	if (len < 0)
-		return (NULL);                              // invalid indices
+		return (NULL);                              // invalid range
 
-	word = arena_alloc(arena, len + 1);            // allocate memory from arena
+	word = arena_alloc(arena, len + 1);             // allocate substring
 	if (!word)
-		return (NULL);                              // allocation failed
+		return (NULL);                              // alloc failed
 
 	i = 0;
 	while (start < end)
 	{
-		word[i] = str[start];                        // copy character
+		word[i] = str[start];                       // copy char
 		i++;
 		start++;
 	}
 	word[i] = '\0';                                 // null-terminate
-	return (word);                                  // return duplicated string
+	return (word);                                  // return allocated substring
 }
 
 /* 
@@ -51,6 +51,6 @@ char	*dup_word(t_arena **arena, const char *str, int start, int end)
 int	skip_spaces(char *s, int i)
 {
 	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
-		i++;                                        // skip whitespace
-	return (i);                                     // return next index
+		i++;                                        // continue skipping
+	return (i);                                     // first non-space index
 }

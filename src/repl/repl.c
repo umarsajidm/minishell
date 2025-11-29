@@ -4,16 +4,17 @@
  * Main REPL loop
  * - Reads input from user
  * - Tokenizes input using arena
- * - Expands variables (currently disabled)
+ * - Expands variables in commands
  * - Parses commands using arena
  * - Executes commands (currently disabled)
  * - Loops until shell->running == false
  */
 void	repl_loop(t_shell *shell, t_arena **arena)
 {
-	char    *input;     // input line (arena memory)
-	t_list  *tokens;    // token list (arena nodes)
-	t_cmd   *commands;  // parsed commands (arena nodes)
+	char	*input;     // input line (arena memory)
+	t_list	*tokens;    // token list (arena nodes)
+	t_cmd	*commands;  // parsed commands (arena nodes)
+	int		res;        // expansion result
 
 	int i = 0;
 	while (shell->running)
@@ -29,6 +30,11 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			break;
 		// dbg_print_tokens(tokens);                // debug tokens
 
+		tokens = tokenize(input, arena);         // tokenize input using arena
+		dbg_print_tokens(tokens);                // debug tokens
+
+		/* parse tokens into commands */
+		commands = parse_tokens(tokens, shell, arena);
 
 		/* parse tokens into commands */
 	
@@ -36,10 +42,26 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		
 		if (!commands && tokens)                 // parse failed (syntax or alloc)
 		{
-			// parsing error already printed by parse_tokens()
-			(void)tokens;
-			continue;                             // skip execution
+			(void)tokens;                        // parsing error already printed
+			arena_clear(arena);
+			continue;
 		}
+		dbg_print_cmds(commands);                // show parsed commands
+
+		/* variable expansion */
+		res = expand_command_argv(commands, shell, arena);
+		if (res == 0)                            // allocation failure during expansion
+		{
+			ft_printf("minishell: parse error: alloc fail\n"); // formatted error
+			arena_clear(arena);
+			continue;
+		}
+
+		/* debug expanded argv (42 Norminette safe) */
+		dbg_print_expanded_argv(commands);
+
+		/* execute commands (disabled for now) */
+		// execute_command(shell, commands);
 		// dbg_print_cmds(commands);                // show parsed commands
 
 		/* tests for built-in commands (for now) */
