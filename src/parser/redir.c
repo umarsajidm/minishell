@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 /* Ensure there is a current command; create if NULL */
-static int	ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena)
+int	ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena)
 {
 	t_cmd	*new_cmd;
 	t_cmd	*iter;
