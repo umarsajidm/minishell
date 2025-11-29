@@ -209,6 +209,7 @@ void	repl_loop(t_shell *shell, t_arena **arena);
 char	*read_input(t_arena **arena);
 char	*read_heredoc(t_arena **arena, const char *delimiter);
 char	*handle_heredoc(t_cmd *cmd, t_arena **arena, const char *delimiter);
+
 /* ===========================
 **        Signals
 ** =========================== */
@@ -235,16 +236,24 @@ char	*dup_word(t_arena **arena, const char *str, int start, int end);
 int		handle_operator(char *s, int i, t_list **tokens, t_arena **arena);
 int		handle_quote(char *s, int i, t_list **tokens, t_arena **arena);
 int		handle_word(char *s, int i, t_list **tokens, t_arena **arena);
-void	free_tokens(t_list **tokens); /* optional, mostly for debug */
+void	free_tokens(t_list **tokens);
 
 /* ===========================
 **          Parser
 ** =========================== */
-t_cmd	*parse_tokens(t_list *tokens, t_arena **arena);
-void	expand_variables(t_list *tokens, t_shell *shell);
+t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena);
 t_cmd	*create_cmd_node(t_arena **arena);
+int		ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena);
 int		add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena);
-int		add_redirection(t_cmd *cmd, t_redir_type type, const char *target, t_arena **arena);
+int		add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
+			t_arena **arena);
+int		handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
+			t_shell *shell, t_arena **arena);
+int		handle_pipe_token(t_token *tok, t_cmd **cur);
+int		handle_operator_token(t_list **tokens_ref, t_cmd **cur,
+			t_cmd **head, t_arena **arena);
+int		handle_redir_token(t_list **tokens_ref, t_cmd **cur,
+			t_cmd **head, t_arena **arena);
 int		is_pipe_token(const char *tok);
 int		is_redir_token(const char *tok);
 t_redir_type	get_redir_type(const char *tok);
@@ -256,7 +265,6 @@ char	*expand_variable(const char *str, size_t *i,
 	t_shell *shell, t_arena **arena);
 char	*expand_string(const char *str, t_shell *shell, t_arena **arena);
 int		expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena);
-
 
 /* ===========================
 **        Builtins
@@ -295,6 +303,7 @@ void	dbg_print_tokens(t_list *tokens);
 void	dbg_print_cmds(t_cmd *cmds);
 void	dbg_print_exit_code(int exit_code);
 void	dbg_print_expanded_argv(t_cmd *cmd);
+
 //cleanup
 void general_cleanup(t_shell *shell, t_arena **arena);
 

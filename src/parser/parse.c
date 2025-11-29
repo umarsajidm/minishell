@@ -7,26 +7,22 @@ int	handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
 	char	*to_add;
 	char	*expanded;
 
-	if (!*cur)                                     // no current command
-	{
-		*cur = create_cmd_node(arena);            // create new command
-		if (!*cur)
-			return (0);                             // allocation failed
-		if (!*head)
-			*head = *cur;                            // set head
-	}
+	/* ensure a current command node exists (will append to head if needed) */
+	if (!ensure_current_cmd(cur, head, arena))
+		return (0);                                /* allocation failed */
+
 	if (tok->type == T_QUOTE)
-		to_add = tok->token;                         // quoted token
+		to_add = tok->token;                        /* quoted token */
 	else
 	{
 		expanded = expand_string(tok->token, shell, arena);
 		if (!expanded)
-			return (0);                             // allocation failed
-		to_add = expanded;
+			return (0);                            /* allocation failed */
+		to_add = expanded;                         /* expanded string */
 	}
 	if (!add_word_to_argv(*cur, to_add, arena))
-		return (0);                                 // allocation failed
-	return (1);                                    // success
+		return (0);                                /* allocation failed */
+	return (1);                                    /* success */
 }
 
 /* Handle pipe token */
