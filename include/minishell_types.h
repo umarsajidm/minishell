@@ -23,8 +23,6 @@ typedef struct s_arena
 /* ===========================
 **        Forward declarations
 ** =========================== */
-/* t_list is provided by libft; forward-declare so types header doesn't
-   require including libft.h (keeps dependency graph clean). */
 typedef struct s_list	t_list;
 
 /* ===========================
@@ -50,14 +48,16 @@ typedef struct s_shell
 typedef enum e_token_type
 {
 	T_WORD,        /* normal word */
-	T_OPERATOR,    /* | < > << >> */
-	T_QUOTE        /* quoted string */
+	T_OPERATOR,    /* |  >< << >> */
+	T_QUOTE,       /* quoted string */
+	T_HEREDOC      /* heredoc delimiter token */
 }	t_token_type;
 
 typedef struct s_token
 {
-	char			*str;   /* token string */
-	t_token_type	type;   /* token type */
+	char			*token;   /* token string */
+	t_token_type	type;     /* token type */
+	struct s_token	*next;   /* next token */
 }	t_token;
 
 /* ===========================
@@ -80,10 +80,29 @@ typedef struct s_redir
 
 typedef struct s_cmd
 {
-	char			**argv;  /* argument vector */
-	t_redir			*redirs; /* redirections */
-	struct s_cmd	*next;   /* next command */
-}	t_cmd;
+	char		**argv;       // command arguments
+	t_redir		*redirs;       // redirection list
+	struct s_cmd	*next;     // next command in pipeline
+	char		*heredoc;     // content of heredoc, if any
+}				t_cmd;
+
+/* ===========================
+**        Expansion helper types
+** =========================== */
+typedef struct s_index
+{
+	char	*str;   /* string being processed */
+	int		i;      /* current index */
+	int		j;      /* last processed index */
+}	t_index;
+
+/* Node for expansion key/value lookup */
+typedef struct s_exp
+{
+	char			*key;    /* key */
+	char			*value;  /* value */
+	struct s_exp	*next;   /* next node */
+}	t_exp;
 
 /* ===========================
 **        Global Variables
