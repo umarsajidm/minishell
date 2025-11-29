@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-/* 
+/*
  * Main REPL loop
  * - Reads input from user
  * - Tokenizes input using arena
@@ -16,30 +16,26 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 	t_cmd	*commands;  // parsed commands (arena nodes)
 	int		res;        // expansion result
 
-	int i = 0;
+	// int i = 0;
 	while (shell->running)
 	{
 		// printf("before anything");
 		input = read_input(arena);               // read user input into arena
-	
+
 		if (!input)
 			break;                               // Ctrl-D exits
-	
+
 		tokens = tokenize(input, arena);       // tokenize input using arena
 		if (!tokens)
 			break;
-		// dbg_print_tokens(tokens);                // debug tokens
+		//dbg_print_tokens(tokens);                // debug tokens
 
 		tokens = tokenize(input, arena);         // tokenize input using arena
 		dbg_print_tokens(tokens);                // debug tokens
 
 		/* parse tokens into commands */
-		commands = parse_tokens(tokens, shell, arena);
+		commands = parse_tokens(tokens, arena);
 
-		/* parse tokens into commands */
-	
-		commands = parse_tokens(tokens, arena);  // build command structures
-		
 		if (!commands && tokens)                 // parse failed (syntax or alloc)
 		{
 			(void)tokens;                        // parsing error already printed
@@ -66,13 +62,14 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 
 		/* tests for built-in commands (for now) */
 		//test_builtin(commands, shell);
-		
+
 		/* execute commands */
 		if (commands->argv != NULL)
 			execution_pipeline(commands, shell);
-		printf("\nnumber of commands %d\n", i++);
-		dbg_print_exit_code(shell->exit_code);
-		
+
+	//	printf("\nnumber of commands %d\n", i++);
+	//dbg_print_exit_code(shell->exit_code);
+
 		(void)tokens;
 		(void)commands;
 	}
@@ -109,4 +106,4 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 // 			execution_pipeline
 // 		}
 // 	}
-// have to handle redire for built in as well 
+// have to handle redire for built in as well

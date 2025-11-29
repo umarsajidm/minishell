@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+         #
+#    By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/09/29 17:14:37 by achowdhu          #+#    #+#              #
-#    Updated: 2025/09/30 15:10:48 by achowdhu         ###   ########.fr        #
+#    Updated: 2025/11/26 11:15:26 by musajid          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ NAME        := minishell
 # Compiler and Flags
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror -g
+# CFLAGS		:= -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 # Directories
 SRC_DIR     := src

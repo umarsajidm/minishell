@@ -108,21 +108,21 @@ char	*handle_heredoc(t_cmd *cmd, t_arena **arena, const char *delimiter)
 //     }
 //     return (1);
 // }
-char *read_input(t_arena **arena)
-{
-    char *line;                                 // line from readline
+// char *read_input(t_arena **arena)
+// {
+//     char *line;                                 // line from readline
 
-        line = readline("minishell$ ");             // display prompt and read input
-        if (!line)
-            return (NULL);                         // Ctrl-D returns NULL
-        // if (checkforspacenblank(line))
-        //     free(line);
-        if (*line)
-            add_history(line);                      // store non-empty lines in history
-        char *dup = arena_strdup(arena, line);       // duplicate line into arena
-        free(line);
-        return(dup);
-}
+//         line = readline("minishell$ ");             // display prompt and read input
+//         if (!line)
+//             return (NULL);                         // Ctrl-D returns NULL
+//         // if (checkforspacenblank(line))
+//         //     free(line);
+//         if (*line)
+//             add_history(line);                      // store non-empty lines in history
+//         char *dup = arena_strdup(arena, line);       // duplicate line into arena
+//         free(line);
+//         return(dup);
+// }
 
 /* Read multiple lines for a heredoc until delimiter is reached
  * - Each line duplicated into arena
