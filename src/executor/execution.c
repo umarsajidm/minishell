@@ -98,7 +98,7 @@ static void relative_path_execution(char **cmd, char **env)
 {
     char *path;
 
-	
+
     if (!env)
     {
         printf("copying environment failed");
@@ -107,7 +107,7 @@ static void relative_path_execution(char **cmd, char **env)
     if (!cmd)
         strerrornexit();
     path = pathtoexecute(cmd, env);
-    if (path == NULL)
+    if (path == NULL)  //ponder our hpe to deal with iin case of execve fails
         notfound();
     checking(path);
     if (execve(path, cmd, env) == -1)
@@ -132,10 +132,10 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 {
 	pid_t	pid;
 	int status;
-	
-	
+
+
 	char **envp = envp_arr(shell);
-	
+
 	pid = fork();
 	if (pid == 0)
 	{
