@@ -16,17 +16,30 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 	t_cmd	*commands;  // parsed commands (arena nodes)
 	int		res;        // expansion result
 
+	int i = 0;
 	while (shell->running)
 	{
+		// printf("before anything");
 		input = read_input(arena);               // read user input into arena
+	
 		if (!input)
 			break;                               // Ctrl-D exits
+	
+		tokens = tokenize(input, arena);       // tokenize input using arena
+		if (!tokens)
+			break;
+		// dbg_print_tokens(tokens);                // debug tokens
 
 		tokens = tokenize(input, arena);         // tokenize input using arena
 		dbg_print_tokens(tokens);                // debug tokens
 
 		/* parse tokens into commands */
 		commands = parse_tokens(tokens, shell, arena);
+
+		/* parse tokens into commands */
+	
+		commands = parse_tokens(tokens, arena);  // build command structures
+		
 		if (!commands && tokens)                 // parse failed (syntax or alloc)
 		{
 			(void)tokens;                        // parsing error already printed
@@ -49,11 +62,51 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 
 		/* execute commands (disabled for now) */
 		// execute_command(shell, commands);
+		// dbg_print_cmds(commands);                // show parsed commands
 
-		dbg_print_exit_code(shell->exit_code);   // debug exit code
-
-		/* avoid unused variable warnings while features are stubbed */
+		/* tests for built-in commands (for now) */
+		//test_builtin(commands, shell);
+		
+		/* execute commands */
+		if (commands->argv != NULL)
+			execution_pipeline(commands, shell);
+		printf("\nnumber of commands %d\n", i++);
+		dbg_print_exit_code(shell->exit_code);
+		
 		(void)tokens;
 		(void)commands;
 	}
 }
+
+// typedef enum e_redir_type
+// {
+// 	R_INPUT,
+// 	R_OUTPUT,
+// 	R_APPEND,
+// 	R_HEREDOC
+// }	t_redir_type;
+
+// typedef struct s_redir
+// {
+// 	t_redir_type	type;   /* type of redirection */
+// 	char			*target;/* file or heredoc target */
+// 	struct s_redir	*next;  /* next redirection */
+// }	t_redir;
+
+// typedef struct s_cmd
+// {
+// 	char			**argv;  /* argument vector */
+// 	t_redir			*redirs; /* redirections */
+// 	struct s_cmd	*next;   /* next command */
+// }	t_cmd;
+
+// if (cmd->redir->type)
+// 	{
+// 		if(cmd->redir->type == in)
+// 			{//check access
+// 			int open_fd = open(cmd->redir->target, O_RDONLY);
+// 			dup2(fd[0], open_fd);
+// 			execution_pipeline
+// 		}
+// 	}
+// have to handle redire for built in as well 

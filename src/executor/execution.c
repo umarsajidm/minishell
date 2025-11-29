@@ -1,37 +1,20 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   execution.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 15:25:08 by musajid           #+#    #+#             */
-/*   Updated: 2025/11/03 18:07:58 by musajid          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "execution.h"
 
-#include "minishell.h"
-
-//getting the path form environment
-
-
-
-static	char	**get_path(char **env)
+static  char    **get_path(char **envp_arr)
 {
-	int		i;
-	char	**paths;
-
+	int             i;
+	char    **paths;
 
 	i = 0;
-	if (!env[i])
-		return (NULL);
-	while (env[i])
+	if (!envp_arr[i])
+			return (NULL);
+	while (envp_arr[i])
 	{
-		if (strncmp(env[i], "PATH=", 5) == 0)
+		if (strncmp(envp_arr[i], "PATH=", 5) == 0)
 		{
-			paths = ft_split((env[i] + 5), ':');
+			paths = ft_split((envp_arr[i] + 5), ':');
 			if (!paths || !*paths)
-				freeerror(paths);
+					freeerror(paths);
 			return (paths);
 		}
 		i++;
@@ -83,6 +66,7 @@ static	char	*pathtoexecute(char **cmd, char **env)
 
 static	void	checking(char *path)
 {
+	// printf("\ni am setting the status here\n");
 	if ((access(path, F_OK) == 0) && (access(path, X_OK) == -1))
 		errno = EACCES;
 	if (access(path, X_OK) == 0)
@@ -91,40 +75,50 @@ static	void	checking(char *path)
 		errno = ENOENT;
 }
 //need serparate function for absolute path
-
-static void	abs_path_execution(char **cmd, char **env)
+static void abs_path_execution(char **cmd, char **env)
 {
-	checking(cmd[0]);
-	if (execve(cmd[0], cmd, env) == -1)
-	{
-		freearray(cmd);
-		strerrornexit();
-	}
-
+    checking(cmd[0]);
+    if (execve(cmd[0], cmd, env) == -1)
+    {
+        freearray(cmd);
+        freearray(env);
+        strerrornexit();
+    }
 }
 
-static void	relative_path_execution(char **cmd, char **env)
+static void	notfound()
 {
-	char	*path;
-
-	if (!env)
-	{
-		printf("copying environment failed");
-		exit(EXIT_FAILURE);
-	}
-	if (!cmd)
-		strerrornexit();
-	path = pathtoexecute(cmd, env);
-	if (path == NULL)
-		commandnotfound(cmd);
-	checking(path);
-	if (execve(path, cmd, env) == -1)
-	{
-		freearray(cmd);
-		free(path);
-		strerrornexit();
-	}
+	// void(arr);
+	// freearray(arr);
+	errno = ENOENT;
+	// shell->exit_code = 127
 }
+
+static void relative_path_execution(char **cmd, char **env)
+{
+    char *path;
+
+	
+    if (!env)
+    {
+        printf("copying environment failed");
+        exit(EXIT_FAILURE);
+    }
+    if (!cmd)
+        strerrornexit();
+    path = pathtoexecute(cmd, env);
+    if (path == NULL)
+        notfound();
+    checking(path);
+    if (execve(path, cmd, env) == -1)
+    {
+        // freearray(cmd);
+        free(path);
+        freearray(env);
+        strerrornexit();
+    }
+}
+
 
 void	execution(char **cmd, char **env)
 {
@@ -133,34 +127,28 @@ void	execution(char **cmd, char **env)
 	else
 		relative_path_execution(cmd, env);
 }
-// static int list_size(t_list *lst)
-// {
-//     int i = 0;
-//     while (lst)
-//     {
-//         i++;
-//         lst = lst->next;
-//     }
-//     return (i);
-// }
 
-
-void	child_process(t_cmd *parsed_cmd, char **envp)
+void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 {
 	pid_t	pid;
 	int status;
 	
-	char **env = copy_envp(envp);
-
+	
+	char **envp = envp_arr(shell);
+	
 	pid = fork();
 	if (pid == 0)
 	{
-		execution(parsed_cmd->argv, env);
+		execution(parsed_cmd->argv, envp);
 		perror("Minishell$ ");
 		exit(EXIT_FAILURE);
 	}
 	else if (pid > 0)
+	{
 		waitpid(pid, &status, 0);
+		freearray(envp);
+	}
 	else
 		perror("fork");
+	waitstatus(pid, shell);
 }

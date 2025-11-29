@@ -132,4 +132,7 @@ void	dbg_print_exit_code(int code)
 	ft_printf("\n---- DEBUG EXIT CODE ----\n");
 	ft_printf("Exit code: %d\n", code);
 	ft_printf("-------------------------\n\n");
+	ft_printf("\n");     // blank line before
+	ft_printf("Exit code: %d\n", code);             // print exit code
+	ft_printf("\n");  // longer line after
 }

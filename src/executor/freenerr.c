@@ -1,21 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   freenerr.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/14 14:11:25 by musajid           #+#    #+#             */
-/*   Updated: 2025/10/30 13:43:32 by musajid          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 void	freearray(char **arr)
 {
 	int	i;
 
+	if (!arr)
+		return ;
 	i = 0;
 	while (arr[i])
 	{
@@ -60,7 +50,10 @@ void	freeall(char **arr, char *str, char *cmd)
 
 void	commandnotfound(char **arr)
 {
+	// void(arr);
 	freearray(arr);
 	errno = ENOENT;
-	exit(127);
+	// shell->exit_code = 127;
+
+	exit(EXIT_FAILURE);
 }

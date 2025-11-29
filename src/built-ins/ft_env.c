@@ -1,11 +1,14 @@
 #include "minishell.h"
 
-int	ft_env(char **env)
+int	ft_env(t_env *head)
 {
-	int	i;
-
-	i = 0;
-	while (env[i])
-		printf("%s\n", env[i++]);
+	while (head)
+	{
+		if (head->value)
+			printf("%s=%s\n", head->key, head->value);
+		else
+			printf("%s\n", head->key);
+		head = head->next;
+	}
 	return (0);
 }
