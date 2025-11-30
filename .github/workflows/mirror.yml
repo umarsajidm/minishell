@@ -1,12 +1,3 @@
-name: Sync ant-hab/Minishell
-  
-on:
-  schedule:
-    # Runs at 00:00 UTC every day
-    - cron: '0 0 * * *'
-  workflow_dispatch:
-    # Allows manual trigger from the GitHub Actions tab
-
 jobs:
   sync_to_portfolio:
     runs-on: ubuntu-latest
@@ -14,21 +5,26 @@ jobs:
       - name: Checkout Portfolio Repository
         uses: actions/checkout@v4
         with:
-          # Checkout is necessary to run commands inside the repository
+          # Use your Personal Access Token (PAT) for authentication instead of the default GITHUB_TOKEN.
+          # This gives the action the necessary permissions to push via the 'git push --mirror' command.
+          token: ${{ secrets.SYNC_TOKEN }}
           fetch-depth: 0 
   
       - name: Mirror ant-hab/Minishell to umarsajidm/minishell
         run: |
-          # 1. Set up Git credentials securely using the SYNC_TOKEN secret
-          # This URL structure uses the token for authentication when pushing.
-          PORTFOLIO_REPO="https://${{ secrets.MINISHELL_SYNC_TOKEN }}@github.com/umarsajidm/minishell.git"
+          # The Git commands will now use the credentials provided in the checkout step.
+          # We no longer need to embed the token in the URL for the push.
+          
+          # 1. Define the source and destination URLs
+          ANT_HAB_REPO="https://github.com/ant-hab/Minishell.git"
+          PORTFOLIO_REPO="https://github.com/umarsajidm/minishell.git"
            
           # 2. Add Antor's repo as a temporary remote
-          git remote add ant-hab https://github.com/ant-hab/Minishell.git
+          git remote add ant-hab $ANT_HAB_REPO
   
           # 3. Fetch all branches and tags from Antor's repo
           git fetch ant-hab --tags --force --prune
   
-          # 4. Push all changes (branches and tags) to your portfolio repo using --mirror
-          # The --mirror flag ensures an exact synchronization of all Git refs.
+          # 4. Push all changes (branches and tags) to your portfolio repo
+          # This push now works because the credentials were set up in the checkout step.
           git push --mirror $PORTFOLIO_REPO
