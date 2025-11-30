@@ -1,0 +1,34 @@
+name: Sync ant-hab/Minishell
+  
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allows manual trigger from the GitHub Actions tab
+
+jobs:
+  sync_to_portfolio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Portfolio Repository
+        uses: actions/checkout@v4
+        with:
+          # Checkout is necessary to run commands inside the repository
+          fetch-depth: 0 
+  
+      - name: Mirror ant-hab/Minishell to umarsajidm/minishell
+        run: |
+          # 1. Set up Git credentials securely using the SYNC_TOKEN secret
+          # This URL structure uses the token for authentication when pushing.
+          PORTFOLIO_REPO="https://${{ secrets.MINISHELL_SYNC_TOKEN }}@github.com/umarsajidm/minishell.git"
+           
+          # 2. Add Antor's repo as a temporary remote
+          git remote add ant-hab https://github.com/ant-hab/Minishell.git
+  
+          # 3. Fetch all branches and tags from Antor's repo
+          git fetch ant-hab --tags --force --prune
+  
+          # 4. Push all changes (branches and tags) to your portfolio repo using --mirror
+          # The --mirror flag ensures an exact synchronization of all Git refs.
+          git push --mirror $PORTFOLIO_REPO
