@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Portfolio Repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.MINISHELLSYNC_TOKEN }}
+          token: ${{ secrets.MINISHELL_SYNC_TOKEN }}
           fetch-depth: 0 
   
       - name: Mirror ant-hab/Minishell to umarsajidm/minishell
