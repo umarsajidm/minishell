@@ -47,6 +47,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		/* debug expanded argv (42 Norminette safe) */
 		// dbg_print_expanded_argv(commands);
 
+		//test_builtin(commands, shell);
 		if (commands->argv != NULL)
 			execution_pipeline(commands, shell);
 
