@@ -1,4 +1,12 @@
-jobs:
+name: Sync ant-hab/Minishell
+  
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allows manual trigger from the GitHub Actions tab
+  jobs:
   sync_to_portfolio:
     runs-on: ubuntu-latest
     steps:
