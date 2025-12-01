@@ -30,7 +30,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		}
 
 		tokens = tokenize(input, arena);         // tokenize input using arena
-		// dbg_print_tokens(tokens);                // debug tokens
+		dbg_print_tokens(tokens);                // debug tokens
 
 		/* parse tokens into commands */
 		commands = parse_tokens(tokens, shell, arena);
@@ -56,14 +56,14 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		// dbg_print_expanded_argv(commands);
 
 		//test_builtin(commands, shell);
-		ft_putstr_fd("peter coming here", 2);
-		if (commands->argv != NULL && commands->argv[1] != NULL)
+		// ft_putstr_fd("peter coming here", 2);
+		if (commands->argv != NULL)
 		{
 
-			ft_putstr_fd("brooks coming here", 2);
+			// ft_putstr_fd("brooks coming here", 2);
 			execution_pipeline(commands, shell);
 		}
-		dbg_print_exit_code(shell->exit_code);   // debug exit code
+		// dbg_print_exit_code(shell->exit_code);   // debug exit code
 
 		/* avoid unused variable warnings while features are stubbed */
 		(void)tokens;
