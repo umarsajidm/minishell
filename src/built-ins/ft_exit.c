@@ -7,6 +7,7 @@ static int	num_error(char *str);
 
 int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 {
+	(void)arena;
 	long	exit_code;
 	int		error;
 	long	result;
@@ -25,8 +26,8 @@ int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 	else
 		exit_code = result;
 	//TODO: clean_up_shell(shell);
-	free_env(shell->env);
-	free_arena(arena);
+	//free_env(shell->env);
+	//free_arena(arena);
 	exit(exit_code & 0xFF);
 }
 

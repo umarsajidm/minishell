@@ -125,7 +125,7 @@ void	execution(t_cmd *cmd, t_shell *shell, char **env)
 	if (ft_strchr(cmd->argv[0], '/' ))
 		abs_path_execution(cmd, env);
 	if (is_builtin(cmd))
-		run_builtin(cmd, shell);
+		run_builtin(cmd, shell, NULL);
 	else
 		relative_path_execution(cmd, env);
 }
