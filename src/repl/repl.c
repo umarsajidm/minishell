@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-/* 
+/*
  * Main REPL loop
  * - Reads input from user
  * - Tokenizes input using arena
@@ -23,7 +23,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			break;                               // Ctrl-D exits
 
 		tokens = tokenize(input, arena);         // tokenize input using arena
-		dbg_print_tokens(tokens);                // debug tokens
+		// dbg_print_tokens(tokens);                // debug tokens
 
 		/* parse tokens into commands */
 		commands = parse_tokens(tokens, shell, arena);
@@ -33,7 +33,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			arena_clear(arena);
 			continue;
 		}
-		dbg_print_cmds(commands);                // show parsed commands
+		// dbg_print_cmds(commands);                // show parsed commands
 
 		/* variable expansion */
 		res = expand_command_argv(commands, shell, arena);
@@ -50,8 +50,9 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		//test_builtin(commands, shell);
 		if (commands->argv != NULL)
 			execution_pipeline(commands, shell);
+		arena_clear(arena);
 
-		dbg_print_exit_code(shell->exit_code);   // debug exit code
+		// dbg_print_exit_code(shell->exit_code);   // debug exit code
 
 		/* avoid unused variable warnings while features are stubbed */
 		(void)tokens;

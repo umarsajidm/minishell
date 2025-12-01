@@ -1,6 +1,6 @@
 #include "execution.h"
 
-/* 
+/*
 
 ==1==we will check whether it is a builtin or binary
 ==2==separate pipelines for both
@@ -58,7 +58,7 @@ void	execution_pipeline(t_cmd *command, t_shell *shell)
 	// t_cmd	*t_command;
 	// int		i;
 	// int		pipe_number;
-	
+
 	// i = 0;
 	// t_command = command;
     // while(t_command)
@@ -70,9 +70,9 @@ void	execution_pipeline(t_cmd *command, t_shell *shell)
 	// pipe_number = i - 1;
 	// if (!pipe_number && !(command->redirs) && !is_builtin(command))//if there is no pipe and cmd is binary
 	// 	child_process(command, shell);
-	// else	
+	// else
 		pipe_execution(command, shell);
-	
+
 }
 
 static void init_fd(t_fd	*fd)
@@ -100,7 +100,7 @@ static void close_fd(t_fd *fd)
 
 static void parent_loop(t_cmd *cmd, t_fd *fd)
 {
-	//parent closes the prev 
+	//parent closes the prev
 	if (fd->prev_fd != -1)
             close(fd->prev_fd);
 
@@ -113,7 +113,7 @@ static void parent_loop(t_cmd *cmd, t_fd *fd)
     close(fd->fd[1]);
 }
 
-static void	execute_pipe(t_cmd *cmd, t_fd *fd, char **arr)
+static void	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 {
 	if (cmd->redirs)
 		applying_redir(cmd->redirs, &(fd->in_fd), &(fd->out_fd));
@@ -126,7 +126,7 @@ static void	execute_pipe(t_cmd *cmd, t_fd *fd, char **arr)
 	if (fd->out_fd != -1)
 		dup2(fd->out_fd, STDOUT_FILENO);
 	close_fd(fd);
-	execution(cmd->argv, arr);
+	execution(cmd, shell, arr);
 }
 
 static void pipe_execution(t_cmd *command, t_shell *shell)
@@ -143,7 +143,7 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
 		if (pid < 0)
 			perror("fork failed in child process");
         if (pid == 0)
-			execute_pipe(command, &fd, envp);
+			execute_pipe(command, shell, &fd, envp);
 		parent_loop(command, &fd);
         command = command->next;
     }
