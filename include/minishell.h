@@ -270,12 +270,12 @@ int		expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena);
 **        Builtins
 ** =========================== */
 int		is_builtin(t_cmd *cmd);
-int		run_builtin(t_cmd *cmds, t_shell *shell);
+int		run_builtin(t_cmd *cmds, t_shell *shell, t_arena **arena);
 long	ft_atol(const char *s, int *error);
 int		ft_env(t_env *head);
 int		ft_echo(char **av);
 int		ft_pwd(void);
-int		ft_exit(char **av, t_shell *shell);
+int		ft_exit(char **av, t_shell *shell, t_arena **arena);
 int		ft_unset(t_cmd *cmd, t_shell *shell);
 int		ft_export(t_cmd *cmds, t_shell *shell);
 int		ft_cd(t_cmd *cmds, t_shell *shell);
@@ -288,7 +288,7 @@ void	sort_env(t_env ***arr);
 int		update_env_node(const char *str, t_shell *shell);
 int		add_env_node(const char *str, t_shell *shell);
 void	print_export(t_env **arr);
-void	test_builtin(t_cmd *commands, t_shell *shell);
+void	test_builtin(t_cmd *commands, t_shell *shell, t_arena **arena);
 
 /* ===========================
 **        Utils

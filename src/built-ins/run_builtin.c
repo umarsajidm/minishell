@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	run_builtin(t_cmd *cmds, t_shell *shell)
+int	run_builtin(t_cmd *cmds, t_shell *shell, t_arena **arena)
 {
 	char	*command;
 
@@ -18,7 +18,7 @@ int	run_builtin(t_cmd *cmds, t_shell *shell)
 	else if (ft_strcmp(command, "env") == 0)
 		return (ft_env(shell->env));
 	else if (ft_strcmp(command, "exit") == 0)
-		return (ft_exit(cmds->argv, shell));
+		return (ft_exit(cmds->argv, shell, arena));
 	printf("Could not execute built-in\n");
 	return (1);
 }

@@ -5,13 +5,13 @@ static void	run_exit(t_shell *shell);
 static int	get_ac(char **av);
 static int	num_error(char *str);
 
-int	ft_exit(char **av, t_shell *shell)
+int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 {
 	long	exit_code;
 	int		error;
 	long	result;
 
-	ft_putstr_fd("exit\n", 2);
+	ft_putstr_fd("exit\n", 1);
 	if (!av[1])
 		run_exit(shell);
 	else if (get_ac(av) > 2)
@@ -25,6 +25,8 @@ int	ft_exit(char **av, t_shell *shell)
 	else
 		exit_code = result;
 	//TODO: clean_up_shell(shell);
+	free_env(shell->env);
+	free_arena(arena);
 	exit(exit_code & 0xFF);
 }
 

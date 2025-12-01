@@ -15,6 +15,7 @@ int	ft_cd(t_cmd *cmds, t_shell *shell)
 			return (cd_error(oldpwd));
 		if (chdir((find_env_node("HOME", shell->env)->value)))
 			return (cd_error(oldpwd));
+		return (0);
 	}
 	if (cmds->argv[2])
 		return (cd_av_error(oldpwd));
