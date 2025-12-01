@@ -296,6 +296,7 @@ void	test_builtin(t_cmd *commands, t_shell *shell);
 t_cmd	*parse_error(const char *msg, const char *tok);
 int		count_argv(char **argv);
 int		iterate_key(const char *str);
+int 	is_blank_line(const char *s);
 
 /* ===========================
 **        Debug
