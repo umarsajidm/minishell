@@ -150,6 +150,7 @@ static void pipe_execution(t_cmd *command, t_shell *shell)
 	waitstatus(pid, shell);
     freearray(envp);
 }
+
 void waitstatus(pid_t pid,  t_shell *shell)
 {
 	int	status;

@@ -22,6 +22,13 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		if (!input)
 			break;                               // Ctrl-D exits
 
+		/* if the line is empty or only whitespace, skip processing */
+		if (is_blank_line(input))
+		{
+			arena_clear(arena);
+			continue;
+		}
+
 		tokens = tokenize(input, arena);         // tokenize input using arena
 		// dbg_print_tokens(tokens);                // debug tokens
 
