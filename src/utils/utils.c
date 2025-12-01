@@ -41,3 +41,18 @@ int	iterate_key(const char *str)
 		i++;
 	return (i);                                 // length of key
 }
+
+/* return 1 if string is NULL or contains only whitespace */
+int is_blank_line(const char *s)
+{
+	if (!s)
+		return (1);
+	while (*s)
+	{
+		if (!(*s == ' ' || *s == '\t' || *s == '\n'
+				|| *s == '\r' || *s == '\f' || *s == '\v'))
+			return (0);
+		s++;
+	}
+	return (1);
+}

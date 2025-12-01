@@ -75,7 +75,7 @@ void	dbg_print_cmds(t_cmd *cmd)
 	int	i;
 	int	j;
 
-	ft_printf("\n---- DEBUG COMMANDS ----\n");
+	ft_printf("---- DEBUG COMMANDS ----\n");
 	i = 0;
 	while (cmd)
 	{
