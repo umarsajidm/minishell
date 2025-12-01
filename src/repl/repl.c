@@ -55,9 +55,9 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		/* debug expanded argv (42 Norminette safe) */
 		// dbg_print_expanded_argv(commands);
 
-		test_builtin(commands, shell, arena);
-		//if (commands->argv != NULL)
-		//	execution_pipeline(commands, shell, arena);
+		//test_builtin(commands, shell, arena);
+		if (commands->argv != NULL)
+			execution_pipeline(commands, shell);
 
 		dbg_print_exit_code(shell->exit_code);   // debug exit code
 
