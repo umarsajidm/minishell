@@ -43,16 +43,13 @@ int	iterate_key(const char *str)
 }
 
 /* return 1 if string is NULL or contains only whitespace */
-int is_blank_line(const char *s)
+int	is_blank_line(const char *s)
 {
 	if (!s)
 		return (1);
-	while (*s)
-	{
-		if (!(*s == ' ' || *s == '\t' || *s == '\n'
-				|| *s == '\r' || *s == '\f' || *s == '\v'))
-			return (0);
+	while (*s && ft_isspace((unsigned char)*s))
 		s++;
-	}
-	return (1);
+	if (*s == '\0')
+		return (1);
+	return (0);
 }
