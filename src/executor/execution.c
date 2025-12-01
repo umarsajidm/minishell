@@ -75,12 +75,12 @@ static	void	checking(char *path)
 		errno = ENOENT;
 }
 //need serparate function for absolute path
-static void abs_path_execution(char **cmd, char **env)
+static void abs_path_execution(t_cmd *cmd, char **env)
 {
-    checking(cmd[0]);
-    if (execve(cmd[0], cmd, env) == -1)
+    checking(cmd->argv[0]);
+    if (execve(cmd->argv[0], &(cmd->argv[0]), env) == -1)
     {
-        freearray(cmd);
+        freearray(cmd->argv);
         freearray(env);
         strerrornexit();
     }
@@ -94,7 +94,7 @@ static void	notfound()
 	// shell->exit_code = 127
 }
 
-static void relative_path_execution(char **cmd, char **env)
+static void relative_path_execution(t_cmd *cmd, char **env)
 {
     char *path;
 
@@ -104,13 +104,13 @@ static void relative_path_execution(char **cmd, char **env)
         printf("copying environment failed");
         exit(EXIT_FAILURE);
     }
-    if (!cmd)
+    if (!cmd->argv)
         strerrornexit();
-    path = pathtoexecute(cmd, env);
+    path = pathtoexecute(cmd->argv, env);
     if (path == NULL)  //ponder our hpe to deal with iin case of execve fails
         notfound();
     checking(path);
-    if (execve(path, cmd, env) == -1)
+    if (execve(path, cmd->argv, env) == -1)
     {
         // freearray(cmd);
         free(path);
@@ -120,10 +120,12 @@ static void relative_path_execution(char **cmd, char **env)
 }
 
 
-void	execution(char **cmd, char **env)
+void	execution(t_cmd *cmd, t_shell *shell, char **env)
 {
-	if (ft_strchr(cmd[0], '/' ))
+	if (ft_strchr(cmd->argv[0], '/' ))
 		abs_path_execution(cmd, env);
+	if (is_builtin(cmd))
+		run_builtin(cmd, shell);
 	else
 		relative_path_execution(cmd, env);
 }
@@ -139,7 +141,7 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
-		execution(parsed_cmd->argv, envp);
+		execution(parsed_cmd, shell, envp);
 		perror("Minishell$ ");
 		exit(EXIT_FAILURE);
 	}

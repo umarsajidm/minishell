@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-/* 
+/*
  * Entry point of minishell
  * - Initializes shell state, arena, and environment
  * - Sets up signal handlers
@@ -51,7 +51,7 @@ int	main(int argc, char **argv, char **envp)
 	repl_loop(&shell, &arena);
 
 	/* debug: print final exit code */
-	dbg_print_exit_code(shell.exit_code);
+	// dbg_print_exit_code(shell.exit_code);
 
 	/* cleanup */
 	free_env(shell.env);
