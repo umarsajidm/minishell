@@ -7,6 +7,7 @@ int	run_builtin(t_cmd *cmds, t_shell *shell, t_arena **arena)
 
 	ret = 0;
 	command = cmds->argv[0];
+	printf("in run_builtin()\n");
 	if (ft_strcmp(command, "echo") == 0)
 		ret = ft_echo(cmds->argv);
 	else if (ft_strcmp(command, "cd") == 0)
@@ -21,6 +22,5 @@ int	run_builtin(t_cmd *cmds, t_shell *shell, t_arena **arena)
 		ret = ft_env(shell->env);
 	else if (ft_strcmp(command, "exit") == 0)
 		ret = ft_exit(cmds->argv, shell, arena);
-	printf("in run_builtin()\n");
 	return (ret);
 }

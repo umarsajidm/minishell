@@ -40,7 +40,7 @@ static void parent_loop(t_cmd *cmd, t_fd *fd)
     close(fd->fd[1]);
 }
 
-static void	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
+static int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 {
 	if (cmd->redirs)
 		applying_redir(cmd->redirs, &(fd->in_fd), &(fd->out_fd));
@@ -53,7 +53,11 @@ static void	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 	if (fd->out_fd != -1)
 		dup2(fd->out_fd, STDOUT_FILENO);
 	close_fd(fd);
-	execution(cmd, shell, arr);
+	if (execution(cmd, shell, arr) == 1)
+	{
+		return (1);
+	}
+	return(0);
 }
 
 void execution_pipeline(t_cmd *command, t_shell *shell)
@@ -63,6 +67,15 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 
     char **envp = envp_arr(shell);
     init_fd(&fd);
+	if (!command->next)
+	{
+		if (execute_pipe(command, shell, &fd, envp) == 1)
+			{
+				freearray(envp);
+				close_fd(&fd);
+				return ;
+			}
+	}
     while (command)
     {
         pipe(fd.fd);
@@ -70,7 +83,14 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 		if (pid < 0)
 			perror("fork failed in child process");
         if (pid == 0)
-			execute_pipe(command, shell, &fd, envp);
+		{
+			if (execute_pipe(command, shell, &fd, envp) == 1)
+			{
+				freearray(envp);
+				close_fd(&fd);
+				return ;
+			}
+		}
 		parent_loop(command, &fd);
         command = command->next;
     }

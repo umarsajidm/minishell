@@ -3,7 +3,7 @@
 
 #include "minishell.h"
 //execution.c
-void	child_process(t_cmd *parsed_cmd, t_shell *shell);
+int	child_process(t_cmd *parsed_cmd, t_shell *shell);
 
 //envp.c
 char **envp_arr(t_shell *shell);
@@ -32,7 +32,7 @@ typedef struct s_fd
 
 void execution_pipeline(t_cmd *command, t_shell *shell);
 // void pipeline(t_cmd	*command, t_shell *shell);
-void	execution(t_cmd *cmd, t_shell *shell, char **env);
+int	execution(t_cmd *cmd, t_shell *shell, char **env);
 
 //pipeline_utils.c
 void applying_redir(t_redir *r, int *in_fd, int *out_fd);

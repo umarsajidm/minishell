@@ -86,15 +86,15 @@ static void abs_path_execution(t_cmd *cmd, char **env)
     }
 }
 
-static void	notfound()
-{
-	// void(arr);
-	// freearray(arr);
-	errno = ENOENT;
-	// shell->exit_code = 127
-}
+// static void	notfound()
+// {
+// 	// void(arr);
+// 	// freearray(arr);
+// 	errno = ENOENT;
+// 	// shell->exit_code = 127
+// }
 
-static void relative_path_execution(t_cmd *cmd, char **env)
+static int relative_path_execution(t_cmd *cmd, char **env)
 {
     char *path;
 
@@ -108,7 +108,7 @@ static void relative_path_execution(t_cmd *cmd, char **env)
         strerrornexit();
     path = pathtoexecute(cmd->argv, env);
     if (path == NULL)  //ponder our hpe to deal with iin case of execve fails
-        notfound();
+        return 1;
     checking(path);
     if (execve(path, cmd->argv, env) == -1)
     {
@@ -117,20 +117,25 @@ static void relative_path_execution(t_cmd *cmd, char **env)
         freearray(env);
         strerrornexit();
     }
+	return (1);
 }
 
 
-void	execution(t_cmd *cmd, t_shell *shell, char **env)
+int	execution(t_cmd *cmd, t_shell *shell, char **env)
 {
 	if (ft_strchr(cmd->argv[0], '/' ))
 		abs_path_execution(cmd, env);
 	if (is_builtin(cmd))
 		shell->exit_code = run_builtin(cmd, shell, &shell->arena);
 	else
-		relative_path_execution(cmd, env);
+	{
+		if (relative_path_execution(cmd, env) == 1)
+			return(1);
+	}
+	return (0);
 }
 
-void	child_process(t_cmd *parsed_cmd, t_shell *shell)
+int	child_process(t_cmd *parsed_cmd, t_shell *shell)
 {
 	pid_t	pid;
 	int status;
@@ -141,9 +146,13 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
-		execution(parsed_cmd, shell, envp);
-		perror("Minishell$ ");
-		exit(EXIT_FAILURE);
+		if (execution(parsed_cmd, shell, envp) == 1)
+		{
+			perror("Minishell$ ");
+			freearray(envp);
+			return (1);
+			// exit(EXIT_FAILURE);
+		}
 	}
 	else if (pid > 0)
 	{
@@ -152,5 +161,7 @@ void	child_process(t_cmd *parsed_cmd, t_shell *shell)
 	}
 	else
 		perror("fork");
+	freearray(envp);
 	waitstatus(pid, shell);
+	return (0);
 }
