@@ -27,7 +27,7 @@ elif [ "$1" == "lf" ]; then
 #with valgrind file descriptors
 
 elif [ "$1" == "fd" ]; then
-	valgrind --track-origins=yes --track-fd=yes --suppressions=readline.supp ./"$program_name"
+	valgrind --track-origins=yes --track-fds=yes --suppressions=readline.supp ./"$program_name"
 
 #with valgrind memleak and file descriptors
 

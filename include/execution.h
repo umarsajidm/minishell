@@ -2,8 +2,19 @@
 #define EXECUTION_H
 
 #include "minishell.h"
+
+typedef struct s_fd
+{
+    int fd[2];
+    int prev_fd;
+    int in_fd;
+    int out_fd;
+}   t_fd;
+
+
+
 //execution.c
-int	child_process(t_cmd *parsed_cmd, t_shell *shell);
+int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env);
 
 //envp.c
 char **envp_arr(t_shell *shell);
@@ -20,17 +31,9 @@ void	commandnotfound(char **arr);
 int init_shell(t_shell *shell, char **envp, t_arena **arena);
 
 //pipeline.c
-
-typedef struct s_fd
-{
-    int fd[2];
-    int prev_fd;
-    int in_fd;
-    int out_fd;
-}   t_fd;
-
-
 void execution_pipeline(t_cmd *command, t_shell *shell);
+void close_fd(t_fd *fd);
+int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr);
 // void pipeline(t_cmd	*command, t_shell *shell);
 int	execution(t_cmd *cmd, t_shell *shell, char **env);
 
@@ -38,5 +41,8 @@ int	execution(t_cmd *cmd, t_shell *shell, char **env);
 void applying_redir(t_redir *r, int *in_fd, int *out_fd);
 void waitstatus(pid_t pid,  t_shell *shell);
 
+
+//builtin
+int	is_parent_level_builtin(t_cmd *cmd);
 
 #endif
