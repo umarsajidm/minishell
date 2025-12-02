@@ -38,6 +38,7 @@ typedef struct s_env
 typedef struct s_shell
 {
 	t_env	*env;        /* environment variables linked list */
+	t_arena	*arena;	 	 /* arena memory */
 	int		exit_code;   /* last exit code */
 	bool	running;     /* shell running flag */
 }	t_shell;
@@ -57,7 +58,7 @@ typedef struct s_token
 {
 	char			*token;   /* token string */
 	t_token_type	type;     /* token type */
-	struct s_token	*next;   /* next token */
+	struct s_token	*next;    /* next token */
 }	t_token;
 
 /* ===========================
@@ -73,16 +74,16 @@ typedef enum e_redir_type
 
 typedef struct s_redir
 {
-	t_redir_type	type;   /* type of redirection */
-	char			*target;/* file or heredoc target */
-	struct s_redir	*next;  /* next redirection */
+	t_redir_type	type;    /* type of redirection */
+	char			*target; /* file or heredoc target */
+	struct s_redir	*next;   /* next redirection */
 }	t_redir;
 
 typedef struct s_cmd
 {
 	char		**argv;       // command arguments
-	t_redir		*redirs;       // redirection list
-	struct s_cmd	*next;     // next command in pipeline
+	t_redir		*redirs;      // redirection list
+	struct s_cmd	*next;    // next command in pipeline
 	char		*heredoc;     // content of heredoc, if any
 }				t_cmd;
 

@@ -11,13 +11,14 @@ long	ft_atol(const char *s, int *error)
 
 	*error = 0;
 	sign = 0;
+	result = 0;
 	s = skip_whitespace(s);
 	sign = process_sign(&s);
 	if (!ft_isdigit(*s))
 		return (*error = 1, 0);
 	while (ft_isdigit(*s))
 	{
-		if (overflow(result, (*s - '0'), sign))
+		if (overflow(result, ((*s) - '0'), sign))
 			return (*error = 1, 0);
 		result = result * 10 + (*s - '0');
 		s++;

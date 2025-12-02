@@ -34,13 +34,12 @@ static int	init_shell_and_arena(t_shell *shell, t_arena **arena,
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell		shell;   // shell state: env, exit_code, running
-	t_arena		*arena;  // arena memory allocator
 	int			err;    // initialization error
 
 	(void)argc;
 	(void)argv;
 
-	err = init_shell_and_arena(&shell, &arena, envp);
+	err = init_shell_and_arena(&shell, &shell.arena, envp);
 	if (err)
 		return (1);
 
@@ -48,14 +47,14 @@ int	main(int argc, char **argv, char **envp)
 	setup_signals();
 
 	/* start REPL loop */
-	repl_loop(&shell, &arena);
+	repl_loop(&shell, &shell.arena);
 
 	/* debug: print final exit code */
 	// dbg_print_exit_code(shell.exit_code);
 
 	/* cleanup */
 	free_env(shell.env);
-	free_arena(&arena);
+	free_arena(&shell.arena);
 
 	return (shell.exit_code);
 }

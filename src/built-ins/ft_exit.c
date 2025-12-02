@@ -4,14 +4,16 @@
 static void	run_exit(t_shell *shell);
 static int	get_ac(char **av);
 static int	num_error(char *str);
+static void	clean_all(t_env *head, t_arena **arena);
 
-int	ft_exit(char **av, t_shell *shell)
+int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 {
+	(void)arena;
 	long	exit_code;
 	int		error;
 	long	result;
 
-	ft_putstr_fd("exit\n", 2);
+	ft_putstr_fd("exit\n", 1);
 	if (!av[1])
 		run_exit(shell);
 	else if (get_ac(av) > 2)
@@ -24,8 +26,15 @@ int	ft_exit(char **av, t_shell *shell)
 		exit_code = num_error(av[1]);
 	else
 		exit_code = result;
-	//TODO: clean_up_shell(shell);
+	clean_all(shell->env, arena);
 	exit(exit_code & 0xFF);
+}
+
+static void	clean_all(t_env *head, t_arena **arena)
+{
+	free_env(head);
+	free_arena(arena);
+	// close fds?
 }
 
 static void	run_exit(t_shell *shell)
