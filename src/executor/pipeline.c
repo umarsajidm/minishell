@@ -55,6 +55,7 @@ int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 	close_fd(fd);
 	if (execution(cmd, shell, arr) == 1)
 	{
+
 		return (1);
 	}
 	return(0);
@@ -78,16 +79,17 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 		}
 		else if (!command->next)
 		{
-			child_process(command, shell, &fd, envp);
-			close_fd(&fd);
-			freearray(envp);
-			return ;
+			if (child_process(command, shell, &fd, envp))
+			{
+				close_fd(&fd);
+				freearray(envp);
+				return ;
+			}
 		}
 		close_fd(&fd);
 		freearray(envp);
 		return ;
 	}
-
 	while (command)
 	{
 		pipe(fd.fd);

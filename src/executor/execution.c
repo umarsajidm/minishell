@@ -138,21 +138,21 @@ int	execution(t_cmd *cmd, t_shell *shell, char **env)
 int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **envp)
 {
 	pid_t	pid;
-	int status;
 
 	pid = fork();
 	if (pid == 0)
 	{
 		if (execute_pipe(cmd, shell, fd, envp) == 1)
 		{
-			perror("Minishell$ ");
-			return (1);
-			// exit(EXIT_FAILURE);
+			// perror("Minishell$ ");
+			close_fd(fd);
+			freearray(envp);
+			exit(126);
 		}
 	}
 	else if (pid > 0)
 	{
-		waitpid(pid, &status, 0);
+		waitstatus(pid, shell);
 		// freearray(envp);
 	}
 	else
