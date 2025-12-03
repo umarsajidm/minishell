@@ -28,7 +28,8 @@ static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
 
 	path = ft_strjoin(dir, pathcmd);
 	if (!path)
-		freestrnarrexit(paths, pathcmd, 1);
+		set_the_code_and_exit(COMMAND_NOT_FOUND, pathcmd, paths);
+		// freestrnarrexit(paths, pathcmd, 1);
 	if (access(path, X_OK) == 0)
 	{
 		freearray(paths);
@@ -48,10 +49,12 @@ static	char	*pathtoexecute(char **cmd, char **env)
 
 	pathcmd = ft_strjoin("/", cmd[0]);
 	if (!pathcmd)
-		strerrornexit();
+		set_the_code_and_exit(GENERAL_ERROR, NULL, env);
+		// strerrornexit();
 	paths = get_path(env);
 	if (!paths || !*paths)
-		freestrnarrexit(paths, pathcmd, 127);
+		set_the_code_and_exit(ENV_PATH_COULDNT_BE_FOUND, pathcmd, paths);
+		// freestrnarrexit(paths, pathcmd, 127);
 	i = 0;
 	while (paths[i])
 	{
@@ -60,7 +63,8 @@ static	char	*pathtoexecute(char **cmd, char **env)
 			return (path);
 		i++;
 	}
-	freeall(paths, pathcmd, cmd[0]);
+	set_the_code_and_exit(COMMAND_NOT_FOUND, pathcmd, paths);
+	// freeall(paths, pathcmd, cmd[0]);
 	return (NULL);
 }
 
@@ -80,9 +84,8 @@ static void abs_path_execution(t_cmd *cmd, char **env)
     checking(cmd->argv[0]);
     if (execve(cmd->argv[0], &(cmd->argv[0]), env) == -1)
     {
-        freearray(cmd->argv);
-        freearray(env);
-        strerrornexit();
+        // freearray(cmd->argv);
+        exit_after_execve(NULL, env);
     }
 }
 
@@ -100,23 +103,16 @@ static int relative_path_execution(t_cmd *cmd, char **env)
 
 
     if (!env)
-    {
-        printf("copying environment failed");
-        exit(EXIT_FAILURE);
-    }
+    	set_the_code_and_exit(ENVIRONMENT_COPY_FAILED, NULL, env);
     if (!cmd->argv)
-        strerrornexit();
+        set_the_code_and_exit(GENERAL_ERROR, NULL, env);
     path = pathtoexecute(cmd->argv, env);
     if (path == NULL)  //ponder our hpe to deal with iin case of execve fails
-        return 1;
+        set_the_code_and_exit(COMMAND_NOT_FOUND, NULL, env);
     checking(path);
     if (execve(path, cmd->argv, env) == -1)
-    {
-        // freearray(cmd);
-        free(path);
-        freearray(env);
-        strerrornexit();
-    }
+		exit_after_execve(path, env);
+	// freearray(cmd);
 	return (1);
 }
 
@@ -130,24 +126,22 @@ int	execution(t_cmd *cmd, t_shell *shell, char **env)
 	else
 	{
 		if (relative_path_execution(cmd, env) == 1)
-			return(1);
+			return 1;
 	}
 	return (0);
 }
 
-int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **envp)
+int	child_process(t_cmd *cmd, t_shell *shell, t_fd fd, char **env)
 {
 	pid_t	pid;
 
 	pid = fork();
 	if (pid == 0)
 	{
-		if (execute_pipe(cmd, shell, fd, envp) == 1)
+		if (execute_pipe(cmd, shell, &fd, env) == 1)
 		{
 			// perror("Minishell$ ");
-			close_fd(fd);
-			freearray(envp);
-			exit(126);
+			set_the_code_and_exit(GENERAL_ERROR, NULL, env);
 		}
 	}
 	else if (pid > 0)

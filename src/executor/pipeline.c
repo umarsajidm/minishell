@@ -79,7 +79,7 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 		}
 		else if (!command->next)
 		{
-			if (child_process(command, shell, &fd, envp))
+			if (child_process(command, shell, fd, envp))
 			{
 				close_fd(&fd);
 				freearray(envp);

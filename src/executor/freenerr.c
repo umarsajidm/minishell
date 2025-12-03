@@ -46,7 +46,6 @@ void	freeall(char **arr, char *str, char *cmd)
 	free(str);
 	ft_putstr_fd(cmd, 2);
 	ft_putstr_fd(": command not found\n", 2);
-	errno = EACCES;
 }
 
 void	commandnotfound(char **arr)
