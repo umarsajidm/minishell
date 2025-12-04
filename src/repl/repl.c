@@ -62,7 +62,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 			arena_clear(arena);
 		}
 
-		dbg_print_exit_code(shell->exit_code);   // debug exit code
+		// dbg_print_exit_code(shell->exit_code);   // debug exit code
 
 		/* avoid unused variable warnings while features are stubbed */
 		(void)tokens;

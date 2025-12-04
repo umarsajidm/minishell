@@ -131,18 +131,16 @@ int	execution(t_cmd *cmd, t_shell *shell, char **env)
 	return (0);
 }
 
-int	child_process(t_cmd *cmd, t_shell *shell, t_fd fd, char **env)
+int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env)
 {
 	pid_t	pid;
 
 	pid = fork();
 	if (pid == 0)
 	{
-		if (execute_pipe(cmd, shell, &fd, env) == 1)
-		{
-			// perror("Minishell$ ");
+
+		if (execute_pipe(cmd, shell, fd, env) == 1)
 			set_the_code_and_exit(GENERAL_ERROR, NULL, env);
-		}
 	}
 	else if (pid > 0)
 	{
@@ -151,7 +149,7 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_fd fd, char **env)
 	}
 	else
 		perror("fork");
-	// freearray(envp);
-	// waitstatus(pid, shell);
+	// freearray(env);
+	waitstatus(pid, shell);
 	return (0);
 }

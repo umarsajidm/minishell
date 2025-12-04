@@ -24,7 +24,7 @@ void set_the_code_and_exit(int type, char *str, char **array);
 void exit_after_execve(char *str, char **array);
 
 //execution.c
-int	child_process(t_cmd *cmd, t_shell *shell, t_fd fd, char **env);
+int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env);
 
 //envp.c
 char **envp_arr(t_shell *shell);

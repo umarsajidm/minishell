@@ -22,7 +22,7 @@ if [ "$1" == "l" ]; then
 #with valgrind --leak-check=ful
 
 elif [ "$1" == "lf" ]; then
-	valgrind --track-origins=yes --leak-check=full --suppressions=readline.supp ./"$program_name"
+	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --suppressions=readline.supp ./"$program_name"
 
 #with valgrind file descriptors
 

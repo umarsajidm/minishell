@@ -1,9 +1,0 @@
-in run_builtin()
-this
-
------- DEBUG EXIT CODE -------
-Exit code: 0
-------------------------------
-
-[?2004hminishell$ ^C[?2004l
-minishell$ [?2004hcd [Kminishell$ cd [Kminishell$ cd [Kminishell$ cd [?2004l
