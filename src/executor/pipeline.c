@@ -58,6 +58,7 @@ int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 
 		return (1);
 	}
+	freearray(arr);
 	exit(shell->exit_code);
 }
 
@@ -88,7 +89,7 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 		}
 		close_fd(&fd);
 		freearray(envp);
-		return ;
+		return;
 	}
 	while (command)
 	{

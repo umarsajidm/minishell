@@ -150,6 +150,6 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env)
 	else
 		perror("fork");
 	// freearray(env);
-	waitstatus(pid, shell);
+	//waitstatus(pid, shell);
 	return (0);
 }
