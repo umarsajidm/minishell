@@ -8,7 +8,6 @@ static void	clean_all(t_env *head, t_arena **arena);
 
 int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 {
-	(void)arena;
 	long	exit_code;
 	int		error;
 	long	result;
@@ -36,6 +35,7 @@ static void	clean_all(t_env *head, t_arena **arena)
 	rl_clear_history();
 	free_env(head);
 	free_arena(arena);
+	printf("freed arena\n");
 	// close fds?
 }
 
