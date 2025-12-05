@@ -13,6 +13,7 @@ int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 	int		error;
 	long	result;
 
+
 	ft_putstr_fd("exit\n", 1);
 	if (!av[1])
 		run_exit(shell);

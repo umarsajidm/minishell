@@ -4,7 +4,7 @@ void	freearray(char **arr)
 {
 	int	i;
 
-	if (!arr)
+	if (arr == NULL)
 		return ;
 	i = 0;
 	while (arr[i])

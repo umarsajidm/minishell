@@ -11,7 +11,7 @@ static void init_fd(t_fd	*fd)
 	fd->out_fd = -1;
 }
 
-static void close_fd(t_fd *fd)
+void close_fd(t_fd *fd)
 {
 	if (fd->fd[0] >= 0)
 		close(fd->fd[0]);
@@ -40,7 +40,7 @@ static void parent_loop(t_cmd *cmd, t_fd *fd)
     close(fd->fd[1]);
 }
 
-static void	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
+int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 {
 	if (cmd->redirs)
 		applying_redir(cmd->redirs, &(fd->in_fd), &(fd->out_fd));
@@ -53,7 +53,13 @@ static void	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 	if (fd->out_fd != -1)
 		dup2(fd->out_fd, STDOUT_FILENO);
 	close_fd(fd);
-	execution(cmd, shell, arr);
+	if (execution(cmd, shell, arr) == 1)
+	{
+
+		return (1);
+	}
+	freearray(arr);
+	exit(shell->exit_code);
 }
 
 void execution_pipeline(t_cmd *command, t_shell *shell)
@@ -63,20 +69,50 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 
     char **envp = envp_arr(shell);
     init_fd(&fd);
-    while (command)
-    {
-        pipe(fd.fd);
-        pid = fork();
+	if (!command->next)
+	{
+		if (is_builtin(command) && is_parent_level_builtin(command))
+		{
+			shell->exit_code = run_builtin(command, shell, &shell->arena);
+			close_fd(&fd);
+			freearray(envp);
+			return ;
+		}
+		else if (!command->next)
+		{
+			if (child_process(command, shell, &fd, envp))
+			{
+				close_fd(&fd);
+				freearray(envp);
+				return ;
+			}
+		}
+		close_fd(&fd);
+		freearray(envp);
+		return;
+	}
+	while (command)
+	{
+		pipe(fd.fd);
+		pid = fork();
 		if (pid < 0)
 			perror("fork failed in child process");
-        if (pid == 0)
-			execute_pipe(command, shell, &fd, envp);
+		if (pid == 0)
+		{
+			if (execute_pipe(command, shell, &fd, envp) == 1)
+			{
+				// freearray(envp);
+				close_fd(&fd);
+				return ;
+			}
+		}
 		parent_loop(command, &fd);
-        command = command->next;
-    }
+		command = command->next;
+	}
 	close_fd(&fd);
 	waitstatus(pid, shell);
     freearray(envp);
+	return ;
 }
 
 void waitstatus(pid_t pid,  t_shell *shell)

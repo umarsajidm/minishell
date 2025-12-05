@@ -17,22 +17,22 @@ fi
 #with classic valgrind
 
 if [ "$1" == "l" ]; then
-	valgrind --supression=readline.supp ./"$program_name"
+	valgrind --track-origins=yes --suppressions=readline.supp ./"$program_name"
 
 #with valgrind --leak-check=ful
 
 elif [ "$1" == "lf" ]; then
-	valgrind --leak-check=full --supression=readline.supp ./"$program_name"
+	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --suppressions=readline.supp ./"$program_name"
 
 #with valgrind file descriptors
 
 elif [ "$1" == "fd" ]; then
-	valgrind --track-fd=yes --supression=readline.supp ./"$program_name"
+	valgrind --track-origins=yes --track-fds=yes --suppressions=readline.supp ./"$program_name"
 
 #with valgrind memleak and file descriptors
 
 elif [ "$1" == "fdl" ]; then
-	valgrind --leak-check=full --track-fds=yes --supression=readline.supp ./"$program_name"
+	valgrind --track-origins=yes --leak-check=full --track-fds=yes --suppressions=readline.supp ./"$program_name"
 
 
 else
