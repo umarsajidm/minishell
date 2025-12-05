@@ -113,7 +113,7 @@ int		expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena);
 **        Builtins
 ** =========================== */
 int		is_builtin(t_cmd *cmd);
-int		run_builtin(t_cmd *cmds, t_shell *shell, t_arena **arena);
+int		run_builtin(t_cmd *cmds, t_shell *shell);
 long	ft_atol(const char *s, int *error);
 int		ft_env(t_env *head);
 int		ft_echo(char **av);

@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 static int	cd_av_error(char *oldpwd);
-static int	cd_error(char *oldpwd);
+static int	cd_error(char *oldpwd, t_env *head, int mode);
 static int	update_env(char *oldpwd, t_shell *shell);
 
 int	ft_cd(t_cmd *cmds, t_shell *shell)
@@ -12,15 +12,16 @@ int	ft_cd(t_cmd *cmds, t_shell *shell)
 	if (!cmds->argv[1] || ft_strncmp(cmds->argv[1], "--", 3) == 0)
 	{
 		if (!find_env_node("HOME", shell->env))
-			return (cd_error(oldpwd));
+			return (cd_error(oldpwd, shell->env, 1));
 		if (chdir((find_env_node("HOME", shell->env)->value)))
-			return (cd_error(oldpwd));
+			return (cd_error(oldpwd, shell->env, 0));
+		update_env(oldpwd, shell);
 		return (0);
 	}
 	if (cmds->argv[2])
 		return (cd_av_error(oldpwd));
 	if (chdir(cmds->argv[1]))
-		return (cd_error(oldpwd));
+		return (cd_error(oldpwd, shell->env, 0));
 	update_env(oldpwd, shell);
 	return (0);
 }
@@ -43,10 +44,16 @@ static int	update_env(char *oldpwd, t_shell *shell)
 	return (0);
 }
 
-static int	cd_error(char *oldpwd)
+static int	cd_error(char *oldpwd, t_env *head, int mode)
 {
+	t_env	*home;
+
+	home = find_env_node("HOME", head);
 	ft_putstr_fd("minishell: cd: ", 2);
-	perror("");
+	if (mode == 1 && !home)
+		ft_putstr_fd("HOME not set\n", 2);
+	else
+		perror("");
 	if (oldpwd)
 		free(oldpwd);
 	return (1);
