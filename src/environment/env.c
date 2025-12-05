@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+static void	clean_node(t_env *node);
+
 /* 
  * Create a single environment node from a "KEY=VALUE" string
  * - Returns newly allocated t_env node or NULL on failure
@@ -18,6 +20,8 @@ static t_env	*create_env_node(char *env_str)
 	node->key = ft_substr(env_str, 0, eq - env_str); // copy key
 	node->value = ft_strdup(eq + 1);              // copy value
 	node->next = NULL;                             // terminate list
+	if (!node->key || !node->key)
+		return (clean_node(node), NULL);
 	return (node);                                 // return node
 }
 
@@ -85,4 +89,12 @@ char	*get_env_value(t_env *env, const char *key)
 		env = env->next;                          // move to next node
 	}
 	return (NULL);                               // key not found
+}
+
+static void	clean_node(t_env *node)
+{
+	if (node->key)
+		free(node->key);
+	if (node->value)
+		free(node->value);
 }
