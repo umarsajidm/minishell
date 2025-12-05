@@ -58,7 +58,7 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		//test_builtin(commands, shell, arena);
 		if (commands->argv != NULL)
 		{
-			execution_pipeline(commands, shell);
+			main_pipeline(commands, shell);
 			arena_clear(arena);
 		}
 

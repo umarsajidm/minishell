@@ -1,7 +1,5 @@
-#! /usr/bin/env bash
-
-echo "PROGRAM = '$program_name'"
 make
+
 if [ $? -ne 0 ]; then  exit 1
 fi
 
