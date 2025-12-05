@@ -42,9 +42,11 @@ static int	process_sign(const char **s)
 
 	sign = 1;
 	if (**s == '+' || **s == '-')
+	{
 		if (**s == '-')
 			sign = -1;
-	(*s)++;
+		(*s)++;
+	}
 	return (sign);
 }
 

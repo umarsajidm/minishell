@@ -53,6 +53,7 @@ int	main(int argc, char **argv, char **envp)
 	// dbg_print_exit_code(shell.exit_code);
 
 	/* cleanup */
+	rl_clear_history();
 	free_env(shell.env);
 	free_arena(&shell.arena);
 
