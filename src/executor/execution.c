@@ -115,7 +115,7 @@ int	execution(t_cmd *cmd, t_shell *shell, char **env)
 	if (ft_strchr(cmd->argv[0], '/' ))
 		abs_path_execution(cmd, shell, env);
 	if (is_builtin(cmd))
-		shell->exit_code = run_builtin(cmd, shell, &shell->arena);
+		shell->exit_code = run_builtin(cmd, shell);
 	else
 	{
 		if (relative_path_execution(shell, cmd, env) == 1)
@@ -139,5 +139,6 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env)
 	}
 	else if (pid > 0)
 		waitstatus(pid, shell);
+	// freearray(env);
 	return (0);
 }

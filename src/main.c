@@ -60,7 +60,7 @@ int	main(int argc, char **argv, char **envp)
 	/* cleanup */
 	// Order doesn't matter much for main cleanup, but all must be freed
 	if (shell.fd)
-        free(shell.fd); // FIXES Loss Record 14
+        free(shell.fd);
 	rl_clear_history();
 	free_env(shell.env);
 	free_arena(&shell.arena);

@@ -53,7 +53,7 @@ int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **
 	close_fd(fd);
 	if (execution(cmd, shell, arr) == 1)
 		exit_after_execve(shell, NULL, arr);
-	freearray(arr);
+	// freearray(arr);
 	exit(shell->exit_code);
 }
 
@@ -67,9 +67,10 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 	{
 		if (is_builtin(command) && is_parent_level_builtin(command))
 		{
-			shell->exit_code = run_builtin(command, shell, &shell->arena);
+			// freearray(envp);
+			free(shell->fd);
+			shell->exit_code = run_builtin(command, shell);
 			close_fd(shell->fd);
-			freearray(envp);
 			return ;
 		}
 		else if (!command->next)
