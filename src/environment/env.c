@@ -1,9 +1,8 @@
 #include "minishell.h"
 
-static void	clean_node(t_env *node);
-
 /* 
  * Create a single environment node from a "KEY=VALUE" string
+ * - Allocates key and value with ft_substr / ft_strdup
  * - Returns newly allocated t_env node or NULL on failure
  */
 static t_env	*create_env_node(char *env_str)
@@ -14,21 +13,28 @@ static t_env	*create_env_node(char *env_str)
 	eq = ft_strchr(env_str, '=');                  // find '=' separator
 	if (!eq)
 		return (NULL);                             // invalid env string
-	node = malloc(sizeof(t_env));                  // allocate node
+	node = malloc(sizeof(t_env));                  // allocate node struct
 	if (!node)
 		return (NULL);                             // malloc failed
+	node->next = NULL;                              // initialize next early
 	node->key = ft_substr(env_str, 0, eq - env_str); // copy key
-	node->value = ft_strdup(eq + 1);              // copy value
-	node->next = NULL;                             // terminate list
-	if (!node->key || !node->key)
-		return (clean_node(node), NULL);
-	return (node);                                 // return node
+	node->value = ft_strdup(eq + 1);               // copy value
+	if (!node->key || !node->value)                // allocation failed
+	{
+		if (node->key)
+			free(node->key);                       // free key if allocated
+		if (node->value)
+			free(node->value);                     // free value if allocated
+		free(node);                                 // free node struct
+		return (NULL);
+	}
+	return (node);                                  // success
 }
 
 /* 
  * Initialize environment linked list from envp array
  * - Copies each "KEY=VALUE" string into t_env nodes
- * - Returns head of list or NULL on failure
+ * - Returns head of list or NULL on failure (frees partial list)
  */
 t_env	*init_env(char **envp)
 {
@@ -37,23 +43,25 @@ t_env	*init_env(char **envp)
 	t_env	*node;
 	int		i;
 
-	head = NULL;                                   // head of list
-	last = NULL;                                   // last node pointer
+	head = NULL;                                    // head of list
+	last = NULL;                                    // last node pointer
 	i = 0;
 	while (envp && envp[i])
 	{
-		node = create_env_node(envp[i]);          // create node
-		if (node)
+		node = create_env_node(envp[i]);           // create node
+		if (!node)
 		{
-			if (!head)
-				head = node;                      // first node becomes head
-			else
-				last->next = node;                // append to end
-			last = node;                          // update last
+			free_env(head);                        // free partial list on failure
+			return (NULL);
 		}
+		if (!head)
+			head = node;                           // first node becomes head
+		else
+			last->next = node;                     // append to end
+		last = node;                               // update last
 		i++;
 	}
-	return (head);                                // return head of list
+	return (head);                                  // return head of list
 }
 
 /* 
@@ -66,35 +74,12 @@ void	free_env(t_env *env)
 
 	while (env)
 	{
-		tmp = env->next;                          // store next node
+		tmp = env->next;                            // store next node
 		if (env->key)
-			free(env->key);                       // free key string
+			free(env->key);                         // free key string
 		if (env->value)
-			free(env->value);                     // free value string
-		free(env);                                // free node
-		env = tmp;                                // move to next node
+			free(env->value);                       // free value string
+		free(env);                                  // free node struct
+		env = tmp;                                  // move to next node
 	}
-}
-
-/* 
- * Get value of an environment variable
- * - Returns pointer to value or NULL if not found
- */
-char	*get_env_value(t_env *env, const char *key)
-{
-	while (env)
-	{
-		if (ft_strcmp(env->key, key) == 0)       // key matches
-			return (env->value);                 // return value
-		env = env->next;                          // move to next node
-	}
-	return (NULL);                               // key not found
-}
-
-static void	clean_node(t_env *node)
-{
-	if (node->key)
-		free(node->key);
-	if (node->value)
-		free(node->value);
 }

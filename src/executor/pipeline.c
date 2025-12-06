@@ -84,7 +84,7 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 			if (child_process(command, shell, shell->fd, envp) == 1)
 				set_the_code_and_exit(shell, GENERAL_ERROR, NULL, envp);
 		}
-		printf("\ni am here in main pipeline\n");
+		// printf("\ni am here in main pipeline\n");
 		close_fd(shell->fd);
 		freearray(envp);
 		// exit(shell->exit_code);

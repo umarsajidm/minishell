@@ -18,6 +18,21 @@ char	*arena_strdup(t_arena **arena, const char *s)
 	return (dst);
 }
 
+/* 
+ * Duplicate first n chars into arena memory
+ * - Needed for substr operations (arena_strdup copies full string only)
+ */
+char	*arena_strndup(t_arena **arena, const char *s, size_t n)
+{
+	char	*dst;
+
+	dst = arena_alloc(arena, n + 1);                 // allocate in arena
+	if (!dst)
+		return (NULL);
+	ft_memcpy(dst, s, n);                            // copy substring
+	dst[n] = '\0';                                   // null-terminate
+	return (dst);
+}
 
 /* Free all arenas in the list
  * - Releases every buffer and arena struct

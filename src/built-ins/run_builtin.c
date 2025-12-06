@@ -21,6 +21,6 @@ int	run_builtin(t_cmd *cmds, t_shell *shell)
 	else if (ft_strcmp(command, "env") == 0)
 		ret = ft_env(shell->env);
 	else if (ft_strcmp(command, "exit") == 0)
-		ret = ft_exit(cmds->argv, shell);
+		ret = ft_exit(cmds->argv, shell, &shell->arena);
 	return (ret);
 }
