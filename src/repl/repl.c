@@ -38,8 +38,10 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
     }
     // dbg_print_expanded_argv(commands);
 
-    if (commands->argv != NULL)
-        main_pipeline(commands, shell);
+	test_builtin(commands, shell);
+
+    // if (commands->argv != NULL)
+    //     main_pipeline(commands, shell);
 }
 
 /*
