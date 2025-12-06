@@ -7,6 +7,15 @@
 # include <stddef.h>  /* size_t */
 # include <stdbool.h> /* bool */
 
+//execution's fd
+typedef struct s_fd
+{
+    int fd[2];
+    int prev_fd;
+    int in_fd;
+    int out_fd;
+}   t_fd;
+
 /* ===========================
 **        Arena Memory Types
 ** =========================== */
@@ -41,6 +50,7 @@ typedef struct s_shell
 	t_arena	*arena;	 	 /* arena memory */
 	int		exit_code;   /* last exit code */
 	bool	running;     /* shell running flag */
+	t_fd	*fd;
 }	t_shell;
 
 /* ===========================
@@ -105,13 +115,6 @@ typedef struct s_exp
 	struct s_exp	*next;   /* next node */
 }	t_exp;
 
-typedef struct s_fd
-{
-    int fd[2];
-    int prev_fd;
-    int in_fd;
-    int out_fd;
-}   t_fd;
 
 /* ===========================
 **        Global Variables

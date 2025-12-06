@@ -25,6 +25,8 @@
 
 # include "libft.h"
 # include "minishell_types.h"
+# include "execution.h"
+//
 
 /* ===========================
 **        Arena core functions
@@ -127,7 +129,7 @@ long	ft_atol(const char *s, int *error);
 int		ft_env(t_env *head);
 int		ft_echo(char **av);
 int		ft_pwd(void);
-int		ft_exit(char **av, t_shell *shell);
+int		ft_exit(char **av, t_shell *shell, t_arena **arena);
 int		ft_unset(t_cmd *cmd, t_shell *shell);
 int		ft_export(t_cmd *cmds, t_shell *shell);
 int		ft_cd(t_cmd *cmds, t_shell *shell);
@@ -172,31 +174,38 @@ void	dbg_print_expanded_argv(t_cmd *cmd);
 #define FORK_FAILED 4
 
 //pipeline_exit_utilities
-void set_the_code_and_exit(int type, char *str, char **array);
-void exit_after_execve(char *str, char **array);
+void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array);
+void exit_after_execve(t_shell *shell, char *str, char **array);
 
 //execution.c
-int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env);
+// UPDATED: Now includes path_to_exec
+int child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env);
 
 //envp.c
 char **envp_arr(t_shell *shell);
 
 //utils
-void	strerrornexit(void);
-void	freearray(char **arr);
-void	freestrnarrexit(char **arr, char *str, int i);
-void	freeerror(char **arr);
-void	freeall(char **arr, char *str, char *cmd);
-void	commandnotfound(char **arr);
+void    strerrornexit(void);
+void    freearray(char **arr);
+void    freestrnarrexit(char **arr, char *str, int i);
+void    freeerror(char **arr);
+void    freeall(char **arr, char *str, char *cmd);
+void    commandnotfound(char **arr);
 
 //shell.c
 int init_shell(t_shell *shell, char **envp, t_arena **arena);
 
 //pipeline.c
-void execution_pipeline(t_cmd *command, t_shell *shell);
+void main_pipeline(t_cmd *command, t_shell *shell);
 void close_fd(t_fd *fd);
-int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr);
-// void pipeline(t_cmd	*command, t_shell *shell);
+// UPDATED: Now includes path_to_exec
+// int fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr, char *path_to_exec);
+int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr);
+void cleanup_pipeline(t_shell *shell, char **envp, pid_t last_pid);
+// void pipeline(t_cmd *command, t_shell *shell);
+
+// UPDATED: Now includes path_to_exec
+// int execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec);
 int	execution(t_cmd *cmd, t_shell *shell, char **env);
 
 //pipeline_utils.c
@@ -205,9 +214,8 @@ void waitstatus(pid_t pid,  t_shell *shell);
 
 
 //builtin
-int	is_parent_level_builtin(t_cmd *cmd);
+int is_parent_level_builtin(t_cmd *cmd);
 
-//cleanup
-void general_cleanup(t_shell *shell, t_arena **arena);
+
 
 #endif /* MINISHELL_H */

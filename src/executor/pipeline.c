@@ -40,10 +40,8 @@ static void parent_loop(t_cmd *cmd, t_fd *fd)
     close(fd->fd[1]);
 }
 
-int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
+int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 {
-	if (cmd->redirs)
-		applying_redir(cmd->redirs, &(fd->in_fd), &(fd->out_fd));
 	if (fd->prev_fd != -1)
 		dup2(fd->prev_fd, STDIN_FILENO);
 	if (fd->in_fd != -1)
@@ -54,64 +52,70 @@ int	execute_pipe(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
 		dup2(fd->out_fd, STDOUT_FILENO);
 	close_fd(fd);
 	if (execution(cmd, shell, arr) == 1)
-	{
-
-		return (1);
-	}
-	freearray(arr);
+		exit_after_execve(shell, NULL, arr);
+	// freearray(arr);
 	exit(shell->exit_code);
 }
 
-void execution_pipeline(t_cmd *command, t_shell *shell)
+void main_pipeline(t_cmd *command, t_shell *shell)
 {
-    pid_t pid;
-    t_fd fd;
+    pid_t pid = -1;
+
 
     char **envp = envp_arr(shell);
-    init_fd(&fd);
+    init_fd(shell->fd);
 	if (!command->next)
 	{
 		if (is_builtin(command) && is_parent_level_builtin(command))
 		{
-			shell->exit_code = run_builtin(command, shell);
-			close_fd(&fd);
+			// execution_cleanup(shell, envp);
+			if (shell->fd != NULL)
+				free(shell->fd);
 			freearray(envp);
+			shell->exit_code = run_builtin(command, shell);
+			close_fd(shell->fd);
 			return ;
 		}
 		else if (!command->next)
 		{
-			if (child_process(command, shell, &fd, envp))
-			{
-				close_fd(&fd);
-				freearray(envp);
-				return ;
-			}
+			// execution_cleanup(shell, envp);
+			if (command->redirs)
+				applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
+			if (child_process(command, shell, shell->fd, envp) == 1)
+				set_the_code_and_exit(shell, GENERAL_ERROR, NULL, envp);
 		}
-		close_fd(&fd);
+		printf("\ni am here in main pipeline\n");
+		close_fd(shell->fd);
 		freearray(envp);
+		// exit(shell->exit_code);
 		return;
 	}
 	while (command)
 	{
-		pipe(fd.fd);
+		if (command->redirs)
+			applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
+		pipe(shell->fd->fd);
 		pid = fork();
 		if (pid < 0)
 			perror("fork failed in child process");
 		if (pid == 0)
 		{
-			if (execute_pipe(command, shell, &fd, envp) == 1)
+			if (fds_manipulation_and_execution(command, shell, shell->fd, envp) == 1)
 			{
-				// freearray(envp);
-				close_fd(&fd);
+				freearray(envp);
+				close_fd(shell->fd);
 				return ;
 			}
 		}
-		parent_loop(command, &fd);
+		parent_loop(command, shell->fd);
 		command = command->next;
 	}
-	close_fd(&fd);
-	waitstatus(pid, shell);
-    freearray(envp);
+	if (shell->fd != NULL)
+		close_fd(shell->fd);
+	if (pid > 0)
+		waitstatus(pid, shell);
+    if (envp != NULL)
+		freearray(envp);
 	return ;
 }
 
@@ -120,6 +124,7 @@ void waitstatus(pid_t pid,  t_shell *shell)
 	int	status;
 
 	waitpid(pid, &status, 0);
-	if WIFEXITED(status)
-		shell->exit_code = WEXITSTATUS(status);
+	if (WIFEXITED(status))
+    	shell->exit_code = WEXITSTATUS(status);
+
 }

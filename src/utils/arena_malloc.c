@@ -64,6 +64,33 @@ void	*arena_alloc(t_arena **arena, size_t size)
 	return (ptr);
 }
 
+// void	*arena_alloc(t_arena **arena, size_t size)
+// {
+// 	t_arena	*head;
+// 	t_arena	*current;
+// 	void	*ptr;
+
+// 	if (!arena || !*arena || size == 0)
+// 		return (NULL);
+// 	head = *arena;
+// 	current = head;
+// 	/* find last arena block */
+// 	while (current->next)
+// 		current = current->next;
+// 	/* if not enough space in last block, grow by appending a new block */
+// 	if (size > (current->buffer - current->offset))
+// 	{
+// 		current = new_bigger_arena(current, size);
+// 		if (!current)
+// 			return (NULL);
+// 		/* DON'T update *arena — keep head unchanged */
+// 	}
+// 	ptr = (char *)current->memory_block + current->offset;
+// 	current->offset += size;
+// 	return (ptr);
+// }
+
+
 /* Re-allocate an arena-allocated block to a larger size
  * - Copies old_size bytes from old_ptr into newly allocated arena memory
  */

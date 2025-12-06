@@ -6,7 +6,7 @@ static int	get_ac(char **av);
 static int	num_error(char *str);
 static void	clean_all(t_env *head, t_arena **arena);
 
-int	ft_exit(char **av, t_shell *shell)
+int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 {
 	long	exit_code;
 	int		error;
@@ -26,7 +26,7 @@ int	ft_exit(char **av, t_shell *shell)
 		exit_code = num_error(av[1]);
 	else
 		exit_code = result;
-	clean_all(shell->env);
+	clean_all(shell->env, arena);
 	exit(exit_code & 0xFF);
 }
 
