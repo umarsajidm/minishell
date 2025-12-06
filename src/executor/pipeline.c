@@ -67,20 +67,16 @@ void main_pipeline(t_cmd *command, t_shell *shell)
     init_fd(shell->fd);
 	if (!command->next)
 	{
-		if (is_builtin(command) && is_parent_level_builtin(command))
 		{
-			// execution_cleanup(shell, envp);
-			shell->exit_code = run_builtin(command, shell);
-			close_fd(shell->fd);
-			return ;
-		}
-		else if (!command->next)
-		{
-			// execution_cleanup(shell, envp);
 			if (is_builtin(command))
 			{
 				if (command->redirs)
 					applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
+				if (shell->fd->in_fd != -1)
+					dup2(shell->fd->in_fd, STDIN_FILENO);
+				if (shell->fd->out_fd != -1)
+					dup2(shell->fd->out_fd, STDOUT_FILENO);
+				close_fd(shell->fd);
 				shell->exit_code = run_builtin(command, shell);
 				return;
 			}
@@ -92,8 +88,8 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 				return;
 				// set_the_code_and_exit(shell, COMMAND_NOT_FOUND, path_to_exec, envp);
 			}
-			if (command->redirs)
-				applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
+			// if (command->redirs)
+			// 	applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
 			if (child_process(command, shell, shell->fd, envp, path_to_exec) == 1)
 				set_the_code_and_exit(shell, GENERAL_ERROR, NULL, envp);
 			
