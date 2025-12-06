@@ -25,7 +25,6 @@
 # include "libft.h"
 # include "minishell_types.h"
 # include "execution.h"
-# include "errors.h"
 //
 
 /* ===========================

@@ -37,12 +37,14 @@ int init_shell(t_shell *shell, char **envp, t_arena **arena);
 void main_pipeline(t_cmd *command, t_shell *shell);
 void close_fd(t_fd *fd);
 // UPDATED: Now includes path_to_exec
-int fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr, char *path_to_exec);
+// int fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr, char *path_to_exec);
+int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr);
 void cleanup_pipeline(t_shell *shell, char **envp, pid_t last_pid);
 // void pipeline(t_cmd *command, t_shell *shell);
 
 // UPDATED: Now includes path_to_exec
-int execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec);
+// int execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec);
+int	execution(t_cmd *cmd, t_shell *shell, char **env);
 
 //pipeline_utils.c
 void applying_redir(t_redir *r, int *in_fd, int *out_fd);

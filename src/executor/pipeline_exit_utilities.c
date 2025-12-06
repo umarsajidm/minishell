@@ -2,9 +2,19 @@
 
 void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 {
+    // 1. Clean up temporary memory allocated in the path search or execve
 	if (str != NULL)
 		free(str);
 	freearray(array);
+
+    // 2. Close file descriptors inherited/opened in the child
+	if (shell->fd != NULL)
+		close_fd(shell->fd);
+
+    // CRITICAL FIX: Removed calls to free(shell->fd), arena_clear, and free_env.
+    // These must ONLY happen in main.c.
+
+    // 3. Print error message
 	if (type == PERMISSION_DENIED)
 		perror("permission denied");
 	else if (type == COMMAND_NOT_FOUND)
@@ -15,14 +25,11 @@ void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 		perror("copying env for child process failed");
 	else if (type == FORK_FAILED)
 		perror("forking failed");
-	if (shell->fd != NULL)
-		close_fd(shell->fd);
-	arena_clear(&shell->arena);
-	if (shell->fd)
-		free(shell->fd);
-	printf("\ni am here in set code and exit\n");
+
 	exit(type);
 }
+
+// ... exit_after_execve and cleanup_pipeline remain the same ...
 
 void exit_after_execve(t_shell *shell, char *str, char **array)
 {
