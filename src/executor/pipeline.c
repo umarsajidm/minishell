@@ -79,6 +79,8 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 			// execution_cleanup(shell, envp);
 			if (is_builtin(command))
 			{
+				if (command->redirs)
+					applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
 				shell->exit_code = run_builtin(command, shell);
 				return;
 			}
