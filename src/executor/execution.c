@@ -113,15 +113,6 @@ static int relative_path_execution(t_shell *shell, t_cmd *cmd, char **env, char*
 
 int	execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec)
 {
-	if (is_builtin(cmd))
-	{
-		freearray(env);
-		arena_clear(&shell->arena);
-		free_env(shell->env);
-		if (shell->fd != NULL)
-		free(shell->fd);
-		shell->exit_code = run_builtin(cmd, shell);
-	}
 	if (ft_strchr(cmd->argv[0], '/' ))
 		abs_path_execution(cmd, shell, env);
 	else
@@ -129,6 +120,9 @@ int	execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec)
 		if (relative_path_execution(shell, cmd, env, path_to_exec) == 1)
 			return 1;
 	}
+	
+	freearray(env);
+	free(path_to_exec);
 	return (0);
 }
 
@@ -148,6 +142,7 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env, char *path_t
 	// printf("\ni am here as well in the child process\n");
 	if (pid > 0)
 		waitstatus(pid, shell);
-	// freearray(env);
+	freearray(env);
+	free(path_to_exec);
 	return (0);
 }

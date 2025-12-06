@@ -54,6 +54,9 @@ int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **
 	close_fd(fd);
 	if (execution(cmd, shell, arr, path_to_exec) == 1)
 		exit_after_execve(shell, NULL, arr);
+	// free(path_to_exec);
+	// if (arr != NULL)
+	// 	freearray(arr);
 	exit(shell->exit_code);
 }
 
@@ -67,8 +70,6 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 		if (is_builtin(command) && is_parent_level_builtin(command))
 		{
 			// execution_cleanup(shell, envp);
-			if (shell->fd != NULL)
-				free(shell->fd);
 			shell->exit_code = run_builtin(command, shell);
 			close_fd(shell->fd);
 			return ;
@@ -76,6 +77,11 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 		else if (!command->next)
 		{
 			// execution_cleanup(shell, envp);
+			if (is_builtin(command))
+			{
+				shell->exit_code = run_builtin(command, shell);
+				return;
+			}
 			char **envp = envp_arr(shell);
 			char *path_to_exec = pathtoexecute(shell, command->argv, envp);
 			if (!path_to_exec)
@@ -88,6 +94,7 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 				applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
 			if (child_process(command, shell, shell->fd, envp, path_to_exec) == 1)
 				set_the_code_and_exit(shell, GENERAL_ERROR, NULL, envp);
+			
 		}
 		// printf("\ni am here in main pipeline\n");
 		close_fd(shell->fd);
@@ -114,6 +121,7 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 			if (fds_manipulation_and_execution(command, shell, shell->fd, envp, path_to_exec) == 1)
 			{
 				freearray(envp);
+				free(path_to_exec);
 				close_fd(shell->fd);
 				return ;
 			}
@@ -125,8 +133,6 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 		close_fd(shell->fd);
 	if (pid > 0)
 		waitstatus(pid, shell);
-    // if (envp != NULL)
-	// 	freearray(envp);
 	return ;
 }
 
