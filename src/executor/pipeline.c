@@ -1,4 +1,4 @@
-#include "execution.h"
+#include "minishell.h"
 
 void waitstatus(pid_t pid,  t_shell *shell);
 
@@ -73,7 +73,7 @@ void execution_pipeline(t_cmd *command, t_shell *shell)
 	{
 		if (is_builtin(command) && is_parent_level_builtin(command))
 		{
-			shell->exit_code = run_builtin(command, shell, &shell->arena);
+			shell->exit_code = run_builtin(command, shell);
 			close_fd(&fd);
 			freearray(envp);
 			return ;

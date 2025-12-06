@@ -1,4 +1,4 @@
-#include "execution.h"
+#include "minishell.h"
 
 static  char    **get_path(char **envp_arr)
 {
@@ -122,7 +122,7 @@ int	execution(t_cmd *cmd, t_shell *shell, char **env)
 	if (ft_strchr(cmd->argv[0], '/' ))
 		abs_path_execution(cmd, env);
 	if (is_builtin(cmd))
-		shell->exit_code = run_builtin(cmd, shell, &shell->arena);
+		shell->exit_code = run_builtin(cmd, shell);
 	else
 	{
 		if (relative_path_execution(cmd, env) == 1)
