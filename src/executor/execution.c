@@ -42,7 +42,7 @@ static	char	*join_and_check(t_shell *shell, char *dir, char *pathcmd, char **pat
 	return (NULL);
 }
 
-static	char	*pathtoexecute(t_shell *shell, char **cmd, char **env)
+char	*pathtoexecute(t_shell *shell, char **cmd, char **env)
 {
 	int		i;
 	char	**paths;
@@ -66,9 +66,11 @@ static	char	*pathtoexecute(t_shell *shell, char **cmd, char **env)
 		i++;
 	}
 
-	set_the_code_and_exit(shell, COMMAND_NOT_FOUND, pathcmd, paths);
+	// set_the_code_and_exit(shell, COMMAND_NOT_FOUND, pathcmd, paths);
 	// freeall(paths, pathcmd, cmd[0]);
-
+	freearray(paths);
+	free(pathcmd);
+	free(path);
 	return (NULL);
 }
 
@@ -93,51 +95,46 @@ static void abs_path_execution(t_cmd *cmd, t_shell *shell, char **env)
     }
 }
 
-static int relative_path_execution(t_shell *shell, t_cmd *cmd, char **env)
+static int relative_path_execution(t_shell *shell, t_cmd *cmd, char **env, char* path_to_exec)
 {
-    char *path;
 
     if (!env)
     	set_the_code_and_exit(shell, ENVIRONMENT_COPY_FAILED, NULL, env);
     if (!cmd->argv)
         set_the_code_and_exit(shell, GENERAL_ERROR, NULL, env);
-    path = pathtoexecute(shell, cmd->argv, env);
-    if (path == NULL)  //ponder our hpe to deal with iin case of execve fails
-        set_the_code_and_exit(shell, COMMAND_NOT_FOUND, NULL, env);
-    checking(path);
-    if (execve(path, cmd->argv, env) == -1)
-		exit_after_execve(shell, path, env);
+        // set_the_code_and_exit(shell, COMMAND_NOT_FOUND, NULL, env);
+    checking(path_to_exec);
+    if (execve(path_to_exec, cmd->argv, env) == -1)
+		exit_after_execve(shell, path_to_exec, env);
 	// freearray(cmd);
 	return (1);
 }
 
 
-int	execution(t_cmd *cmd, t_shell *shell, char **env)
+int	execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec)
 {
+	if (is_builtin(cmd))
+	{
+		freearray(env);
+		arena_clear(&shell->arena);
+		free_env(shell->env);
+		if (shell->fd != NULL)
+		free(shell->fd);
+		shell->exit_code = run_builtin(cmd, shell);
+	}
 	if (ft_strchr(cmd->argv[0], '/' ))
 		abs_path_execution(cmd, shell, env);
-	if (is_builtin(cmd))
-		{
-			freearray(env);
-			arena_clear(&shell->arena);
-			free_env(shell->env);
-			if (shell->fd != NULL)
-				free(shell->fd);
-			shell->exit_code = run_builtin(cmd, shell);
-		}
 	else
 	{
-		if (relative_path_execution(shell, cmd, env) == 1)
+		if (relative_path_execution(shell, cmd, env, path_to_exec) == 1)
 			return 1;
 	}
 	return (0);
 }
 
-int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env)
+int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env, char *path_to_exec)
 {
 	pid_t	pid;
-
-
 
 	pid = fork();
 	if (pid < 0)
@@ -145,7 +142,7 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env)
 	if (pid == 0)
 	{
 
-		if (fds_manipulation_and_execution(cmd, shell, fd, env) == 1)
+		if (fds_manipulation_and_execution(cmd, shell, fd, env, path_to_exec) == 1)
 			set_the_code_and_exit(shell, GENERAL_ERROR, NULL, env);
 	}
 	// printf("\ni am here as well in the child process\n");

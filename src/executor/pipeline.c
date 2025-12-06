@@ -40,8 +40,9 @@ static void parent_loop(t_cmd *cmd, t_fd *fd)
     close(fd->fd[1]);
 }
 
-int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
+int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr, char *path_to_exec)
 {
+	//if there is pipe, if not then go to the execution
 	if (fd->prev_fd != -1)
 		dup2(fd->prev_fd, STDIN_FILENO);
 	if (fd->in_fd != -1)
@@ -51,9 +52,8 @@ int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **
 	if (fd->out_fd != -1)
 		dup2(fd->out_fd, STDOUT_FILENO);
 	close_fd(fd);
-	if (execution(cmd, shell, arr) == 1)
+	if (execution(cmd, shell, arr, path_to_exec) == 1)
 		exit_after_execve(shell, NULL, arr);
-	// freearray(arr);
 	exit(shell->exit_code);
 }
 
@@ -61,8 +61,6 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 {
     pid_t pid = -1;
 
-
-    char **envp = envp_arr(shell);
     init_fd(shell->fd);
 	if (!command->next)
 	{
@@ -71,7 +69,6 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 			// execution_cleanup(shell, envp);
 			if (shell->fd != NULL)
 				free(shell->fd);
-			freearray(envp);
 			shell->exit_code = run_builtin(command, shell);
 			close_fd(shell->fd);
 			return ;
@@ -79,19 +76,33 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 		else if (!command->next)
 		{
 			// execution_cleanup(shell, envp);
+			char **envp = envp_arr(shell);
+			char *path_to_exec = pathtoexecute(shell, command->argv, envp);
+			if (!path_to_exec)
+			{
+				set_the_exit_code(shell, command->argv[0], envp);
+				return;
+				// set_the_code_and_exit(shell, COMMAND_NOT_FOUND, path_to_exec, envp);
+			}
 			if (command->redirs)
 				applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
-			if (child_process(command, shell, shell->fd, envp) == 1)
+			if (child_process(command, shell, shell->fd, envp, path_to_exec) == 1)
 				set_the_code_and_exit(shell, GENERAL_ERROR, NULL, envp);
 		}
 		// printf("\ni am here in main pipeline\n");
 		close_fd(shell->fd);
-		freearray(envp);
+		// freearray(envp);
 		// exit(shell->exit_code);
 		return;
 	}
 	while (command)
 	{
+		char **envp = envp_arr(shell);
+		char *path_to_exec = pathtoexecute(shell, command->argv, envp);
+		if (!path_to_exec)
+			{
+				set_the_code_and_exit(shell, COMMAND_NOT_FOUND, path_to_exec, envp);
+			}
 		if (command->redirs)
 			applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
 		pipe(shell->fd->fd);
@@ -100,7 +111,7 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 			perror("fork failed in child process");
 		if (pid == 0)
 		{
-			if (fds_manipulation_and_execution(command, shell, shell->fd, envp) == 1)
+			if (fds_manipulation_and_execution(command, shell, shell->fd, envp, path_to_exec) == 1)
 			{
 				freearray(envp);
 				close_fd(shell->fd);
@@ -114,8 +125,8 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 		close_fd(shell->fd);
 	if (pid > 0)
 		waitstatus(pid, shell);
-    if (envp != NULL)
-		freearray(envp);
+    // if (envp != NULL)
+	// 	freearray(envp);
 	return ;
 }
 

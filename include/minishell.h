@@ -176,7 +176,8 @@ void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array);
 void exit_after_execve(t_shell *shell, char *str, char **array);
 
 //execution.c
-int child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env);
+char	*pathtoexecute(t_shell *shell, char **cmd, char **env);
+int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env, char *path_to_exec);
 
 //envp.c
 char **envp_arr(t_shell *shell);
@@ -195,12 +196,13 @@ int init_shell(t_shell *shell, char **envp, t_arena **arena);
 //pipeline.c
 void main_pipeline(t_cmd *command, t_shell *shell);
 void close_fd(t_fd *fd);
-int fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr);
+int fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr, char *path_to_exec);
 void cleanup_pipeline(t_shell *shell, char **envp, pid_t last_pid);
 
-int execution(t_cmd *cmd, t_shell *shell, char **env);
+int execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec);
 
 //pipeline_utils.c
+void set_the_exit_code(t_shell *shell, char *command, char **envp);
 void applying_redir(t_redir *r, int *in_fd, int *out_fd);
 void waitstatus(pid_t pid,  t_shell *shell);
 

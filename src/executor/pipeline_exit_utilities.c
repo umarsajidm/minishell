@@ -2,10 +2,10 @@
 
 void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 {
-    // 1. Clean up temporary memory allocated in the path search or execve
+	// 1. Clean up temporary memory allocated in the path search or execve
+	freearray(array);
 	if (str != NULL)
 		free(str);
-	freearray(array);
 
     // 2. Close file descriptors inherited/opened in the child
 	if (shell->fd != NULL)
@@ -27,6 +27,20 @@ void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 		perror("forking failed");
 
 	exit(type);
+}
+
+void set_the_exit_code(t_shell *shell, char *command, char **envp)
+{
+	if (envp != NULL)
+		freearray(envp);
+
+	// if (shell->fd != NULL)
+	// 	free(shell->fd);
+	
+	// close_fd(shell->fd);
+	ft_putstr_fd(command, 2);
+	ft_putstr_fd(": command not found\n", 2);
+	shell->exit_code = 127;
 }
 
 // ... exit_after_execve and cleanup_pipeline remain the same ...
