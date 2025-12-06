@@ -48,6 +48,8 @@ void	repl_loop(t_shell *shell, t_arena **arena)
 		if (res == 0)                            // allocation failure during expansion
 		{
 			ft_printf("minishell: parse error: alloc fail\n"); // formatted error
+			if (shell->fd != NULL)
+				free(shell->fd);
 			arena_clear(arena);
 			continue;
 		}

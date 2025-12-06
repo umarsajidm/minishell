@@ -2,6 +2,9 @@
 
 void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 {
+	if (str != NULL)
+		free(str);
+	freearray(array);
 	if (type == PERMISSION_DENIED)
 		perror("permission denied");
 	else if (type == COMMAND_NOT_FOUND)
@@ -12,11 +15,12 @@ void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 		perror("copying env for child process failed");
 	else if (type == FORK_FAILED)
 		perror("forking failed");
-	if (shell->fd != NULL)	
+	if (shell->fd != NULL)
 		close_fd(shell->fd);
-	freearray(array);
-	if (str != NULL)
-		free(str);
+	arena_clear(&shell->arena);
+	if (shell->fd)
+		free(shell->fd);
+	printf("\ni am here in set code and exit\n");
 	exit(type);
 }
 
@@ -35,11 +39,11 @@ void cleanup_pipeline(t_shell *shell, char **envp, pid_t last_pid)
     // 1. Close any remaining file descriptors in the parent shell
     if (shell->fd != NULL)
         close_fd(shell->fd);
-    
+
     // 2. Wait for the last process to finish and set the exit code
     if (last_pid > 0)
         waitstatus(last_pid, shell);
-    
+
     // 3. Free the environment copy allocated at the start of the function (FIXES LEAK)
     if (envp != NULL)
         freearray(envp);

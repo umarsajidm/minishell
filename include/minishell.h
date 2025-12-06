@@ -150,6 +150,6 @@ void	dbg_print_exit_code(int exit_code);
 void	dbg_print_expanded_argv(t_cmd *cmd);
 
 //cleanup
-void general_cleanup(t_shell *shell, t_arena **arena);
+void general_cleanup(t_shell *shell);
 
 #endif /* MINISHELL_H */
