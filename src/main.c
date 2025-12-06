@@ -1,11 +1,5 @@
 #include "minishell.h"
 
-/*
- * Entry point of minishell
- * - Initializes shell state, arena, and environment
- * - Sets up signal handlers
- * - Starts the REPL loop
- */
 static int	init_shell_and_arena(t_shell *shell, t_arena **arena,
 	char **envp)
 {
@@ -13,6 +7,8 @@ static int	init_shell_and_arena(t_shell *shell, t_arena **arena,
 	shell->env = NULL;
 	shell->exit_code = 0;
 	shell->running = true;
+	shell->fd = NULL;
+	
 	/* initialize arena */
 	*arena = init_arena(1024);
 	if (!*arena)
@@ -28,6 +24,15 @@ static int	init_shell_and_arena(t_shell *shell, t_arena **arena,
 		free_arena(arena);
 		return (1);
 	}
+	shell->fd = malloc(sizeof(t_fd));
+	if (!shell->fd)
+	{
+		// FIX: Must free ALL previously allocated memory on failure path
+		ft_putstr_fd("initialization of fd structure failed", 2);
+		free_arena(arena);
+		free_env(shell->env); 
+		return (1);
+	}
 	return (0);
 }
 
@@ -38,6 +43,9 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
+    
+    // Safety initialization for shell.fd, in case init_shell_and_arena fails early
+    shell.fd = NULL;
 
 	err = init_shell_and_arena(&shell, &shell.arena, envp);
 	if (err)
@@ -49,10 +57,10 @@ int	main(int argc, char **argv, char **envp)
 	/* start REPL loop */
 	repl_loop(&shell, &shell.arena);
 
-	/* debug: print final exit code */
-	// dbg_print_exit_code(shell.exit_code);
-
 	/* cleanup */
+	// Order doesn't matter much for main cleanup, but all must be freed
+	if (shell.fd)
+        free(shell.fd);
 	rl_clear_history();
 	free_env(shell.env);
 	free_arena(&shell.arena);
