@@ -1,74 +1,97 @@
 #include "minishell.h"
 
 /*
- * Main REPL loop
- * - Reads input from user
- * - Tokenizes input using arena
- * - Expands variables in commands
- * - Parses commands using arena
- * - Executes commands (currently disabled)
- * - Loops until shell->running == false
+ * Shared Helper: Processes a single line of input.
+ * - Used by BOTH interactive and non-interactive modes.
+ * - Handles tokenizing, parsing, expansion, and execution.
  */
-void	repl_loop(t_shell *shell, t_arena **arena)
+static void process_line(t_shell *shell, t_arena **arena, char *input)
 {
-	char	*input;     // input line (arena memory)
-	t_list	*tokens;    // token list (arena nodes)
-	t_cmd	*commands;  // parsed commands (arena nodes)
-	int		res;        // expansion result
+    t_list  *tokens;
+    t_cmd   *commands;
+    int     res;
 
-	while (shell->running)
-	{
-		input = read_input(arena);               // read user input into arena
-		if (!input)
-			break;                               // Ctrl-D exits
+    /* if the line is empty or only whitespace, skip processing */
+    if (is_blank_line(input))
+        return ;
 
-		/* if the line is empty or only whitespace, skip processing */
-		if (is_blank_line(input))
-		{
-			arena_clear(arena);
-			continue;
-		}
+    tokens = tokenize(input, arena);         // tokenize input using arena
+    // dbg_print_tokens(tokens);              // debug tokens
 
-		tokens = tokenize(input, arena);         // tokenize input using arena
-		// dbg_print_tokens(tokens);                // debug tokens
+    /* parse tokens into commands */
+    commands = parse_tokens(tokens, shell, arena);
+    if (!commands && tokens)                 // parse failed (syntax or alloc)
+    {
+        // (void)tokens;                      // parsing error already printed
+        return ;
+    }
+    // dbg_print_cmds(commands);              // show parsed commands
 
-		/* parse tokens into commands */
-		commands = parse_tokens(tokens, shell, arena);
-		if (!commands && tokens)                 // parse failed (syntax or alloc)
-		{
-			(void)tokens;                        // parsing error already printed
-			arena_clear(arena);
-			continue;
-		}
+    /* variable expansion */
+    res = expand_command_argv(commands, shell, arena);
+    if (res == 0)                            // allocation failure during expansion
+    {
+        ft_printf("minishell: parse error: alloc fail\n"); // formatted error
+        if (shell->fd != NULL)
+            free(shell->fd);
+        return ;
+    }
+    // dbg_print_expanded_argv(commands);
 
-		// dbg_print_cmds(commands);                // show parsed commands
+    if (commands->argv != NULL)
+        main_pipeline(commands, shell);
+}
 
-		/* variable expansion */
-		res = expand_command_argv(commands, shell, arena);
-		if (res == 0)                            // allocation failure during expansion
-		{
-			ft_printf("minishell: parse error: alloc fail\n"); // formatted error
-			if (shell->fd != NULL)
-				free(shell->fd);
-			arena_clear(arena);
-			continue;
-		}
+/*
+ * Interactive REPL loop
+ * - Uses readline for history and editing
+ * - Handles interactive signals
+ */
+void    repl_loop(t_shell *shell, t_arena **arena)
+{
+    char    *input;
 
-		/* debug expanded argv (42 Norminette safe) */
-		// dbg_print_expanded_argv(commands);
+    while (shell->running)
+    {
+        input = read_input(arena);           // read user input into arena
+        if (!input)
+        {
+            ft_printf("exit\n");
+            break ;
+        }
+        process_line(shell, arena, input);
+        arena_clear(arena);                  // wipe memory for next line
+    }
+}
 
-		// test_builtin(commands, shell, &shell->arena);
-		// arena_clear(arena);
-		if (commands->argv != NULL)
-		{
-			main_pipeline(commands, shell);
-			arena_clear(arena);
-		}
+/*
+ * Non-Interactive Loop (Pipes)
+ * - Uses get_next_line (no prompt, no history)
+ * - Handles input from pipes (echo "ls" | ./minishell)
+ */
+void    non_interactive_loop(t_shell *shell, t_arena **arena)
+{
+    char    *line;
+    char    *input;
 
-		// dbg_print_exit_code(shell->exit_code);   // debug exit code
+    while (shell->running)
+    {
+        line = get_next_line(STDIN_FILENO);
+        if (!line)
+            break ;
 
-		/* avoid unused variable warnings while features are stubbed */
-		(void)tokens;
-		(void)commands;
-	}
+        // Copy to arena to match your memory model
+        input = arena_strdup(arena, line);
+        free(line);                          // free GNL buffer
+
+        // Remove trailing newline from GNL
+        if (input)
+        {
+            size_t len = ft_strlen(input);
+            if (len > 0 && input[len - 1] == '\n')
+                input[len - 1] = '\0';
+        }
+        process_line(shell, arena, input);
+        arena_clear(arena);
+    }
 }

@@ -1,4 +1,4 @@
-#include "execution.h"
+#include "minishell.h"
 
 void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 {

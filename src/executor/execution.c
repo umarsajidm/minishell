@@ -1,4 +1,4 @@
-#include "execution.h"
+#include "minishell.h"
 
 static  char    **get_path(char **envp_arr)
 {
@@ -148,7 +148,7 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env)
 		if (fds_manipulation_and_execution(cmd, shell, fd, env) == 1)
 			set_the_code_and_exit(shell, GENERAL_ERROR, NULL, env);
 	}
-	printf("\ni am here as well in the child process\n");
+	// printf("\ni am here as well in the child process\n");
 	if (pid > 0)
 		waitstatus(pid, shell);
 	// freearray(env);

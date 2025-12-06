@@ -48,60 +48,61 @@ int	handle_operator(char *s, int i, t_list **tokens, t_arena **arena)
 	return (i + len);                              // next index
 }
 
-/* 
- * Handle quoted strings in the input
+/* * Handle quoted strings in the input
  * - Supports single (') and double (") quotes
- * - Everything inside quotes is a single token
+ * - FIX: Everything INCLUDING quotes is stored as a single token
  * Returns next index after closing quote or -1 on error
  */
 int	handle_quote(char *s, int i, t_list **tokens, t_arena **arena)
 {
-	t_list	*node;                                  // new node
-	t_token	*tok;                                   // token struct
-	char	quote;                                  // which quote
-	int		start;                                  // start index
-	t_list	*tmp;                                   // iterator
+	t_list	*node;
+	t_token	*tok;
+	char	quote;
+	int		start;
+	t_list	*tmp;
 
-	quote = s[i];                                   // opening quote
-	i++;                                            // move past quote
-	start = i;                                      // content starts here
+	start = i;                                      // FIX: Start BEFORE the quote
+	quote = s[i];
+	i++;
 
 	while (s[i] && s[i] != quote)
-		i++;                                        // find closing
+		i++;
+
 	if (!s[i])
 	{
-		ft_printf("minishell: syntax error: unmatched quote\n"); // error msg
-		return (-1);                                // unmatched quote
+		ft_printf("minishell: syntax error: unmatched quote\n");
+		return (-1);
 	}
+	i++;                                            // Include the closing quote in count
 
-	tok = arena_alloc(arena, sizeof(t_token));      // alloc token
+	tok = arena_alloc(arena, sizeof(t_token));
 	if (!tok)
-		return (-1);                              // alloc failed
+		return (-1);
 
-	tok->token = arena_alloc(arena, i - start + 1); // alloc quoted string
+	tok->token = arena_alloc(arena, i - start + 1); // FIX: Allocate length including both quotes
 	if (!tok->token)
-		return (-1);                              // alloc failed
+		return (-1);
 
-	ft_memcpy(tok->token, s + start, i - start);    // copy inner content
-	tok->token[i - start] = '\0';                   // null-terminate
-	tok->type = T_QUOTE;                            // set type
+	ft_memcpy(tok->token, s + start, i - start);    // FIX: Copy from 'start' (the opening quote)
+	tok->token[i - start] = '\0';
+	tok->type = T_QUOTE;
 
-	node = arena_alloc(arena, sizeof(t_list));      // alloc list node
+	node = arena_alloc(arena, sizeof(t_list));
 	if (!node)
-		return (-1);                              // alloc failed
-	node->content = tok;                            // set content
-	node->next = NULL;                              // last node
+		return (-1);
+	node->content = tok;
+	node->next = NULL;
 
-	if (!*tokens)                                   // first token
+	if (!*tokens)
 		*tokens = node;
 	else
 	{
-		tmp = *tokens;                             // append at end
+		tmp = *tokens;
 		while (tmp->next)
 			tmp = tmp->next;
-		tmp->next = node;                          // link new node
+		tmp->next = node;
 	}
-	return (i + 1);                                 // index after closing quote
+	return (i);                                    // i is already incremented past the closing quote
 }
 
 /* 
