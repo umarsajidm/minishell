@@ -72,11 +72,15 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 			{
 				if (command->redirs)
 					applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
+				// if (shell->fd->prev_fd != -1)
+				// 	dup2(shell->fd->prev_fd, STDIN_FILENO);
 				if (shell->fd->in_fd != -1)
 					dup2(shell->fd->in_fd, STDIN_FILENO);
+				if (shell->fd->out_fd == -1)
+					dup2(shell->fd->fd[1], STDOUT_FILENO);
 				if (shell->fd->out_fd != -1)
 					dup2(shell->fd->out_fd, STDOUT_FILENO);
-				close_fd(shell->fd);
+				// close_fd(shell->fd);
 				shell->exit_code = run_builtin(command, shell);
 				return;
 			}
