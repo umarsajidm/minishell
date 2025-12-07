@@ -32,6 +32,13 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
     if (command->argv && command->argv[0]) //need a str error
         exec->path_to_exec = pathtoexecute(command->argv, exec);
     if (!exec->path_to_exec)
+    {
+        freearray(exec->envp);
+        ft_putstr_fd(command->argv[0], 2);
+        ft_putstr_fd(": command not found\n", 2);
+        shell->exit_code = 127;
+        return (1);
+    }
     if (exec->envp != NULL)
 	{
 		freearray(exec->envp);
