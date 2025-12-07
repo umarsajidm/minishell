@@ -90,7 +90,7 @@ void main_pipeline(t_cmd *command, t_shell *shell)
             shell->fd->out_fd = -1;
 
             if (command->redirs)
-                applying_redir(command->redirs, &shell->fd->in_fd, &shell->fd->out_fd);
+                applying_redir(command, &shell->fd->in_fd, &shell->fd->out_fd);
     
             // Perform the redirection using dup2
             if (shell->fd->in_fd != -1)
@@ -126,7 +126,7 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 				// set_the_code_and_exit(shell, COMMAND_NOT_FOUND, path_to_exec, envp);
 			}
 			if (command->redirs)
-				applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
+				applying_redir(command, &(shell->fd->in_fd), &(shell->fd->out_fd));
 			if (child_process(command, shell, shell->fd, envp, path_to_exec) == 1)
 				set_the_code_and_exit(shell, GENERAL_ERROR, NULL, envp);
 			
@@ -147,7 +147,7 @@ void main_pipeline(t_cmd *command, t_shell *shell)
 				return ;
 			}
 		if (command->redirs)
-			applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
+			applying_redir(command, &(shell->fd->in_fd), &(shell->fd->out_fd));
 		pipe(shell->fd->fd);
 		pid = fork();
 		if (pid < 0)

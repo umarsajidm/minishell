@@ -203,7 +203,7 @@ int execution(t_cmd *cmd, t_shell *shell, char **env, char *path_to_exec);
 
 //pipeline_utils.c
 void set_the_exit_code(t_shell *shell, char *command, char **envp);
-void applying_redir(t_redir *r, int *in_fd, int *out_fd);
+void applying_redir(t_cmd *cmd, int *in_fd, int *out_fd);
 void waitstatus(pid_t pid,  t_shell *shell);
 
 //builtin
