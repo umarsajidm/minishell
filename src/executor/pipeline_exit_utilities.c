@@ -8,8 +8,7 @@ void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 		free(str);
 
     // 2. Close file descriptors inherited/opened in the child
-	if (shell->fd != NULL)
-		close_fd(shell->fd);
+	close_fd(shell->fd);
 
     // CRITICAL FIX: Removed calls to free(shell->fd), arena_clear, and free_env.
     // These must ONLY happen in main.c.
@@ -26,6 +25,8 @@ void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array)
 	else if (type == FORK_FAILED)
 		perror("forking failed");
 
+	printf("set the code and exit\n");
+	shell->exit_code = 127;
 	exit(type);
 }
 
@@ -33,14 +34,17 @@ void set_the_exit_code(t_shell *shell, char *command, char **envp)
 {
 	if (envp != NULL)
 		freearray(envp);
+	
+	// free(command);
 
 	// if (shell->fd != NULL)
 	// 	free(shell->fd);
 	
 	// close_fd(shell->fd);
 	ft_putstr_fd(command, 2);
-	ft_putstr_fd(": command not found\n", 2);
+	ft_putstr_fd(": command not found (set the exit code)\n", 2);
 	shell->exit_code = 127;
+	// exit(shell->exit_code);
 }
 
 // ... exit_after_execve and cleanup_pipeline remain the same ...

@@ -38,6 +38,8 @@ static	char	*join_and_check(t_shell *shell, char *dir, char *pathcmd, char **pat
 		free(pathcmd);
 		return (path);
 	}
+	// printf("in the strjoin and check");
+	// free(pathcmd);
 	free(path);
 	return (NULL);
 }
@@ -98,6 +100,7 @@ static void abs_path_execution(t_cmd *cmd, t_shell *shell, char **env)
 static int relative_path_execution(t_shell *shell, t_cmd *cmd, char **env, char* path_to_exec)
 {
 
+	// printf("\n in the relative path execution \n");
     if (!env)
     	set_the_code_and_exit(shell, ENVIRONMENT_COPY_FAILED, NULL, env);
     if (!cmd->argv)
