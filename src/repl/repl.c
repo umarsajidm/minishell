@@ -32,8 +32,8 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
     if (res == 0)                            // allocation failure during expansion
     {
         ft_printf("minishell: parse error: alloc fail\n"); // formatted error
-        if (shell->fd != NULL)
-            free(shell->fd);
+        if (shell->exec->fd != NULL)
+            free(shell->exec->fd);
         return ;
     }
     // dbg_print_expanded_argv(commands);
@@ -41,7 +41,7 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
 	// test_builtin(commands, shell);
 
     if (commands->argv != NULL)
-        main_pipeline(commands, shell);
+        main_pipeline(shell, commands);
 }
 
 /*

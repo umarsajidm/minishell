@@ -7,7 +7,6 @@ static int  init_shell_and_arena(t_shell *shell, t_arena **arena,
     shell->env = NULL;
     shell->exit_code = 0;
     shell->running = true;
-    shell->fd = NULL;
 
     /* initialize arena */
     *arena = init_arena(1024);
@@ -16,7 +15,6 @@ static int  init_shell_and_arena(t_shell *shell, t_arena **arena,
         ft_printf("minishell: failed to initialize memory arena\n");
         return (1);
     }
-
     /* initialize environment from envp */
     shell->env = init_env(envp);
     if (!shell->env)
@@ -25,16 +23,22 @@ static int  init_shell_and_arena(t_shell *shell, t_arena **arena,
         free_arena(arena);
         return (1);
     }
-
-    /* allocate fd structure */
-    shell->fd = malloc(sizeof(t_fd));
-    if (!shell->fd)
+    shell->exec = malloc(sizeof(t_exec));
+    if (!shell->exec)
     {
-        ft_putstr_fd("minishell: initialization of fd structure failed\n", 2);
+        free_env(shell->env);
         free_arena(arena);
-        free_env(shell->env); 
         return (1);
     }
+    shell->exec->fd = malloc(sizeof(t_fd));
+    if (!shell->exec->fd)
+    {
+        free(shell->exec);
+        free_env(shell->env);
+        free_arena(arena);
+        return (1);
+    }
+    init_fd(shell->exec->fd);
     return (0);
 }
 
@@ -47,7 +51,6 @@ int main(int argc, char **argv, char **envp)
     (void)argv;
 
     /* Safety initialization for shell.fd */
-    shell.fd = NULL;
 
     err = init_shell_and_arena(&shell, &shell.arena, envp);
     if (err)
@@ -68,11 +71,12 @@ int main(int argc, char **argv, char **envp)
         non_interactive_loop(&shell, &shell.arena);
     }
 
-    /* cleanup allocated resources */
-    if (shell.fd)
-        free(shell.fd);
     rl_clear_history();
     free_env(shell.env);
     free_arena(&shell.arena);
+    if (shell.exec->fd) 
+        close_fd(shell.exec->fd);
+    free(shell.exec->fd);
+    free(shell.exec);
     return (shell.exit_code);
 }

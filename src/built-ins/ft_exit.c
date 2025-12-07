@@ -35,8 +35,8 @@ static void	clean_all(t_env *head, t_arena **arena, t_shell *shell)
 	rl_clear_history();
 	free_env(head);
 	free_arena(arena);
-	if (shell->fd)
-		free(shell->fd);
+	if (shell->exec->fd)
+		free(shell->exec->fd);
 }
 
 static void	run_exit(t_shell *shell)
