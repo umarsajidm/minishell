@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+         #
+#    By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/22 18:09:48 by achowdhu          #+#    #+#              #
-#    Updated: 2025/12/01 15:06:26 by achowdhu         ###   ########.fr        #
+#    Updated: 2025/12/06 23:56:47 by musajid          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ NAME        := libft.a
 
 # Compiler and Flags
 CC          := cc
-CFLAGS      := -Wall -Wextra -Werror
+CFLAGS      := -Wall -Wextra -Werror -g
 AR          := ar rcs
 RM          := rm -f
 

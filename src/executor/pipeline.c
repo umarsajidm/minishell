@@ -2,7 +2,7 @@
 
 void waitstatus(pid_t pid,  t_shell *shell);
 
-static void init_fd(t_fd	*fd)
+void init_fd(t_fd	*fd)
 {
 	fd->fd[0] = -1;
 	fd->fd[1] = -1;
@@ -23,9 +23,10 @@ void close_fd(t_fd *fd)
 		close(fd->in_fd);
 	if (fd->out_fd >= 0)
 		close(fd->out_fd);
+	init_fd(fd);
 }
 
-static void parent_loop(t_cmd *cmd, t_fd *fd)
+void parent_loop(t_cmd *cmd, t_fd *fd)
 {
 	//parent closes the prev
 	if (fd->prev_fd != -1)
@@ -40,83 +41,98 @@ static void parent_loop(t_cmd *cmd, t_fd *fd)
     close(fd->fd[1]);
 }
 
-int	fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr)
+
+int	fds_manipulation_and_execution(t_cmd *command, t_shell *shell, t_exec *exec)
 {
-	if (fd->prev_fd != -1)
-		dup2(fd->prev_fd, STDIN_FILENO);
-	if (fd->in_fd != -1)
-		dup2(fd->in_fd, STDIN_FILENO);
-	if (cmd->next != NULL && fd->out_fd == -1)
-		dup2(fd->fd[1], STDOUT_FILENO);
-	if (fd->out_fd != -1)
-		dup2(fd->out_fd, STDOUT_FILENO);
-	close_fd(fd);
-	if (execution(cmd, shell, arr) == 1)
-		exit_after_execve(shell, NULL, arr);
-	// freearray(arr);
+	//if there is pipe, if not then go to the execution
+	if (exec->fd->prev_fd != -1)
+		dup2(exec->fd->prev_fd, STDIN_FILENO);
+	if (exec->fd->in_fd != -1)
+		dup2(exec->fd->in_fd, STDIN_FILENO);
+	if (command->next != NULL && exec->fd->out_fd == -1)
+		dup2(exec->fd->fd[1], STDOUT_FILENO);
+	if (exec->fd->out_fd != -1)
+		dup2(exec->fd->out_fd, STDOUT_FILENO);
+	close_fd(exec->fd);
+	if (execution(command, shell, exec) == 1)
+		exit_after_execve(shell, exec);
+	free(exec->path_to_exec);
+	if (exec->envp != NULL)
+		freearray(exec->envp);
 	exit(shell->exit_code);
 }
 
-void main_pipeline(t_cmd *command, t_shell *shell)
+void main_pipeline(t_shell *shell, t_cmd *command)
 {
-    pid_t pid = -1;
+	t_exec	*exec;
 
+	exec = shell->exec;
+	// init_fd(exec->fd);
 
-    char **envp = envp_arr(shell);
-    init_fd(shell->fd);
-	if (!command->next)
+    if (!command->next)
 	{
-		if (is_builtin(command) && is_parent_level_builtin(command))
-		{
-			// execution_cleanup(shell, envp);
-			if (shell->fd != NULL)
-				free(shell->fd);
-			freearray(envp);
-			shell->exit_code = run_builtin(command, shell);
-			close_fd(shell->fd);
-			return ;
-		}
-		else if (!command->next)
-		{
-			// execution_cleanup(shell, envp);
-			if (command->redirs)
-				applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
-			if (child_process(command, shell, shell->fd, envp) == 1)
-				set_the_code_and_exit(shell, GENERAL_ERROR, NULL, envp);
-		}
-		// printf("\ni am here in main pipeline\n");
-		close_fd(shell->fd);
-		freearray(envp);
-		// exit(shell->exit_code);
-		return;
+        if (is_builtin(command))
+        {
+            int saved_stdin = -1;
+            int saved_stdout = -1;
+            int rc = 0;
+
+            saved_stdin = dup(STDIN_FILENO);
+            saved_stdout = dup(STDOUT_FILENO);
+            if (saved_stdin == -1 || saved_stdout == -1)
+            {
+                perror("minishell: dup failed");
+                rc = -1;
+                /* fallthrough to cleanup */
+            }
+
+            /* apply redirections (may set shell->exec->fd->in_fd/out_fd) */
+            if (rc == 0 && command->redirs)
+                applying_redir(command, &shell->exec->fd->in_fd, &shell->exec->fd->out_fd);
+
+            /* if redirs set fds, dup them to std fds; if dup2 fails, set rc */
+            if (rc == 0)
+            {
+                if (shell->exec->fd->in_fd != -1 && dup2(shell->exec->fd->in_fd, STDIN_FILENO) == -1)
+                    rc = -1;
+                if (shell->exec->fd->out_fd != -1 && dup2(shell->exec->fd->out_fd, STDOUT_FILENO) == -1)
+                    rc = -1;
+            }
+
+            if (rc == 0)
+                shell->exit_code = run_builtin(command, shell);
+
+            /* restore original fds (always attempt) */
+            if (saved_stdin != -1)
+            {
+                dup2(saved_stdin, STDIN_FILENO); /* ignore failure, we'll still close saved fds */
+                close(saved_stdin);
+            }
+            if (saved_stdout != -1)
+            {
+                dup2(saved_stdout, STDOUT_FILENO);
+                close(saved_stdout);
+            }
+
+            /* Close any opened redir fds and the shell->exec->fd structure fds */
+            if (shell->exec->fd->in_fd != -1)
+            {
+                close(shell->exec->fd->in_fd);
+                shell->exec->fd->in_fd = -1;
+            }
+            if (shell->exec->fd->out_fd != -1)
+            {
+                close(shell->exec->fd->out_fd);
+                shell->exec->fd->out_fd = -1;
+            }
+            close_fd(shell->exec->fd);
+
+        	return;
+    	}
 	}
-	while (command)
-	{
-		if (command->redirs)
-			applying_redir(command->redirs, &(shell->fd->in_fd), &(shell->fd->out_fd));
-		pipe(shell->fd->fd);
-		pid = fork();
-		if (pid < 0)
-			perror("fork failed in child process");
-		if (pid == 0)
-		{
-			if (fds_manipulation_and_execution(command, shell, shell->fd, envp) == 1)
-			{
-				freearray(envp);
-				close_fd(shell->fd);
-				return ;
-			}
-		}
-		parent_loop(command, shell->fd);
-		command = command->next;
-	}
-	if (shell->fd != NULL)
-		close_fd(shell->fd);
-	if (pid > 0)
-		waitstatus(pid, shell);
-    if (envp != NULL)
-		freearray(envp);
-	return ;
+		// single or piped command execution path
+	validate_command(exec, shell, command);
+	
 }
 
 void waitstatus(pid_t pid,  t_shell *shell)
@@ -126,5 +142,4 @@ void waitstatus(pid_t pid,  t_shell *shell)
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
     	shell->exit_code = WEXITSTATUS(status);
-
 }

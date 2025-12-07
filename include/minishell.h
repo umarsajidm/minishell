@@ -172,11 +172,12 @@ void    dbg_print_expanded_argv(t_cmd *cmd);
 #define FORK_FAILED 4
 
 //pipeline_exit_utilities
-void set_the_code_and_exit(t_shell *shell, int type, char *str, char **array);
-void exit_after_execve(t_shell *shell, char *str, char **array);
+void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type);
+void exit_after_execve(t_shell *shell, t_exec *exec);
 
 //execution.c
-int child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env);
+char	*pathtoexecute(char **cmd, t_exec *exec);
+int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec);
 
 //envp.c
 char **envp_arr(t_shell *shell);
@@ -193,18 +194,31 @@ void    commandnotfound(char **arr);
 int init_shell(t_shell *shell, char **envp, t_arena **arena);
 
 //pipeline.c
-void main_pipeline(t_cmd *command, t_shell *shell);
+void init_fd(t_fd	*fd);
+void parent_loop(t_cmd *cmd, t_fd *fd);
+void main_pipeline(t_shell *shell, t_cmd *command);
 void close_fd(t_fd *fd);
-int fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_fd *fd, char **arr);
+int fds_manipulation_and_execution(t_cmd *cmd, t_shell *shell, t_exec *exec);
 void cleanup_pipeline(t_shell *shell, char **envp, pid_t last_pid);
 
-int execution(t_cmd *cmd, t_shell *shell, char **env);
+int	execution(t_cmd *command, t_shell *shell, t_exec *exec);
+
+//main_pipeline_utils.c
+int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command);
+int is_parent_level_builtin(t_cmd *cmd);
+void clean_exec(t_exec *exec);
+
+int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *command);
+int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *cmd);
+void validate_command(t_exec *exec, t_shell *shell, t_cmd *command);
 
 //pipeline_utils.c
-void applying_redir(t_redir *r, int *in_fd, int *out_fd);
+void set_the_exit_code(t_shell *shell, char *command, char **envp);
+void applying_redir(t_cmd *cmd, int *in_fd, int *out_fd);
 void waitstatus(pid_t pid,  t_shell *shell);
 
+
 //builtin
-int is_parent_level_builtin(t_cmd *cmd);
+
 
 #endif /* MINISHELL_H */
