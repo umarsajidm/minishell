@@ -23,14 +23,14 @@ static int  init_shell_and_arena(t_shell *shell, t_arena **arena,
         free_arena(arena);
         return (1);
     }
-    shell->exec = malloc(sizeof(t_exec));
+    shell->exec = ft_calloc(1, sizeof(t_exec));
     if (!shell->exec)
     {
         free_env(shell->env);
         free_arena(arena);
         return (1);
     }
-    shell->exec->fd = malloc(sizeof(t_fd));
+    shell->exec->fd = ft_calloc(1, sizeof(t_fd));
     if (!shell->exec->fd)
     {
         free(shell->exec);

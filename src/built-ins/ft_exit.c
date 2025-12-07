@@ -36,7 +36,15 @@ static void	clean_all(t_env *head, t_arena **arena, t_shell *shell)
 	free_env(head);
 	free_arena(arena);
 	if (shell->exec->fd)
-		free(shell->exec->fd);
+    {
+        free(shell->exec->fd);
+        shell->exec->fd = NULL;
+    }
+    if (shell->exec)
+    {
+        free(shell->exec);
+        shell->exec = NULL;
+    }
 }
 
 static void	run_exit(t_shell *shell)

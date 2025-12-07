@@ -130,9 +130,8 @@ void main_pipeline(t_shell *shell, t_cmd *command)
         	return;
     	}
 	}
-		// External command execution path
-    else
-		validate_command(exec, shell, command);
+		// single or piped command execution path
+	validate_command(exec, shell, command);
 	
 }
 

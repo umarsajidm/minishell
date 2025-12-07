@@ -32,7 +32,12 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
     if (command->argv && command->argv[0]) //need a str error
         exec->path_to_exec = pathtoexecute(command->argv, exec);
     if (!exec->path_to_exec)
-        return(free(exec->envp), 1);
+    if (exec->envp != NULL)
+	{
+		freearray(exec->envp);
+		exec->envp = NULL;
+        return (1);
+	}
     //need to make a function to putste and return value;
     return (0);
 }
