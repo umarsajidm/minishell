@@ -151,7 +151,8 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
     while (waitpid(-1, NULL, 0) > 0);
 
     close_fd(exec->fd);
-    clean_exec(exec);
+    clean_exec(exec);s
+    
 }
 
 

@@ -140,6 +140,9 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	}
 		// single or piped command execution path
 	validate_command(exec, shell, command);
+
+    
+
 	return ;
 
 }
