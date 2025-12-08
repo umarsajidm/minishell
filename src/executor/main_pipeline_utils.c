@@ -152,6 +152,7 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
 
     close_fd(exec->fd);
     clean_exec(exec);
+    
 }
 
 

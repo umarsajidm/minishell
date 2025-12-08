@@ -137,40 +137,7 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec)
 	// printf("\ni am here as well in the child process\n");
 	if (exec->pid > 0)
 		waitstatus(exec->pid, shell);
-	// while (waitpid(-1, NULL, 0)>0);
+	while (waitpid(-1, NULL, 0)>0);
 	clean_exec(exec);
 	return (0);
 }
-
-
-
-
-// {
-// 		char **envp = envp_arr(shell);
-// 		char *path_to_exec = pathtoexecute(shell, command->argv, envp);
-// 		if (!path_to_exec)
-// 			{
-// 				set_the_exit_code(shell, command->argv[0], envp);
-// 				return ;
-// 			}
-// 		if (command->redirs)
-// 			applying_redir(command, &(shell->fd->in_fd), &(shell->fd->out_fd));
-// 		pipe(shell->fd->fd);
-// 		pid = fork();
-// 		if (pid < 0)
-// 			perror("fork failed in child process");
-// 		if (pid == 0)
-// 		{
-// 			if (fds_manipulation_and_execution(command, shell, shell->fd, envp, path_to_exec) == 1)
-// 			{
-// 				freearray(envp);
-// 				free(path_to_exec);
-// 				close_fd(shell->fd);
-// 				return ;
-// 			}
-// 		}
-// 		free(path_to_exec);
-// 		freearray(envp);
-// 		parent_loop(command, shell->fd);
-// 		command = command->next;
-// 	}

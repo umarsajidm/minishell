@@ -1,7 +1,6 @@
 #include "minishell.h"
 
-static int  init_shell_and_arena(t_shell *shell, t_arena **arena,
-    char **envp)
+static int  init_shell_and_arena(t_shell *shell, t_arena **arena, char **envp)
 {
     /* initialize shell state */
     shell->env = NULL;
@@ -42,24 +41,64 @@ static int  init_shell_and_arena(t_shell *shell, t_arena **arena,
     return (0);
 }
 
+// int main(int argc, char **argv, char **envp)
+// {
+//     t_shell     shell;   // shell state: env, exit_code, running
+//     int         err;     // initialization error
+
+//     (void)argc;
+//     (void)argv;
+
+//     /* Safety initialization for shell.fd */
+
+//     err = init_shell_and_arena(&shell, &shell.arena, envp);
+//     if (err)
+//         return (1);
+
+//     /* setup signal handlers */
+//     setup_signals();
+
+//     /* start REPL or non-interactive loop */
+//     if (isatty(STDIN_FILENO))
+//     {
+//         // Interactive Mode: ./minishell
+//         repl_loop(&shell, &shell.arena);
+//     }
+//     else
+//     {
+//         // Non-Interactive Mode: echo "ls" | ./minishell
+//         non_interactive_loop(&shell, &shell.arena);
+//     }
+
+//     rl_clear_history();
+//     free_env(shell.env);
+//     free_arena(&shell.arena);
+//     if (shell.exec->fd) 
+//         close_fd(shell.exec->fd);
+//     free(shell.exec->fd);
+//     free(shell.exec);
+//     return (shell.exit_code);
+// }
+
 int main(int argc, char **argv, char **envp)
 {
-    t_shell     shell;   // shell state: env, exit_code, running
-    int         err;     // initialization error
+    t_shell     shell;
+    int         err;
 
     (void)argc;
     (void)argv;
 
-    /* Safety initialization for shell.fd */
-
+    /* Initialize shell and arena */
     err = init_shell_and_arena(&shell, &shell.arena, envp);
     if (err)
         return (1);
 
-    /* setup signal handlers */
     setup_signals();
 
-    /* start REPL or non-interactive loop */
+    /* * TESTER CHECK:
+     * If STDIN is a TTY (keyboard), run REPL.
+     * If STDIN is a PIPE (tester script), run non-interactive loop.
+     */
     if (isatty(STDIN_FILENO))
     {
         // Interactive Mode: ./minishell
@@ -71,12 +110,16 @@ int main(int argc, char **argv, char **envp)
         non_interactive_loop(&shell, &shell.arena);
     }
 
+    /* Cleanup */
     rl_clear_history();
     free_env(shell.env);
     free_arena(&shell.arena);
-    if (shell.exec->fd) 
+    if (shell.exec && shell.exec->fd) 
+    {
         close_fd(shell.exec->fd);
-    free(shell.exec->fd);
-    free(shell.exec);
+        free(shell.exec->fd);
+        free(shell.exec);
+    }
+    
     return (shell.exit_code);
 }
