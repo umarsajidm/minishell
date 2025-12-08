@@ -1,42 +1,65 @@
 #include "minishell.h"
 
+// src/executor/pipeline_exit_utilities.c
+
 void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type)
 {
-	// 1. Clean up temporary memory allocated in the path search or execve
-	freearray(exec->envp);
-	if (exec->path_to_exec != NULL)
-		free(exec->path_to_exec);
+    // 1. Clean up temporary memory allocated in the path search or execve
+    freearray(exec->envp);
+    if (exec->path_to_exec != NULL)
+        free(exec->path_to_exec);
 
-    // 2. Close file descriptors inherited/opened in the child
-	close_fd(exec->fd);
+   
+    close_fd(exec->fd);
 
     // 3. Print error message
-	if (type == PERMISSION_DENIED)
-		perror("permission denied");
-	else if (type == COMMAND_NOT_FOUND)
-		perror("command not found");
-	else if (type == ENV_PATH_COULDNT_BE_FOUND)
-		perror("retrievinig path from env failed");
-	else if (type == ENVIRONMENT_COPY_FAILED)
-		perror("copying env for child process failed");
-	else if (type == FORK_FAILED)
-		perror("forking failed");
+    if (type == PERMISSION_DENIED)
+        perror("permission denied");
+    else if (type == COMMAND_NOT_FOUND)
+        perror("command not found");
+    else if (type == ENV_PATH_COULDNT_BE_FOUND)
+        perror("retrievinig path from env failed");
+    else if (type == ENVIRONMENT_COPY_FAILED)
+        perror("copying env for child process failed");
+    else if (type == FORK_FAILED)
+        perror("forking failed");
 
-	printf("set the code and exit\n");
-	shell->exit_code = 127;
-	exit(type);
+    if (shell->env)
+        free_env(shell->env);
+
+    if (shell->arena)
+        free_arena(&shell->arena);
+
+    if (shell->exec->fd)
+        free(shell->exec->fd);
+
+    if (shell->exec)
+        free(shell->exec);
+
+    rl_clear_history();
+    // ================================
+
+    // printf("set the code and exit\n"); // Optional: Remove debug print
+
+    // Handle specific exit codes based on error type
+    if (type == COMMAND_NOT_FOUND)
+        exit(127);
+    if (type == PERMISSION_DENIED)
+        exit(126);
+
+    exit(type);
 }
 
 void set_the_exit_code(t_shell *shell, char *command, char **envp)
 {
 	if (envp != NULL)
 		freearray(envp);
-	
+
 	// free(command);
 
 	// if (shell->fd != NULL)
 	// 	free(shell->fd);
-	
+
 	// close_fd(shell->fd);
 	ft_putstr_fd(command, 2);
 	ft_putstr_fd(": command not found (set the exit code)\n", 2);

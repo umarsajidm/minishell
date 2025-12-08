@@ -20,7 +20,7 @@ void pre_init(t_exec *exec)
 
 
 int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
-{    
+{
     // exec = shell->exec;
     pre_init(exec);
     // exec->fd = malloc(sizeof(t_fd));
@@ -33,18 +33,20 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
         exec->path_to_exec = pathtoexecute(command->argv, exec);
     if (!exec->path_to_exec)
     {
-        freearray(exec->envp);
+		freearray(exec->envp);
+		exec->envp = NULL;
         ft_putstr_fd(command->argv[0], 2);
         ft_putstr_fd(": command not found\n", 2);
         shell->exit_code = 127;
         return (1);
     }
-    if (exec->envp != NULL)
-	{
-		freearray(exec->envp);
-		exec->envp = NULL;
-        return (1);
-	}
+	// ft_putstr_fd("this is me\n", 2);
+    // if (exec->envp != NULL)
+	// {
+	// 	freearray(exec->envp);
+	// 	exec->envp = NULL;
+    //     return (1);
+	// }
     //need to make a function to putste and return value;
     return (0);
 }
@@ -66,13 +68,14 @@ void clean_exec(t_exec *exec)
 
 int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *command)
 {
+
     if (init_exec(exec, shell, command) == 0) //what if it fails
-    {   
+    {
         if (command->redirs)
             applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd));
         child_process(command, shell, exec); //where am i handling the anomaly
     }
-    else 
+    else
         return (1);
     return (0);
 }
@@ -107,7 +110,7 @@ int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *c
 // void child_process_for_multiple()
 void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
 {
-    // init_fd(exec->fd);
+    init_fd(exec->fd);
     //only one command (no pipeline)
     if (!command->next)
     {
