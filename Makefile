@@ -6,7 +6,7 @@
 #    By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/09/29 17:14:37 by achowdhu          #+#    #+#              #
-#    Updated: 2025/11/26 11:15:26 by musajid          ###   ########.fr        #
+#    Updated: 2025/12/08 13:45:42 by musajid          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ NAME        := minishell
 # Compiler and Flags
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror -g
-# CFLAGS		:= -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
+#CFLAGS		:= -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 # Directories
 SRC_DIR     := src

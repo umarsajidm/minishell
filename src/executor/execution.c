@@ -107,7 +107,13 @@ static int relative_path_execution(t_shell *shell, t_cmd *command, t_exec *exec)
 
 int	execution(t_cmd *command, t_shell *shell, t_exec *exec)
 {
-	if (ft_strchr(command->argv[0], '/' ))
+	if (is_builtin(command))
+	{
+		shell->exit_code = run_builtin(command, shell);
+		return (0);
+
+	}
+	else if (ft_strchr(command->argv[0], '/' ))
 		abs_path_execution(command, shell, exec);
 	else
 	{
@@ -168,4 +174,3 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec)
 // 		parent_loop(command, shell->fd);
 // 		command = command->next;
 // 	}
-	
