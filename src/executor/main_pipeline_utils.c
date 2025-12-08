@@ -36,7 +36,7 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 		freearray(exec->envp);
 		exec->envp = NULL;
         ft_putstr_fd(command->argv[0], 2);
-        ft_putstr_fd(": command not found\n", 2);
+        ft_putstr_fd(": command not here found\n", 2);
         shell->exit_code = 127;
         return (1);
     }
@@ -63,7 +63,6 @@ void clean_exec(t_exec *exec)
         freearray(exec->envp);
         exec->envp = NULL;
     }
-
 }
 
 int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *command)
@@ -72,7 +71,13 @@ int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *comm
     if (init_exec(exec, shell, command) == 0) //what if it fails
     {
         if (command->redirs)
-            applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd));
+        {
+			if (applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd)) == 1)
+			{
+				shell->exit_code = GENERAL_ERROR;
+				return (1);
+			}
+		}
         child_process(command, shell, exec); //where am i handling the anomaly
     }
     else
@@ -82,16 +87,25 @@ int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *comm
 
 int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *command)
 {
-    if (init_exec(exec, shell, command) == 0)
-    {
-        if (command->redirs)
-            applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd));
-    }
-    else
-    {
-        clean_exec(exec);
-        return (1);
-    }
+    if (!is_builtin(command))
+	{
+		if (init_exec(exec, shell, command) == 0)
+		{
+			if (command->redirs)
+			{
+				if (applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd)) == 1)
+				{
+					shell->exit_code = GENERAL_ERROR;
+					return (1);
+				}
+			}
+		}
+    	else
+    	{
+       		clean_exec(exec);
+        	return (1);
+   		}
+	}
     pipe(exec->fd->fd);
     exec->pid = fork();
     if (exec->pid < 0)

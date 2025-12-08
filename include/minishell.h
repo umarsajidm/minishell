@@ -214,7 +214,7 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command);
 
 //pipeline_utils.c
 void set_the_exit_code(t_shell *shell, char *command, char **envp);
-void applying_redir(t_cmd *cmd, int *in_fd, int *out_fd);
+int applying_redir(t_cmd *cmd, int *in_fd, int *out_fd);
 void waitstatus(pid_t pid,  t_shell *shell);
 
 

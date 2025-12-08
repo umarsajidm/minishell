@@ -59,6 +59,11 @@ void	*arena_alloc(t_arena **arena, size_t size)
 			return (NULL);
 	}
 	ptr = (char *)current->memory_block + current->offset;
+	// while (current->offset + size / 8 != 0)
+	// {
+	// 	printf("help me im stuck\n");
+	// 	size++;
+	// }
 	current->offset += size;
 	return (ptr);
 }

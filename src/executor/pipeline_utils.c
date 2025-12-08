@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static void write_heredoc_to_pipe(int *in_fd, char *content)
+static int write_heredoc_to_pipe(int *in_fd, char *content)
 {
     int fd[2];
 
@@ -10,25 +10,29 @@ static void write_heredoc_to_pipe(int *in_fd, char *content)
         exit(1);
     }
     if (content)
-    {
-        ft_putstr_fd(content, fd[1]); // Write the stored content!
-    }
+    	ft_putstr_fd(content, fd[1]); // Write the stored content!
+
     close(fd[1]); // Close write end so child sees EOF
-    
+
     if (*in_fd >= 0)
         close(*in_fd);
     *in_fd = fd[0]; // Set read end as input
+	return (0);
 }
-static void	applying_input_redir(t_redir *r, int *in_fd)
+static int	applying_input_redir(t_redir *r, int *in_fd)
 {
 	if (*in_fd >= 0)
 		close(*in_fd);
 	*in_fd = open(r->target, O_RDONLY);
 	if (*in_fd < 0)
-		perror("opening of input redirection");
+	{
+		perror("input redirection");
+		return (1);
+	}
+	return (0);
 }
 
-static void	applying_outside_redir(t_redir *r, int *out_fd)
+static int	applying_outside_redir(t_redir *r, int *out_fd)
 {
 	if (*out_fd >= 0)
 		close(*out_fd);
@@ -37,10 +41,14 @@ static void	applying_outside_redir(t_redir *r, int *out_fd)
 	if (r->type == R_APPEND)
 		*out_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (*out_fd < 0)
-		perror("opening of out redirection or heredoc");
+	{
+		perror("output redirection or heredoc");
+		return (1);
+	}
+	return (0);
 }
 
-void	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
+int		applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 {
 	t_redir	*r;
 
@@ -51,12 +59,22 @@ void	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 		if (r->target)
 		{
 			if (r->type == R_INPUT)
-				applying_input_redir(r, in_fd);
+			{
+				if (applying_input_redir(r, in_fd) == 1)
+					return (1);
+			}
 			if (r->type == R_OUTPUT || r->type == R_APPEND)
-				applying_outside_redir(r, out_fd);
+			{
+				if (applying_outside_redir(r, out_fd) == 1)
+					return (1);
+			}
 			if (r->type == R_HEREDOC)
-				write_heredoc_to_pipe(in_fd, cmd->heredoc);
+			{
+				if (write_heredoc_to_pipe(in_fd, cmd->heredoc) == 1)
+					return (1);
+			}
 		}
 		r = r->next;
-	}	
+	}
+	return (0);
 }
