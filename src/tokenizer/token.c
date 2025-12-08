@@ -11,6 +11,8 @@ int	process_token(char *input, int *i, t_list **tokens, t_arena **arena)
 {
 	int	ret;                                        // handler return (next index)
 
+	ret = -1;                                       // defensive init
+
 	if (is_operator_char(input[*i]))                // operator | < >
 		ret = handle_operator(input, *i, tokens, arena);
 	else if (input[*i] == '\'' || input[*i] == '"') // quoted string
@@ -18,7 +20,7 @@ int	process_token(char *input, int *i, t_list **tokens, t_arena **arena)
 	else                                            // normal word
 		ret = handle_word(input, *i, tokens, arena);
 
-	if (ret == -1)                                  // handler failed
+	if (ret == -1)                                  // handler failed (alloc or unmatched quote)
 		return (0);
 	*i = ret;                                       // update index
 	return (1);                                     // success
@@ -47,7 +49,7 @@ t_list	*tokenize(char *input, t_arena **arena)
 		if (!input[i])
 			break;                                  // end of string
 		if (!process_token(input, &i, &tokens, arena)) // process token
-			return (NULL);                          // error occurred
+			return (NULL);                          // error occurred (unmatched quote or alloc)
 	}
 	return (tokens);                                // return token list
 }
