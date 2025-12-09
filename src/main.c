@@ -73,7 +73,7 @@ static int  init_shell_and_arena(t_shell *shell, t_arena **arena, char **envp)
 //     rl_clear_history();
 //     free_env(shell.env);
 //     free_arena(&shell.arena);
-//     if (shell.exec->fd) 
+//     if (shell.exec->fd)
 //         close_fd(shell.exec->fd);
 //     free(shell.exec->fd);
 //     free(shell.exec);
@@ -93,7 +93,7 @@ int main(int argc, char **argv, char **envp)
     if (err)
         return (1);
 
-    setup_signals();
+    setup_parent_signals();
 
     /* * TESTER CHECK:
      * If STDIN is a TTY (keyboard), run REPL.
@@ -114,12 +114,12 @@ int main(int argc, char **argv, char **envp)
     rl_clear_history();
     free_env(shell.env);
     free_arena(&shell.arena);
-    if (shell.exec && shell.exec->fd) 
+    if (shell.exec && shell.exec->fd)
     {
         close_fd(shell.exec->fd);
         free(shell.exec->fd);
         free(shell.exec);
     }
-    
+
     return (shell.exit_code);
 }
