@@ -218,8 +218,8 @@ void    non_interactive_loop(t_shell *shell, t_arena **arena)
     char    *line;
     char    *input;
 
-    // while (shell->running)
-    // {
+    while (shell->running)
+    {
         line = get_next_line(STDIN_FILENO);
         if (!line)
             return; // End of input/pipe (CTRL+D or End of Script)
@@ -240,5 +240,5 @@ void    non_interactive_loop(t_shell *shell, t_arena **arena)
             process_line(shell, arena, input);
             
         arena_clear(arena);
-    // }
+    }
 }

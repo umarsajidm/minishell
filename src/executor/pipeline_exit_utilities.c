@@ -73,7 +73,7 @@ void exit_after_execve(t_shell *shell, t_exec *exec)
 {
 	if (errno == ENOENT)
 		set_the_code_and_exit(shell, exec, COMMAND_NOT_FOUND);
-	else if (errno == ENOENT)
+	else if (errno == EACCES)
 		set_the_code_and_exit(shell, exec, PERMISSION_DENIED);
 	else
 		set_the_code_and_exit(shell, exec, GENERAL_ERROR);
