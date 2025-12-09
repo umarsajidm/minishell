@@ -82,7 +82,9 @@ void	dbg_print_env(t_env *env);
 
 t_list	*tokenize(char *input, t_arena **arena);
 int		skip_spaces(char *s, int i);
+int		skip_quote_chunk(char *s, int i);
 int		is_operator_char(char c);
+int 	create_token_node(t_arena **ar, t_list **toks, char *content, t_token_type type);
 char	*dup_word(t_arena **arena, const char *str, int start, int end);
 int		handle_operator(char *s, int i, t_list **tokens, t_arena **arena);
 int		handle_quote(char *s, int i, t_list **tokens, t_arena **arena);
@@ -93,7 +95,7 @@ void	free_tokens(t_list **tokens);
 ** Parser
 ** =========================== */
 
-t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena);
+t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena);
 t_cmd	*create_cmd_node(t_arena **arena);
 int		ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena);
 int		add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena);
