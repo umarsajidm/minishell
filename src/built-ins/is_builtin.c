@@ -4,6 +4,7 @@ int	is_builtin(t_cmd *cmd)
 {
 	char	*command;
 
+	// ft_putstr_fd("hi i am  in builtin\n", 2);
 	command = cmd->argv[0];
 	if (ft_strcmp(command, "echo") == 0)
 		return (1);

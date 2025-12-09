@@ -24,25 +24,26 @@ static  char    **get_path(char **envp_arr)
 	return (NULL);
 }
 
-static	char	*join_and_check(t_shell *shell, char *dir, char *pathcmd, char **paths)
+static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
 {
 	char	*path;
 
 	path = ft_strjoin(dir, pathcmd);
 	if (!path)
-		set_the_code_and_exit(shell, COMMAND_NOT_FOUND, pathcmd, paths);
-		// freestrnarrexit(paths, pathcmd, 1);
+		return (NULL);
 	if (access(path, X_OK) == 0)
 	{
 		freearray(paths);
 		free(pathcmd);
 		return (path);
 	}
+	// printf("in the strjoin and check");
+	// free(pathcmd);
 	free(path);
 	return (NULL);
 }
 
-static	char	*pathtoexecute(t_shell *shell, char **cmd, char **env)
+char	*pathtoexecute(char **cmd, t_exec *exec)
 {
 	int		i;
 	char	**paths;
@@ -51,24 +52,21 @@ static	char	*pathtoexecute(t_shell *shell, char **cmd, char **env)
 
 	pathcmd = ft_strjoin("/", cmd[0]);
 	if (!pathcmd)
-		set_the_code_and_exit(shell, GENERAL_ERROR, NULL, env);
-		// strerrornexit();
-	paths = get_path(env);
+		return (NULL);
+	paths = get_path(exec->envp);
 	if (!paths || !*paths)
-		set_the_code_and_exit(shell, ENV_PATH_COULDNT_BE_FOUND, pathcmd, paths);
-		// freestrnarrexit(paths, pathcmd, 127);
+		return (NULL);
 	i = 0;
 	while (paths[i])
 	{
-		path = join_and_check(shell, paths[i], pathcmd, paths);
+		path = join_and_check(paths[i], pathcmd, paths);
 		if (path)
 			return (path);
 		i++;
 	}
-
-	set_the_code_and_exit(shell, COMMAND_NOT_FOUND, pathcmd, paths);
-	// freeall(paths, pathcmd, cmd[0]);
-
+	freearray(paths);
+	free(pathcmd);
+	// free(path);
 	return (NULL);
 }
 
@@ -83,74 +81,63 @@ static	void	checking(char *path)
 		errno = ENOENT;
 }
 //need serparate function for absolute path
-static void abs_path_execution(t_cmd *cmd, t_shell *shell, char **env)
+static void abs_path_execution(t_cmd *cmd, t_shell *shell, t_exec *exec)
 {
     checking(cmd->argv[0]);
-    if (execve(cmd->argv[0], &(cmd->argv[0]), env) == -1)
+    if (execve(cmd->argv[0], &(cmd->argv[0]), exec->envp) == -1)
     {
-        // freearray(cmd->argv);
-        exit_after_execve(shell, NULL, env);
+        exit_after_execve(shell, exec);
     }
 }
 
-static int relative_path_execution(t_shell *shell, t_cmd *cmd, char **env)
+static int relative_path_execution(t_shell *shell, t_cmd *command, t_exec *exec)
 {
-    char *path;
 
-    if (!env)
-    	set_the_code_and_exit(shell, ENVIRONMENT_COPY_FAILED, NULL, env);
-    if (!cmd->argv)
-        set_the_code_and_exit(shell, GENERAL_ERROR, NULL, env);
-    path = pathtoexecute(shell, cmd->argv, env);
-    if (path == NULL)  //ponder our hpe to deal with iin case of execve fails
-        set_the_code_and_exit(shell, COMMAND_NOT_FOUND, NULL, env);
-    checking(path);
-    if (execve(path, cmd->argv, env) == -1)
-		exit_after_execve(shell, path, env);
-	// freearray(cmd);
+	// printf("\n in the relative path execution \n");
+    if (!exec->envp)
+    	set_the_code_and_exit(shell, exec, ENVIRONMENT_COPY_FAILED);
+    if (!command->argv)
+        set_the_code_and_exit(shell, exec ,GENERAL_ERROR);
+    checking(exec->path_to_exec);
+    if (execve(exec->path_to_exec, command->argv, exec->envp) == -1)
+		exit_after_execve(shell, exec);
 	return (1);
 }
 
 
-int	execution(t_cmd *cmd, t_shell *shell, char **env)
+int	execution(t_cmd *command, t_shell *shell, t_exec *exec)
 {
-	if (ft_strchr(cmd->argv[0], '/' ))
-		abs_path_execution(cmd, shell, env);
-	if (is_builtin(cmd))
-		{
-			freearray(env);
-			arena_clear(&shell->arena);
-			free_env(shell->env);
-			if (shell->fd != NULL)
-				free(shell->fd);
-			shell->exit_code = run_builtin(cmd, shell);
-		}
+	if (is_builtin(command))
+	{
+		shell->exit_code = run_builtin(command, shell);
+		return (0);
+
+	}
+	else if (ft_strchr(command->argv[0], '/' ))
+		abs_path_execution(command, shell, exec);
 	else
 	{
-		if (relative_path_execution(shell, cmd, env) == 1)
+		if (relative_path_execution(shell, command, exec) == 1)
 			return 1;
 	}
 	return (0);
 }
 
-int	child_process(t_cmd *cmd, t_shell *shell, t_fd *fd, char **env)
+int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec)
 {
-	pid_t	pid;
-
-
-
-	pid = fork();
-	if (pid < 0)
+	exec->pid = fork();
+	if (exec->pid < 0)
 		return(ft_putstr_fd("forking failed in child process", 2), 1);
-	if (pid == 0)
+	if (exec->pid == 0)
 	{
 
-		if (fds_manipulation_and_execution(cmd, shell, fd, env) == 1)
-			set_the_code_and_exit(shell, GENERAL_ERROR, NULL, env);
+		if (fds_manipulation_and_execution(cmd, shell, exec) == 1)
+			set_the_code_and_exit(shell, exec, GENERAL_ERROR);
 	}
 	// printf("\ni am here as well in the child process\n");
-	if (pid > 0)
-		waitstatus(pid, shell);
-	// freearray(env);
+	if (exec->pid > 0)
+		waitstatus(exec->pid, shell);
+	while (waitpid(-1, NULL, 0)>0);
+	clean_exec(exec);
 	return (0);
 }

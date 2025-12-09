@@ -4,7 +4,7 @@
 static void	run_exit(t_shell *shell);
 static int	get_ac(char **av);
 static int	num_error(char *str);
-static void	clean_all(t_env *head, t_arena **arena);
+static void	clean_all(t_env *head, t_arena **arena, t_shell *shell);
 
 int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 {
@@ -26,17 +26,25 @@ int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 		exit_code = num_error(av[1]);
 	else
 		exit_code = result;
-	clean_all(shell->env, arena);
+	clean_all(shell->env, arena, shell);
 	exit(exit_code & 0xFF);
 }
 
-static void	clean_all(t_env *head, t_arena **arena)
+static void	clean_all(t_env *head, t_arena **arena, t_shell *shell)
 {
 	rl_clear_history();
 	free_env(head);
 	free_arena(arena);
-	printf("freed arena\n");
-	// close fds?
+	if (shell->exec->fd)
+    {
+        free(shell->exec->fd);
+        shell->exec->fd = NULL;
+    }
+    if (shell->exec)
+    {
+        free(shell->exec);
+        shell->exec = NULL;
+    }
 }
 
 static void	run_exit(t_shell *shell)
@@ -44,7 +52,7 @@ static void	run_exit(t_shell *shell)
 	long	exit_code;
 
 	exit_code = shell->exit_code;
-	clean_all(shell->env, &shell->arena);
+	clean_all(shell->env, &shell->arena, shell);
 	exit(exit_code & 0xFF);
 }
 

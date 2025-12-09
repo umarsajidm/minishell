@@ -16,6 +16,15 @@ typedef struct s_fd
 	int	out_fd;
 }	t_fd;
 
+typedef struct s_exec
+{
+    t_fd    *fd;
+    pid_t   pid;
+    char    *path_to_exec;
+    char    **envp;
+    int     jonatan;
+}   t_exec;
+
 /* ===========================
 ** Arena Memory Types
 ** =========================== */
@@ -50,7 +59,7 @@ typedef struct s_shell
 	t_arena	*arena;      /* arena memory */
 	int		exit_code;   /* last exit code */
 	bool	running;     /* shell running flag */
-	t_fd	*fd;
+	t_exec	*exec;
 }	t_shell;
 
 /* ===========================
@@ -125,6 +134,7 @@ typedef struct s_state
 	t_shell	*shell;     /* Shell access */
 	t_arena	**arena;    /* Memory arena */
 }	t_state;
+
 
 /* ===========================
 ** Global Variables

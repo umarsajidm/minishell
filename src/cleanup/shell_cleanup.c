@@ -10,8 +10,8 @@ void execution_cleanup(t_shell *shell, char **arr)
 
 	// close_fd(shell->fd);
 
-	if (shell->fd != NULL)
-		free(shell->fd);
+	if (shell->exec->fd != NULL)
+		free(shell->exec->fd);
 
 	freearray(arr);
 

@@ -42,8 +42,8 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
     if (res == 0)                            // allocation failure during expansion
     {
         ft_printf("minishell: parse error: alloc fail\n"); // formatted error
-        if (shell->fd != NULL)
-            free(shell->fd);
+        if (shell->exec->fd != NULL)
+            free(shell->exec->fd);
         shell->exit_code = 1;
         return ;
     }
