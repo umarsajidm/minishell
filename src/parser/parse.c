@@ -116,5 +116,11 @@ t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
         // In both cases, we move next here.
         it = it->next;                              
     }
+	if (cur == NULL && head != NULL)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+		shell->exit_code = 2;
+		return (NULL);
+	}
     return (head);                                 // return command list
 }
