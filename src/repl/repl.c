@@ -32,11 +32,12 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
     if (!commands)                 // parse failed (syntax or alloc)
     {
         /* parse_tokens should print the error */
+		setup_parent_signals();
         shell->exit_code = 2;
         return ;
     }
     // dbg_print_cmds(commands);              // show parsed commands
-
+	setup_parent_signals();
     /* variable expansion */
     res = expand_command_argv(commands, shell, arena);
     if (res == 0)                            // allocation failure during expansion
@@ -127,9 +128,9 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
 //         if (!input)
 //         {
 //             // TESTER FIX: Do not print "exit" here.
-//             // The shell should exit silently on CTRL+D during tests, 
+//             // The shell should exit silently on CTRL+D during tests,
 //             // or only print it if you really want to (but testers hate it).
-//             // ft_printf("exit\n"); 
+//             // ft_printf("exit\n");
 //             break ;
 //         }
 //         process_line(shell, arena, input);
@@ -147,7 +148,7 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
 //     char    *line;
 //     char    *input;
 
-  
+
 //         line = get_next_line(STDIN_FILENO);
 //         if (!line)
 //             return; // End of input/pipe
@@ -160,14 +161,14 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
 
 //         // 2. Copy to your arena
 //         input = arena_strdup(arena, line);
-        
+
 //         // 3. Free the GNL buffer immediately
 //         free(line);
 
 //         // 4. Process
 //         if (input) // Ensure allocation worked
 //             process_line(shell, arena, input);
-            
+
 //         arena_clear(arena);
 // }
 
@@ -192,7 +193,7 @@ void    repl_loop(t_shell *shell, t_arena **arena)
             break ;
         }
 
-        /* * Optional: Add history here if read_input doesn't do it. 
+        /* * Optional: Add history here if read_input doesn't do it.
          * Standard readline usage requires adding non-empty lines to history.
          */
         if (*input)
@@ -231,14 +232,14 @@ void    non_interactive_loop(t_shell *shell, t_arena **arena)
 
         /* Copy to your arena */
         input = arena_strdup(arena, line);
-        
+
         /* Free the GNL buffer immediately */
         free(line);
 
         /* Process the line */
-        if (input) 
+        if (input)
             process_line(shell, arena, input);
-            
+
         arena_clear(arena);
     }
 }

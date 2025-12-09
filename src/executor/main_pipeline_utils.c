@@ -113,14 +113,16 @@ int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *c
    		}
 	}
     pipe(exec->fd->fd);
+	setup_parent_waiting();
     exec->pid = fork();
     if (exec->pid < 0)
     {
         perror("fork failed in multiple child process");
-        return (1);
+        return (setup_parent_signals(), 1);
     }
     if (exec->pid == 0)
     {
+		setup_child_signals();
         if (fds_manipulation_and_execution(command, shell, exec) == 1)
             set_the_code_and_exit(shell, exec, COMMAND_NOT_FOUND);
     }
@@ -161,7 +163,7 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
 
     close_fd(exec->fd);
     clean_exec(exec);
-    
+
 }
 
 

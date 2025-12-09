@@ -45,7 +45,10 @@ int handle_operator_token(t_list **tokens_ref, t_cmd **cur,
     if (is_pipe_token(tok->token))                 // pipe
         return (handle_pipe_token(tok, cur));
     if (is_redir_token(tok->token))               // redirection
+	{
+		setup_hd_signals();
         return (handle_redir_token(tokens_ref, cur, head, arena));
+	}
     return (0);                                     // unknown operator
 }
 
@@ -109,12 +112,12 @@ t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
         // FIX: Pass address of 'it' so process_token can look ahead if needed
         if (process_token(&it, &cur, &head, shell, arena) == -1)
             return (NULL);                         // error during token processing
-        
+
         // Loop advancement logic:
         // If it was a word/pipe, 'it' is still the same node.
         // If it was a redir, 'it' now points to the target (filename).
         // In both cases, we move next here.
-        it = it->next;                              
+        it = it->next;
     }
 	if (cur == NULL && head != NULL)
 	{
