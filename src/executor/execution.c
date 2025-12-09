@@ -24,49 +24,39 @@ static  char    **get_path(char **envp_arr)
 	return (NULL);
 }
 
-static	char	*join_and_check(char *dir, char *pathcmd, char **paths)
-{
-	char	*path;
 
-	path = ft_strjoin(dir, pathcmd);
-	if (!path)
-		return (NULL);
-	if (access(path, X_OK) == 0)
-	{
-		freearray(paths);
-		free(pathcmd);
-		return (path);
-	}
-	// printf("in the strjoin and check");
-	// free(pathcmd);
-	free(path);
-	return (NULL);
-}
 
 char	*pathtoexecute(char **cmd, t_exec *exec)
 {
 	int		i;
 	char	**paths;
-	char	*pathcmd;
+	char	*path_part;
 	char	*path;
 
-	pathcmd = ft_strjoin("/", cmd[0]);
-	if (!pathcmd)
-		return (NULL);
+	if (access(cmd[0], X_OK) == 0)
+		return (ft_strdup(cmd[0]));
 	paths = get_path(exec->envp);
-	if (!paths || !*paths)
+	if (!paths)
 		return (NULL);
 	i = 0;
 	while (paths[i])
 	{
-		path = join_and_check(paths[i], pathcmd, paths);
-		if (path)
+		path_part = ft_strjoin(paths[i], "/");
+		if (!path_part)
+			break ;
+		path = ft_strjoin(path_part, cmd[0]);
+		free(path_part);
+		if (!path)
+			break ;
+		if (access(path, X_OK) == 0)
+		{
+			freearray(paths);
 			return (path);
+		}
+		free(path);
 		i++;
 	}
 	freearray(paths);
-	free(pathcmd);
-	// free(path);
 	return (NULL);
 }
 
