@@ -62,7 +62,11 @@ char    *handle_heredoc(t_cmd *cmd, t_arena **arena, const char *delimiter);
 ** 			Signals
 ** =========================== */
 
-void    setup_signals(void);
+void    setup_parent_signals(void);
+void    setup_parent_waiting(void);
+void    setup_child_signals(void);
+void    setup_hd_signals(void);
+void    handle_hd_signal(int sig);
 void    handle_sigint(int sig);
 void    handle_sigquit(int sig);
 
