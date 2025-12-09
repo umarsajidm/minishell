@@ -35,9 +35,15 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
     {
 		freearray(exec->envp);
 		exec->envp = NULL;
-        ft_putstr_fd(command->argv[0], 2);
-        ft_putstr_fd(": command not here found\n", 2);
-        shell->exit_code = 127;
+        if (command->argv && command->argv[0])
+        {
+            ft_putstr_fd(command->argv[0], 2);
+            ft_putstr_fd("minishell: ", 2);
+ft_putstr_fd(command->argv[0], 2);
+ft_putstr_fd(": command not found\n", 2);
+
+            shell->exit_code = 127;
+        }
         return (1);
     }
 	// ft_putstr_fd("this is me\n", 2);
@@ -139,7 +145,10 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
     while (command)
     {
         if (initialize_and_process_multiple_child(exec, shell, command) == 1)
+        {
             clean_exec(exec);
+            break ;
+        }
         else
         {
             parent_loop(command, exec->fd);

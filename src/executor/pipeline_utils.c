@@ -26,7 +26,11 @@ static int	applying_input_redir(t_redir *r, int *in_fd)
 	*in_fd = open(r->target, O_RDONLY);
 	if (*in_fd < 0)
 	{
-		perror("input redirection");
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(r->target, 2);
+		ft_putstr_fd(": ", 2);
+		ft_putstr_fd(strerror(errno), 2);
+		ft_putstr_fd("\n", 2);
 		return (1);
 	}
 	return (0);
@@ -42,7 +46,11 @@ static int	applying_outside_redir(t_redir *r, int *out_fd)
 		*out_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (*out_fd < 0)
 	{
-		perror("output redirection or heredoc");
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(r->target, 2);
+		ft_putstr_fd(": ", 2);
+		ft_putstr_fd(strerror(errno), 2);
+		ft_putstr_fd("\n", 2);
 		return (1);
 	}
 	return (0);
