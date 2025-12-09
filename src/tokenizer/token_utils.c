@@ -1,156 +1,80 @@
 #include "minishell.h"
 
-/* 
- * Handle operators in the input string
- * - Supports |, <, >, <<, >>
- * - Adds operator as token to list using arena
- * Returns next index after operator or -1 on error
+/*
+ * Check if character is an operator
  */
-int	handle_operator(char *s, int i, t_list **tokens, t_arena **arena)
+int	is_operator_char(char c)
 {
-	int		len;                                   // operator length
-	t_list	*node;                                 // new list node
-	t_token	*tok;                                  // token struct
-	t_list	*tmp;                                  // iterator
-
-	len = 1;                                       // default operator length
-	if ((s[i] == '<' && s[i + 1] == '<')
-		|| (s[i] == '>' && s[i + 1] == '>'))
-		len = 2;                                   // double operator
-
-	tok = arena_alloc(arena, sizeof(t_token));     // allocate token struct
-	if (!tok)
-		return (-1);                              // alloc failed
-
-	tok->token = arena_alloc(arena, len + 1);      // allocate operator string
-	if (!tok->token)
-		return (-1);                              // alloc failed
-
-	ft_memcpy(tok->token, s + i, len);             // copy operator chars
-	tok->token[len] = '\0';                        // null-terminate
-	tok->type = T_OPERATOR;                        // set type
-
-	node = arena_alloc(arena, sizeof(t_list));     // allocate list node
-	if (!node)
-		return (-1);                              // alloc failed
-	node->content = tok;                           // attach token
-	node->next = NULL;                             // end of list
-
-	if (!*tokens)                                  // first token
-		*tokens = node;
-	else
-	{
-		tmp = *tokens;                             // append at end
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = node;                          // link new node
-	}
-	return (i + len);                              // next index
+	if (c == '|' || c == '<' || c == '>')
+		return (1);                             // operator found
+	return (0);                                 // not an operator
 }
 
-/* * Handle quoted strings in the input
- * - Supports single (') and double (") quotes
- * - FIX: Everything INCLUDING quotes is stored as a single token
- * Returns next index after closing quote or -1 on error
+/*
+ * Skip whitespace characters
  */
-int	handle_quote(char *s, int i, t_list **tokens, t_arena **arena)
+int	skip_spaces(char *s, int i)
 {
-	t_list	*node;
-	t_token	*tok;
-	char	quote;
-	int		start;
+	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
+		i++;                                    // advance index
+	return (i);                                 // return new index
+}
+
+/*
+ * Duplicate a substring from start to end
+ */
+char	*dup_word(t_arena **arena, const char *str, int start, int end)
+{
+	char	*word;
+	int		len;
+
+	len = end - start;
+	word = arena_alloc(arena, len + 1);         // alloc string
+	if (!word)
+		return (NULL);                          // alloc failed
+	ft_memcpy(word, str + start, len);          // copy chars
+	word[len] = '\0';                           // null terminate
+	return (word);
+}
+
+/*
+ * Helper: Append node to end of list
+ */
+static void	list_append(t_list **tokens, t_list *node)
+{
 	t_list	*tmp;
 
-	start = i;                                      // FIX: Start BEFORE the quote
-	quote = s[i];
-	i++;
-
-	while (s[i] && s[i] != quote)
-		i++;
-
-	if (!s[i])
-	{
-		ft_printf("minishell: syntax error: unmatched quote\n");
-		return (-1);
-	}
-	i++;                                            // Include the closing quote in count
-
-	tok = arena_alloc(arena, sizeof(t_token));
-	if (!tok)
-		return (-1);
-
-	tok->token = arena_alloc(arena, i - start + 1); // FIX: Allocate length including both quotes
-	if (!tok->token)
-		return (-1);
-
-	ft_memcpy(tok->token, s + start, i - start);    // FIX: Copy from 'start' (the opening quote)
-	tok->token[i - start] = '\0';
-	tok->type = T_QUOTE;
-
-	node = arena_alloc(arena, sizeof(t_list));
-	if (!node)
-		return (-1);
-	node->content = tok;
-	node->next = NULL;
-
 	if (!*tokens)
-		*tokens = node;
+		*tokens = node;                         // set head
 	else
 	{
 		tmp = *tokens;
 		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = node;
+			tmp = tmp->next;                    // find tail
+		tmp->next = node;                       // link node
 	}
-	return (i);                                    // i is already incremented past the closing quote
 }
 
-/* 
- * Handle normal words in the input
- * - Word ends at space, tab, operator, or quote
- * Returns next index after word or -1 on error
+/*
+ * Allocate token struct, node, and add to list
+ * - Updated to use t_token_type
  */
-int	handle_word(char *s, int i, t_list **tokens, t_arena **arena)
+int	create_token_node(t_arena **ar, t_list **toks, char *content, t_token_type type)
 {
-	t_list	*node;                                  // new node
-	t_token	*tok;                                   // token struct
-	int		start;                                  // start index
-	t_list	*tmp;                                   // iterator
+	t_token	*tok;
+	t_list	*node;
 
-	start = i;                                      // beginning of word
-	while (s[i] && !is_operator_char(s[i]) && s[i] != ' '
-		&& s[i] != '\t' && s[i] != '\'' && s[i] != '"'
-		&& s[i] != '\n')
-		i++;                                        // find end of word
-	if (i == start)
-		return (i);                                // empty, nothing to store
-
-	tok = arena_alloc(arena, sizeof(t_token));      // allocate token struct
+	tok = arena_alloc(ar, sizeof(t_token));     // alloc struct
 	if (!tok)
-		return (-1);                              // alloc failed
-
-	tok->token = arena_alloc(arena, i - start + 1); // allocate word string
-	if (!tok->token)
-		return (-1);                              // alloc failed
-
-	ft_memcpy(tok->token, s + start, i - start);    // copy word
-	tok->token[i - start] = '\0';                   // null-terminate
-	tok->type = T_WORD;                             // set type
-
-	node = arena_alloc(arena, sizeof(t_list));      // allocate list node
+		return (0);                             // alloc failed
+	tok->token = content;                       // set string
+	tok->type = type;                           // set type
+	tok->next = NULL;                           // (optional) init unused next
+	node = arena_alloc(ar, sizeof(t_list));     // alloc node
 	if (!node)
-		return (-1);                              // alloc failed
-	node->content = tok;                            // set content
-	node->next = NULL;                              // last node
-
-	if (!*tokens)                                   // first token
-		*tokens = node;
-	else
-	{
-		tmp = *tokens;                             // append to end
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = node;                          // link node
-	}
-	return (i);                                     // next index
+		return (0);                             // alloc failed
+	node->content = tok;                        // attach content
+	node->next = NULL;
+	list_append(toks, node);                    // add to list
+	return (1);                                 // success
 }

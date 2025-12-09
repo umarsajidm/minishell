@@ -2,7 +2,7 @@
 # define MINISHELL_TYPES_H
 
 /* ===========================
-**        Standard types
+** Standard types
 ** =========================== */
 # include <stddef.h>  /* size_t */
 # include <stdbool.h> /* bool */
@@ -10,11 +10,11 @@
 //execution's fd
 typedef struct s_fd
 {
-    int fd[2];
-    int prev_fd;
-    int in_fd;
-    int out_fd;
-}   t_fd;
+	int	fd[2];
+	int	prev_fd;
+	int	in_fd;
+	int	out_fd;
+}	t_fd;
 
 typedef struct s_exec
 {
@@ -26,7 +26,7 @@ typedef struct s_exec
 }   t_exec;
 
 /* ===========================
-**        Arena Memory Types
+** Arena Memory Types
 ** =========================== */
 typedef struct s_arena
 {
@@ -39,12 +39,12 @@ typedef struct s_arena
 # define GROWTH_FACTOR 2
 
 /* ===========================
-**        Forward declarations
+** Forward declarations
 ** =========================== */
 typedef struct s_list	t_list;
 
 /* ===========================
-**        Environment / Shell
+** Environment / Shell
 ** =========================== */
 typedef struct s_env
 {
@@ -56,14 +56,14 @@ typedef struct s_env
 typedef struct s_shell
 {
 	t_env	*env;        /* environment variables linked list */
-	t_arena	*arena;	 	 /* arena memory */
+	t_arena	*arena;      /* arena memory */
 	int		exit_code;   /* last exit code */
 	bool	running;     /* shell running flag */
 	t_exec	*exec;
 }	t_shell;
 
 /* ===========================
-**        Token types
+** Token types
 ** =========================== */
 typedef enum e_token_type
 {
@@ -81,7 +81,7 @@ typedef struct s_token
 }	t_token;
 
 /* ===========================
-**        Parser structures
+** Parser structures
 ** =========================== */
 typedef enum e_redir_type
 {
@@ -100,14 +100,14 @@ typedef struct s_redir
 
 typedef struct s_cmd
 {
-	char		**argv;       // command arguments
-	t_redir		*redirs;      // redirection list
-	struct s_cmd	*next;    // next command in pipeline
-	char		*heredoc;     // content of heredoc, if any
-}				t_cmd;
+	char			**argv;       // command arguments
+	t_redir			*redirs;      // redirection list
+	struct s_cmd	*next;        // next command in pipeline
+	char			*heredoc;     // content of heredoc, if any
+}	t_cmd;
 
 /* ===========================
-**        Expansion helper types
+** Expansion helper types
 ** =========================== */
 typedef struct s_index
 {
@@ -124,10 +124,20 @@ typedef struct s_exp
 	struct s_exp	*next;   /* next node */
 }	t_exp;
 
+/* Internal State struct for expansion parsing */
+typedef struct s_state
+{
+	char	*res;       /* Result string */
+	size_t	len;        /* Current length */
+	size_t	i;          /* Current index in input */
+	int		quote;      /* 0=None, 1=Single, 2=Double */
+	t_shell	*shell;     /* Shell access */
+	t_arena	**arena;    /* Memory arena */
+}	t_state;
 
 
 /* ===========================
-**        Global Variables
+** Global Variables
 ** =========================== */
 extern int	g_signal; /* last received signal */
 
