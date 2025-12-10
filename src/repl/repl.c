@@ -207,39 +207,22 @@ void    repl_loop(t_shell *shell, t_arena **arena)
 /*
  * Non-Interactive Loop (Pipes)
  * - Uses get_next_line (no prompt, no history)
- * - Loops until GNL returns NULL
- */
-/*
- * Non-Interactive Loop (Pipes)
- * - Uses get_next_line (no prompt, no history)
  * - Loops until GNL returns NULL to handle scripts/multiple commands
  */
 void    non_interactive_loop(t_shell *shell, t_arena **arena)
 {
-    char    *line;
     char    *input;
 
-    // while (shell->running)
-    // {
-        line = get_next_line(STDIN_FILENO);
-        if (!line)
-            return; // End of input/pipe (CTRL+D or End of Script)
-
-        /* Trim the newline manually. */
-        size_t len = ft_strlen(line);
-        if (len > 0 && line[len - 1] == '\n')
-            line[len - 1] = '\0';
-
-        /* Copy to your arena */
-        input = arena_strdup(arena, line);
-
-        /* Free the GNL buffer immediately */
-        free(line);
+    while (shell->running)
+    {
+        input = read_input(arena);
+        if (!input)
+            break; // End of input/pipe (CTRL+D or End of Script)
 
         /* Process the line */
         if (input)
             process_line(shell, arena, input);
 
         arena_clear(arena);
-    // }
+    }
 }

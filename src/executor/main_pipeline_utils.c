@@ -132,8 +132,10 @@ int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *c
 // void child_process_for_multiple()
 void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
 {
+    int error_in_pipeline;
+
+    error_in_pipeline = 0;
     init_fd(exec->fd);
-    //only one command (no pipeline)
     if (!command->next)
     {
         if (intialize_and_process_single_child(exec, shell, command) == 0)
@@ -143,12 +145,11 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
         }
         return;
     }
-   //x multiple commands (pipeline)
     while (command)
     {
         if (initialize_and_process_multiple_child(exec, shell, command) == 1)
         {
-            clean_exec(exec);
+            error_in_pipeline = 1;
             break ;
         }
         else
@@ -157,13 +158,11 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
             command = command->next;
         }
     }
-
-    waitstatus(exec->pid, shell);
+    if (error_in_pipeline == 0)
+        waitstatus(exec->pid, shell);
     while (waitpid(-1, NULL, 0) > 0);
-
     close_fd(exec->fd);
     clean_exec(exec);
-
 }
 
 

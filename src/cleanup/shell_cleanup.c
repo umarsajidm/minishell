@@ -1,19 +1,16 @@
 #include "minishell.h"
 
-void execution_cleanup(t_shell *shell, char **arr)
+void execution_cleanup(t_shell *shell)
 {
-    if (shell && shell->env)
+    if (shell->env)
         free_env(shell->env);
 
     if (shell->arena)
-		arena_clear(&shell->arena);
+        free_arena(&shell->arena);
 
-	// close_fd(shell->fd);
+    if (shell->exec->fd)
+        free(shell->exec->fd);
 
-	if (shell->exec->fd != NULL)
-		free(shell->exec->fd);
-
-	freearray(arr);
-
-    // rl_clear_history();
+    if (shell->exec)
+        free(shell->exec);
 }

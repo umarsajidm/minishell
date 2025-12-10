@@ -9,10 +9,13 @@ int	ft_env(t_env *head)
 			head = head->next;
 			continue;
 		}
+		ft_putstr_fd(head->key, STDERR_FILENO);
 		if (head->value)
-			printf("%s=%s\n", head->key, head->value);
-		else
-			printf("%s\n", head->key);
+		{
+			ft_putchar_fd('=', STDERR_FILENO);
+			ft_putstr_fd(head->value, STDERR_FILENO);
+		}
+		ft_putchar_fd('\n', STDERR_FILENO);
 		head = head->next;
 	}
 	return (0);

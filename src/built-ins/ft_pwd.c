@@ -10,7 +10,8 @@ int	ft_pwd(void)
 		perror("pwd");
 		return (1);
 	}
-	printf("%s\n", pwd);
+	ft_putstr_fd(pwd, STDOUT_FILENO);
+	ft_putchar_fd('\n', STDOUT_FILENO);
 	free(pwd);
 	return (0);
 }
