@@ -5,6 +5,7 @@ int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
     t_shell *shell, t_arena **arena)
 {
     char    *expanded;
+    int     is_first_arg;
 
     /* ensure a current command node exists (will append to head if needed) */
     if (!ensure_current_cmd(cur, head, arena))
@@ -12,9 +13,12 @@ int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
     expanded = expand_string(tok->token, shell, arena);
     if (!expanded)
         return (0);                                /* allocation failed */
+    is_first_arg = ((*cur)->argv == NULL);
+    if (is_first_arg)
+        (*cur)->unexpanded_cmd = tok->token;
     /* If a word is from an unquoted token and expands to nothing,
      * it is removed from the argument list. */
-    if (tok->type != T_QUOTE && expanded[0] == '\0')
+    if (tok->type != T_QUOTE && expanded[0] == '\0' && !is_first_arg)
         return (1);
     if (!add_word_to_argv(*cur, expanded, arena))
         return (0);                                /* allocation failed */

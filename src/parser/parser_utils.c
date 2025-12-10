@@ -11,6 +11,7 @@ t_cmd	*create_cmd_node(t_arena **arena)
 	cmd->argv = NULL;                              // initialize argv
 	cmd->redirs = NULL;                            // initialize redirections
 	cmd->next = NULL;                              // initialize next pointer
+	cmd->unexpanded_cmd = NULL;
 	return (cmd);                                  // return new command node
 }
 

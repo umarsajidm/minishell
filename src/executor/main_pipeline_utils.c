@@ -21,7 +21,6 @@ void pre_init(t_exec *exec)
 
 int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 {
-
     pre_init(exec);
     exec->envp = envp_arr(shell);
     if (!exec->envp)
@@ -30,16 +29,30 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
         exec->path_to_exec = pathtoexecute(command->argv, exec);
     if (!exec->path_to_exec)
     {
+		char *cmd_name_for_error;
+
 		freearray(exec->envp);
-    	exec->envp = NULL;
-        if (command->argv && command->argv[0])
-        {
-            ft_putstr_fd(command->argv[0], 2);
-            ft_putstr_fd(": command not found\n", 2);
-            shell->exit_code = 127;
-        }
+		exec->envp = NULL;
+        shell->exit_code = 127;
+		if (command->argv && command->argv[0] && command->argv[0][0])
+			cmd_name_for_error = command->argv[0];
+		else
+			cmd_name_for_error = command->unexpanded_cmd;
+		if (cmd_name_for_error)
+		{
+			ft_putstr_fd(cmd_name_for_error, 2);
+			ft_putstr_fd(": command not found\n", 2);
+		}
         return (1);
     }
+	// ft_putstr_fd("this is me\n", 2);
+    // if (exec->envp != NULL)
+	// {
+	// 	freearray(exec->envp);
+	// 	exec->envp = NULL;
+    //     return (1);
+	// }
+    //need to make a function to putste and return value;
     return (0);
 }
 
