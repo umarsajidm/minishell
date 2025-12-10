@@ -25,7 +25,7 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
         return ;
     }
 
-    // dbg_print_tokens(tokens);              // debug tokens
+    dbg_print_tokens(tokens);              // debug tokens
 
     /* parse tokens into commands */
     commands = parse_tokens(tokens, shell, arena);
@@ -36,7 +36,7 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
         shell->exit_code = 2;
         return ;
     }
-    // dbg_print_cmds(commands);              // show parsed commands
+    dbg_print_cmds(commands);              // show parsed commands
 	setup_parent_signals();
     /* variable expansion */
     res = expand_command_argv(commands, shell, arena);

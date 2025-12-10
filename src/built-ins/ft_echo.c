@@ -8,19 +8,19 @@ int	ft_echo(char **av)
 	int	newline;
 
 	if (!av[1])
-		return ((void)printf("\n"), 0);
+		return ((void)ft_putchar_fd('\n', STDOUT_FILENO), 0);
 	i = 1;
 	newline = 1;
 	while (is_flag(av[i], &newline))
 		i++;
 	while (av[i])
 	{
-		printf("%s", av[i++]);
+		ft_putstr_fd(av[i++], STDOUT_FILENO);
 		if (av[i])
-			printf(" ");
+			ft_putchar_fd(' ', STDOUT_FILENO);
 	}
 	if (newline)
-		printf("\n");
+		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (0);
 }
 
