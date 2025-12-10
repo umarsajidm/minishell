@@ -28,13 +28,19 @@ static  char    **get_path(char **envp_arr)
 
 char	*pathtoexecute(char **cmd, t_exec *exec)
 {
-	int		i;
+	int	i;
 	char	**paths;
 	char	*path_part;
 	char	*path;
 
-	if (access(cmd[0], X_OK) == 0)
-		return (ft_strdup(cmd[0]));
+	if (!cmd || !cmd[0] || !cmd[0][0])
+		return (NULL);
+	if (ft_strchr(cmd[0], '/'))
+	{
+		if (access(cmd[0], X_OK) == 0)
+			return (ft_strdup(cmd[0]));
+		return (NULL);
+	}
 	paths = get_path(exec->envp);
 	if (!paths)
 		return (NULL);

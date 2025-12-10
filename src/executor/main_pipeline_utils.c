@@ -20,8 +20,6 @@ void pre_init(t_exec *exec)
 
 
 int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
-
-
 {
 
     pre_init(exec);
@@ -36,8 +34,6 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
     	exec->envp = NULL;
         if (command->argv && command->argv[0])
         {
-            ft_putstr_fd(command->argv[0], 2);
-            ft_putstr_fd("minishell: ", 2);
             ft_putstr_fd(command->argv[0], 2);
             ft_putstr_fd(": command not found\n", 2);
             shell->exit_code = 127;
