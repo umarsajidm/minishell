@@ -9,7 +9,7 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
 {
     t_list  *tokens;
     t_cmd   *commands;
-    int     res;
+    // int     res;
 
     /* if the line is empty or only whitespace, skip processing */
     if (is_blank_line(input))
@@ -34,18 +34,6 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
         /* parse_tokens should print the error */
 		setup_parent_signals();
         shell->exit_code = 2;
-        return ;
-    }
-    // dbg_print_cmds(commands);              // show parsed commands
-	setup_parent_signals();
-    /* variable expansion */
-    res = expand_command_argv(commands, shell, arena);
-    if (res == 0)                            // allocation failure during expansion
-    {
-        ft_printf("minishell: parse error: alloc fail\n"); // formatted error
-        if (shell->exec->fd != NULL)
-            free(shell->exec->fd);
-        shell->exit_code = 1;
         return ;
     }
     // dbg_print_expanded_argv(commands);
