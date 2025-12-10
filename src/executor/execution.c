@@ -78,18 +78,15 @@ char	*pathtoexecute(char **cmd, t_exec *exec)
 	return (NULL);
 }
 
-static void	checking(char *path)
+static	void	checking(char *path)
 {
-	if (access(path, F_OK) == -1)
-	{
-		errno = ENOENT;
-		return ;
-	}
-	if (access(path, X_OK) == -1)
-	{
+	// printf("\ni am setting the status here\n");
+	if ((access(path, F_OK) == 0) && (access(path, X_OK) == -1))
 		errno = EACCES;
+	if (access(path, X_OK) == 0)
 		return ;
-	}
+	if (access(path, X_OK))
+		errno = ENOENT;
 }
 //need serparate function for absolute path
 static void abs_path_execution(t_cmd *cmd, t_shell *shell, t_exec *exec)

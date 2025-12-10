@@ -21,6 +21,8 @@ void pre_init(t_exec *exec)
 
 int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 {
+    char *cmd_name_for_error;
+
     pre_init(exec);
     exec->envp = envp_arr(shell);
     if (!exec->envp)
@@ -29,8 +31,6 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
         exec->path_to_exec = pathtoexecute(command->argv, exec);
     if (!exec->path_to_exec)
     {
-		char *cmd_name_for_error;
-
 		freearray(exec->envp);
 		exec->envp = NULL;
         shell->exit_code = 127;
@@ -90,50 +90,116 @@ int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *comm
     return (0);
 }
 
+// int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *command)
+// {
+//     if (!is_builtin(command))
+// 	{
+// 		if (init_exec(exec, shell, command) == 0)
+// 		{
+// 			if (command->redirs)
+// 			{
+// 				if (applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd)) == 1)
+// 				{
+// 					shell->exit_code = GENERAL_ERROR;
+// 					return (1);
+// 				}
+// 			}
+// 		}
+//     	else
+//     	{
+//        		clean_exec(exec);
+//         	return (1);
+//    		}
+// 	}
+//     pipe(exec->fd->fd);
+// 	setup_parent_waiting();
+//     exec->pid = fork();
+//     if (exec->pid < 0)
+//     {
+//         perror("fork failed in multiple child process");
+//         return (setup_parent_signals(), 1);
+//     }
+//     if (exec->pid == 0)
+//     {
+// 		setup_child_signals();
+//         if (fds_manipulation_and_execution(command, shell, exec) == 1)
+//             set_the_code_and_exit(shell, exec, COMMAND_NOT_FOUND);
+//     }
+//     return (0);
+// }
+
+// // void child_process_for_multiple()
+// void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
+// {
+//     int error_in_pipeline;
+
+//     error_in_pipeline = 0;
+//     init_fd(exec->fd);
+//     if (!command->next)
+//     {
+//         if (intialize_and_process_single_child(exec, shell, command) == 0)
+//         {
+//             clean_exec(exec);
+//             close_fd(exec->fd);
+//         }
+//         return;
+//     }
+//     while (command)
+//     {
+//         if (initialize_and_process_multiple_child(exec, shell, command) == 1)
+//         {
+//             error_in_pipeline = 1;
+//             break ;
+//         }
+//         else
+//         {
+//             parent_loop(command, exec->fd);
+//             command = command->next;
+//         }
+//     }
+//     if (error_in_pipeline == 0 && exec->pid > 0)
+//         waitstatus(exec->pid, shell);
+//     while (waitpid(-1, NULL, 0) > 0);
+//     close_fd(exec->fd);
+//     clean_exec(exec);
+// }
+
+
 int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *command)
 {
-    if (!is_builtin(command))
-	{
-		if (init_exec(exec, shell, command) == 0)
-		{
-			if (command->redirs)
-			{
-				if (applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd)) == 1)
-				{
-					shell->exit_code = GENERAL_ERROR;
-					return (1);
-				}
-			}
-		}
-    	else
-    	{
-       		clean_exec(exec);
-        	return (1);
-   		}
-	}
     pipe(exec->fd->fd);
-	setup_parent_waiting();
+    setup_parent_waiting();
+
     exec->pid = fork();
     if (exec->pid < 0)
     {
         perror("fork failed in multiple child process");
-        return (setup_parent_signals(), 1);
+        setup_parent_signals();
+        return (1);
     }
     if (exec->pid == 0)
     {
-		setup_child_signals();
+        setup_child_signals();
+        if (init_exec(exec, shell, command) != 0)
+        {
+            set_the_code_and_exit(shell, exec, 127);  
+        }
+        if (command->redirs)
+        {
+            if (applying_redir(command, &(exec->fd->in_fd), &(exec->fd->out_fd)) == 1)
+                set_the_code_and_exit(shell, exec, GENERAL_ERROR);
+        }
         if (fds_manipulation_and_execution(command, shell, exec) == 1)
             set_the_code_and_exit(shell, exec, COMMAND_NOT_FOUND);
+        exit(0);
     }
     return (0);
 }
 
-// void child_process_for_multiple()
 void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
 {
-    int error_in_pipeline;
+    int error_in_pipeline = 0;
 
-    error_in_pipeline = 0;
     init_fd(exec->fd);
     if (!command->next)
     {
@@ -146,22 +212,18 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
     }
     while (command)
     {
-        if (initialize_and_process_multiple_child(exec, shell, command) == 1)
+        if (initialize_and_process_multiple_child(exec, shell, command) != 0)
         {
             error_in_pipeline = 1;
             break ;
         }
-        else
-        {
-            parent_loop(command, exec->fd);
-            command = command->next;
-        }
+        parent_loop(command, exec->fd);
+        command = command->next;
     }
-    if (error_in_pipeline == 0)
+    if (!error_in_pipeline && exec->pid > 0)
         waitstatus(exec->pid, shell);
-    while (waitpid(-1, NULL, 0) > 0);
+    while (waitpid(-1, NULL, 0) > 0)
+        ;
     close_fd(exec->fd);
     clean_exec(exec);
 }
-
-
