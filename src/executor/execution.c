@@ -37,8 +37,13 @@ char	*pathtoexecute(char **cmd, t_exec *exec)
 		return (NULL);
 	if (ft_strchr(cmd[0], '/'))
 	{
-		if (access(cmd[0], X_OK) == 0)
+		struct stat	s;
+		if (access(cmd[0], F_OK) == 0)
+		{
+			if (stat(cmd[0], &s) == 0 && S_ISDIR(s.st_mode))
+				return (NULL);
 			return (ft_strdup(cmd[0]));
+		}
 		return (NULL);
 	}
 	paths = get_path(exec->envp);
@@ -47,6 +52,7 @@ char	*pathtoexecute(char **cmd, t_exec *exec)
 	i = 0;
 	while (paths[i])
 	{
+		struct stat	s;
 		path_part = ft_strjoin(paths[i], "/");
 		if (!path_part)
 			break ;
@@ -54,8 +60,14 @@ char	*pathtoexecute(char **cmd, t_exec *exec)
 		free(path_part);
 		if (!path)
 			break ;
-		if (access(path, X_OK) == 0)
+		if (access(path, F_OK) == 0)
 		{
+			if (stat(path, &s) == 0 && S_ISDIR(s.st_mode))
+			{
+				free(path);
+				i++;
+				continue ;
+			}
 			freearray(paths);
 			return (path);
 		}
@@ -66,15 +78,18 @@ char	*pathtoexecute(char **cmd, t_exec *exec)
 	return (NULL);
 }
 
-static	void	checking(char *path)
+static void	checking(char *path)
 {
-	// printf("\ni am setting the status here\n");
-	if ((access(path, F_OK) == 0) && (access(path, X_OK) == -1))
-		errno = EACCES;
-	if (access(path, X_OK) == 0)
-		return ;
-	if (access(path, X_OK))
+	if (access(path, F_OK) == -1)
+	{
 		errno = ENOENT;
+		return ;
+	}
+	if (access(path, X_OK) == -1)
+	{
+		errno = EACCES;
+		return ;
+	}
 }
 //need serparate function for absolute path
 static void abs_path_execution(t_cmd *cmd, t_shell *shell, t_exec *exec)

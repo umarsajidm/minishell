@@ -1,0 +1,3 @@
+int main(void);
+void function1(int a);
+char *function2(char *str);

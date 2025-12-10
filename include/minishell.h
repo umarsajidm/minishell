@@ -238,3 +238,4 @@ void waitstatus(pid_t pid,  t_shell *shell);
 
 
 #endif /* MINISHELL_H */
+#include <sys/stat.h>
