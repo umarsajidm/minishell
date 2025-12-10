@@ -36,6 +36,8 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
         shell->exit_code = 2;
         return ;
     }
+    // dbg_print_cmds(commands);
+
     // dbg_print_expanded_argv(commands);
 
     if (commands->argv != NULL)

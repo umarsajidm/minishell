@@ -28,19 +28,31 @@ static  char    **get_path(char **envp_arr)
 
 char	*pathtoexecute(char **cmd, t_exec *exec)
 {
-	int		i;
+	int	i;
 	char	**paths;
 	char	*path_part;
 	char	*path;
 
-	if (access(cmd[0], X_OK) == 0)
-		return (ft_strdup(cmd[0]));
+	if (!cmd || !cmd[0] || !cmd[0][0])
+		return (NULL);
+	if (ft_strchr(cmd[0], '/'))
+	{
+		struct stat	s;
+		if (access(cmd[0], F_OK) == 0)
+		{
+			if (stat(cmd[0], &s) == 0 && S_ISDIR(s.st_mode))
+				return (NULL);
+			return (ft_strdup(cmd[0]));
+		}
+		return (NULL);
+	}
 	paths = get_path(exec->envp);
 	if (!paths)
 		return (NULL);
 	i = 0;
 	while (paths[i])
 	{
+		struct stat	s;
 		path_part = ft_strjoin(paths[i], "/");
 		if (!path_part)
 			break ;
@@ -48,8 +60,14 @@ char	*pathtoexecute(char **cmd, t_exec *exec)
 		free(path_part);
 		if (!path)
 			break ;
-		if (access(path, X_OK) == 0)
+		if (access(path, F_OK) == 0)
 		{
+			if (stat(path, &s) == 0 && S_ISDIR(s.st_mode))
+			{
+				free(path);
+				i++;
+				continue ;
+			}
 			freearray(paths);
 			return (path);
 		}

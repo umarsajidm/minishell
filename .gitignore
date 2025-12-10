@@ -60,4 +60,5 @@ Mkfile.old
 dkms.conf
 
 # debug information files
+norminette.toon
 *.dwo

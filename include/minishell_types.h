@@ -104,6 +104,7 @@ typedef struct s_cmd
 	t_redir			*redirs;      // redirection list
 	struct s_cmd	*next;        // next command in pipeline
 	char			*heredoc;     // content of heredoc, if any
+	char			*unexpanded_cmd;
 }	t_cmd;
 
 /* ===========================
