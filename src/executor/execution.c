@@ -125,12 +125,13 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec)
 		setup_child_signals();
 		if (fds_manipulation_and_execution(cmd, shell, exec) == 1)
 			set_the_code_and_exit(shell, exec, GENERAL_ERROR);
+		clean_exec(exec);
+		execution_cleanup(shell);
 	}
 	// printf("\ni am here as well in the child process\n");
 	if (exec->pid > 0)
 		waitstatus(exec->pid, shell);
 	setup_parent_signals();
 	while (waitpid(-1, NULL, 0)>0);
-	clean_exec(exec);
 	return (0);
 }

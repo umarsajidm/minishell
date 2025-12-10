@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include <unistd.h>
 
 /* Read a single line of input from user and duplicate into arena
 ** - Adds non-empty lines to history
@@ -8,11 +9,16 @@ char	*read_input(t_arena **arena)
 {
 	char	*line;				// line from readline
 
-	line = readline("minishell$ ");	// display prompt and read input
+	if (isatty(STDIN_FILENO))
+		line = readline("minishell$ ");	// display prompt and read input
+	else
+	{
+		line = get_next_line(STDIN_FILENO);
+		if (line && line[ft_strlen(line) - 1] == '\n')
+			line[ft_strlen(line) - 1] = '\0';
+	}
 	if (!line)
 		return (NULL);			// Ctrl-D returns NULL
-	if (*line)
-		add_history(line);		// store non-empty lines in history
 	return (arena_strdup(arena, line));	// duplicate line into arena
 }
 

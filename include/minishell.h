@@ -184,6 +184,9 @@ void	dbg_print_expanded_argv(t_cmd *cmd);
 # define ENVIRONMENT_COPY_FAILED 3
 # define FORK_FAILED 4
 
+//shell_cleanup.c
+void execution_cleanup(t_shell *shell);
+
 //pipeline_exit_utilities
 void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type);
 void exit_after_execve(t_shell *shell, t_exec *exec);
