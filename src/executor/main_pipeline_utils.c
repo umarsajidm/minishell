@@ -20,12 +20,11 @@ void pre_init(t_exec *exec)
 
 
 int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
+
+
 {
-    // exec = shell->exec;
+
     pre_init(exec);
-    // exec->fd = malloc(sizeof(t_fd));
-    // if (!exec->fd)
-    //     return (1); //have to write a str error
     exec->envp = envp_arr(shell);
     if (!exec->envp)
         return(1);
@@ -34,26 +33,17 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
     if (!exec->path_to_exec)
     {
 		freearray(exec->envp);
-		exec->envp = NULL;
+    	exec->envp = NULL;
         if (command->argv && command->argv[0])
         {
             ft_putstr_fd(command->argv[0], 2);
             ft_putstr_fd("minishell: ", 2);
-ft_putstr_fd(command->argv[0], 2);
-ft_putstr_fd(": command not found\n", 2);
-
+            ft_putstr_fd(command->argv[0], 2);
+            ft_putstr_fd(": command not found\n", 2);
             shell->exit_code = 127;
         }
         return (1);
     }
-	// ft_putstr_fd("this is me\n", 2);
-    // if (exec->envp != NULL)
-	// {
-	// 	freearray(exec->envp);
-	// 	exec->envp = NULL;
-    //     return (1);
-	// }
-    //need to make a function to putste and return value;
     return (0);
 }
 

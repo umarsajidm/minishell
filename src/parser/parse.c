@@ -4,23 +4,19 @@
 int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
     t_shell *shell, t_arena **arena)
 {
-    char    *to_add;
     char    *expanded;
 
     /* ensure a current command node exists (will append to head if needed) */
     if (!ensure_current_cmd(cur, head, arena))
         return (0);                                /* allocation failed */
-
-    if (tok->type == T_QUOTE)
-        to_add = tok->token;                        /* quoted token */
-    else
-    {
-        expanded = expand_string(tok->token, shell, arena);
-        if (!expanded)
-            return (0);                            /* allocation failed */
-        to_add = expanded;                         /* expanded string */
-    }
-    if (!add_word_to_argv(*cur, to_add, arena))
+    expanded = expand_string(tok->token, shell, arena);
+    if (!expanded)
+        return (0);                                /* allocation failed */
+    /* If a word is from an unquoted token and expands to nothing,
+     * it is removed from the argument list. */
+    if (tok->type != T_QUOTE && expanded[0] == '\0')
+        return (1);
+    if (!add_word_to_argv(*cur, expanded, arena))
         return (0);                                /* allocation failed */
     return (1);                                    /* success */
 }

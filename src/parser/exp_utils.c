@@ -46,7 +46,7 @@ static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 {
 	size_t	start;
 	char	*key;
-	size_t	len;
+	// size_t	len;
 
 	start = *i; // record start of key
 	if (str[*i] == '?')
@@ -58,10 +58,7 @@ static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 	}
 	else
 	{
-		len = 0;
-		if (str[*i] == '$')
-			(*i)++; /* consume repeated '$' to avoid infinite loop */
-		return (append_char(NULL, &len, '$', arena));
+		return (arena_strdup(arena, "")); // Not a valid var, return empty
 	}
 	key = arena_alloc(arena, *i - start + 1); // allocate key buffer
 	if (!key)
