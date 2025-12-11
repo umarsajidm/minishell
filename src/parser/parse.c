@@ -1,30 +1,79 @@
 #include "minishell.h"
 
 /* Handle word or quoted token */
+// int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
+//     t_shell *shell, t_arena **arena)
+// {
+//     char    *expanded;
+//     bool    add_arg;
+
+//     add_arg = true;
+//     if (!ensure_current_cmd(cur, head, arena))
+//         return (0);
+
+//     if ((*cur)->argv == NULL)
+//         (*cur)->unexpanded_cmd = tok->token;
+
+//     expanded = expand_string(tok->token, shell, arena);
+//     if (!expanded)
+//         return (0);
+
+//     if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
+//     {
+//         if (ft_strcmp(tok->token, "$") != 0)
+//             add_arg = false;
+//     }
+
+//     if (add_arg)
+//     {
+//         if (!add_word_to_argv(*cur, expanded, arena))
+//             return (0);
+//     }
+//     return (1);
+// }
+
+// src/parser/parse.c
+/* Replace the existing handle_word_token in src/parser/parse.c */
 int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
     t_shell *shell, t_arena **arena)
 {
     char    *expanded;
+    bool    add_arg;
 
-    /* 1. Ensure a command struct exists */
-    if (!ensure_current_cmd(cur, head, arena))
-        return (0);
-    /* 2. Expand the token's content, regardless of type. */
+    add_arg = true;
+
+    /* Expand first */
     expanded = expand_string(tok->token, shell, arena);
     if (!expanded)
         return (0);
-    /* 3. Handle empty string removal for unquoted tokens. */
-    if (tok->type != T_QUOTE && expanded[0] == '\0')
+
+    /* If expansion produced empty string and token was not quoted,
+       drop it (except the literal "$") */
+    if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
     {
-        /* Special case: A lone '$' should produce an error, not disappear. */
         if (ft_strcmp(tok->token, "$") != 0)
-            return (1);
+            add_arg = false;
     }
-    /* 4. Add the final, processed argument to the command. */
+
+    if (!add_arg)
+    {
+        /* Do not create a command node for tokens removed by expansion */
+        return (1);
+    }
+
+    /* Now ensure there's a command node and set unexpanded_cmd if needed */
+    if (!ensure_current_cmd(cur, head, arena))
+        return (0);
+
+    if ((*cur)->argv == NULL)
+        (*cur)->unexpanded_cmd = tok->token;
+
     if (!add_word_to_argv(*cur, expanded, arena))
         return (0);
+
     return (1);
 }
+
 
 /* Handle pipe token */
 int handle_pipe_token(t_token *tok, t_cmd **cur)

@@ -130,6 +130,9 @@ char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena);
 char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 			t_arena **arena);
 
+/* field_splitting.c */
+char	**field_split(const char *str, t_arena **arena);
+
 /* ===========================
 ** Builtins
 ** =========================== */

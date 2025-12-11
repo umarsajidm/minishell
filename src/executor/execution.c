@@ -25,58 +25,47 @@ static  char    **get_path(char **envp_arr)
 }
 
 
-
-char	*pathtoexecute(char **cmd, t_exec *exec)
+char    *pathtoexecute(char **cmd, t_exec *exec)
 {
-	int	i;
-	char	**paths;
-	char	*path_part;
-	char	*path;
+    char    **paths;
+    char    *candidate;
+    char    *join;
+    int     i;
 
-	if (!cmd || !cmd[0] || !cmd[0][0])
-		return (NULL);
-	if (ft_strchr(cmd[0], '/'))
-	{
-		struct stat	s;
-		if (access(cmd[0], F_OK) == 0)
-		{
-			if (stat(cmd[0], &s) == 0 && S_ISDIR(s.st_mode))
-				return (NULL);
-			return (ft_strdup(cmd[0]));
-		}
-		return (NULL);
-	}
-	paths = get_path(exec->envp);
-	if (!paths)
-		return (NULL);
-	i = 0;
-	while (paths[i])
-	{
-		struct stat	s;
-		path_part = ft_strjoin(paths[i], "/");
-		if (!path_part)
-			break ;
-		path = ft_strjoin(path_part, cmd[0]);
-		free(path_part);
-		if (!path)
-			break ;
-		if (access(path, F_OK) == 0)
-		{
-			if (stat(path, &s) == 0 && S_ISDIR(s.st_mode))
-			{
-				free(path);
-				i++;
-				continue ;
-			}
-			freearray(paths);
-			return (path);
-		}
-		free(path);
-		i++;
-	}
-	freearray(paths);
-	return (NULL);
+    if (!cmd || !cmd[0] || !cmd[0][0])
+        return (NULL);
+    if (ft_strchr(cmd[0], '/'))
+    {
+        if (access(cmd[0], F_OK) == 0)
+            return (ft_strdup(cmd[0]));
+        return (NULL);
+    }
+    paths = get_path(exec->envp);
+    if (!paths)
+        return (NULL);
+
+    i = 0;
+    while (paths[i])
+    {
+        join = ft_strjoin(paths[i], "/");
+        if (!join)
+            break;
+        candidate = ft_strjoin(join, cmd[0]);
+        free(join);
+        if (!candidate)
+            break;
+        if (access(candidate, F_OK) == 0)
+        {
+            freearray(paths);
+            return (candidate);
+        }
+        free(candidate);
+        i++;
+    }
+    freearray(paths);
+    return (NULL);
 }
+
 
 static	void	checking(char *path)
 {

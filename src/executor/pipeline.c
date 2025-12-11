@@ -70,7 +70,7 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	exec = shell->exec;
 	// init_fd(exec->fd);
 
-	if (is_builtin(command) && !command->next)
+	if (is_parent_level_builtin(command) && !command->next)
 	{
 		// ft_putstr_fd("i am here", 2);
 		int saved_stdin = -1;
@@ -141,11 +141,7 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	}
 		// single or piped command execution path
 	validate_command(exec, shell, command);
-
-    
-
 	return ;
-
 }
 
 void waitstatus(pid_t pid,  t_shell *shell)
