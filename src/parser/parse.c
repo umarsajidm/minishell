@@ -1,60 +1,108 @@
 #include "minishell.h"
 
 /* Handle word or quoted token */
+// int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
+//     t_shell *shell, t_arena **arena)
+// {
+//     char    *expanded;
+//     bool    add_arg;
+
+//     add_arg = true;
+//     if (!ensure_current_cmd(cur, head, arena))
+//         return (0);
+
+//     if ((*cur)->argv == NULL)
+//         (*cur)->unexpanded_cmd = tok->token;
+
+//     expanded = expand_string(tok->token, shell, arena);
+//     if (!expanded)
+//         return (0);
+
+//     if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
+//     {
+//         if (ft_strcmp(tok->token, "$") != 0)
+//             add_arg = false;
+//     }
+
+//     if (add_arg)
+//     {
+//         if (!add_word_to_argv(*cur, expanded, arena))
+//             return (0);
+//     }
+//     return (1);
+// }
+
+// src/parser/parse.c
+/* Replace the existing handle_word_token in src/parser/parse.c */
 int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
     t_shell *shell, t_arena **arena)
 {
     char    *expanded;
+    bool    add_arg;
 
-    /* ensure a current command node exists (will append to head if needed) */
-    if (!ensure_current_cmd(cur, head, arena))
-        return (0);                                /* allocation failed */
+    add_arg = true;
+
+    /* Expand first */
     expanded = expand_string(tok->token, shell, arena);
     if (!expanded)
-        return (0);                                /* allocation failed */
-    /* If an unquoted token expands to an empty string, remove it,
-     * unless the token itself was just "$". */
-    if (tok->type != T_QUOTE && expanded[0] == '\0')
+        return (0);
+
+    /* If expansion produced empty string and token was not quoted,
+       drop it (except the literal "$") */
+    if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
     {
         if (ft_strcmp(tok->token, "$") != 0)
-            return (1);
+            add_arg = false;
     }
+
+    if (!add_arg)
+    {
+        /* Do not create a command node for tokens removed by expansion */
+        return (1);
+    }
+
+    /* Now ensure there's a command node and set unexpanded_cmd if needed */
+    if (!ensure_current_cmd(cur, head, arena))
+        return (0);
+
+    if ((*cur)->argv == NULL)
+        (*cur)->unexpanded_cmd = tok->token;
+
     if (!add_word_to_argv(*cur, expanded, arena))
-        return (0);                                /* allocation failed */
-    return (1);                                    /* success */
+        return (0);
+
+    return (1);
 }
+
 
 /* Handle pipe token */
 int handle_pipe_token(t_token *tok, t_cmd **cur)
 {
     (void)tok;
     if (!*cur || !(*cur)->argv || !(*cur)->argv[0]) // invalid pipe
-        return (-1);                                 // syntax error
-    *cur = NULL;                                     // end current command
-    return (1);                                      // success
+        return (-1);
+    *cur = NULL;
+    return (1);
 }
 
 /* Handle operators including pipes and redirections */
 int handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-    t_cmd **head, t_arena **arena)
+    t_cmd **head, t_shell *shell, t_arena **arena)
 {
     t_token *tok;
 
-    tok = (*tokens_ref)->content;                   // get current token
-    if (is_pipe_token(tok->token))                 // pipe
+    tok = (*tokens_ref)->content;
+    if (is_pipe_token(tok->token))
         return (handle_pipe_token(tok, cur));
-    if (is_redir_token(tok->token))               // redirection
+    if (is_redir_token(tok->token))
 	{
 		setup_hd_signals();
-        return (handle_redir_token(tokens_ref, cur, head, arena));
+        return (handle_redir_token(tokens_ref, cur, head, shell, arena));
 	}
-    return (0);                                     // unknown operator
+    return (0);
 }
 
-/* * Process a single token
- * - Handles words, quoted strings, and operators
- * - Returns 0 on success, -1 on syntax or allocation error
- */
+/* Process a single token */
 static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
     t_shell *shell, t_arena **arena)
 {
@@ -70,7 +118,6 @@ static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
 
     if (tok->type == T_WORD || tok->type == T_QUOTE)
     {
-        // Handle word or quoted token
         if (!handle_word_token(cur, head, tok, shell, arena))
         {
             ft_printf("minishell: parse error: alloc fail\n");
@@ -79,9 +126,7 @@ static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
     }
     else
     {
-        // Handle pipe or redirection
-        // FIX: We pass the real iterator, not a temp list
-        res = handle_operator_token(iterator, cur, head, arena);
+        res = handle_operator_token(iterator, cur, head, shell, arena);
         if (res == -1)
         {
             ft_printf("minishell: syntax error near '%s'\n", tok->token);
@@ -93,7 +138,7 @@ static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
             return (-1);
         }
     }
-    return (0);                                     // success
+    return (0);
 }
 
 /* Parse token list into command list */
@@ -103,20 +148,14 @@ t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
     t_cmd   *cur;
     t_list  *it;
 
-    head = NULL;                                   // initialize command list head
-    cur = NULL;                                    // current command pointer
+    head = NULL;
+    cur = NULL;
     it = tokens;
     while (it)
     {
-        // FIX: Pass address of 'it' so process_token can look ahead if needed
         if (process_token(&it, &cur, &head, shell, arena) == -1)
-            return (NULL);                         // error during token processing
-
-        // Loop advancement logic:
-        // If it was a word/pipe, 'it' is still the same node.
-        // If it was a redir, 'it' now points to the target (filename).
-        // In both cases, we move next here.
+            return (NULL);
         it = it->next;
     }
-    return (head);                                 // return command list
+    return (head);
 }

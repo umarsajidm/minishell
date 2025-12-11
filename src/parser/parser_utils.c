@@ -1,18 +1,30 @@
 #include "minishell.h"
 
+void	add_argv_to_cmd(t_cmd *cmd, char **argv, t_arena **arena)
+{
+	int	i;
+
+	i = 0;
+	while (argv[i])
+	{
+		add_word_to_argv(cmd, argv[i], arena);
+		i++;
+	}
+}
+
 /* Create a new command node and initialize fields */
 t_cmd	*create_cmd_node(t_arena **arena)
 {
 	t_cmd	*cmd;
 
-	cmd = arena_alloc(arena, sizeof(t_cmd));      // allocate memory for command
+	cmd = arena_alloc(arena, sizeof(t_cmd));
 	if (!cmd)
-		return (NULL);                            // allocation failed
-	cmd->argv = NULL;                              // initialize argv
-	cmd->redirs = NULL;                            // initialize redirections
-	cmd->next = NULL;                              // initialize next pointer
+		return (NULL);
+	cmd->argv = NULL;
+	cmd->redirs = NULL;
+	cmd->next = NULL;
 	cmd->unexpanded_cmd = NULL;
-	return (cmd);                                  // return new command node
+	return (cmd);
 }
 
 /* Append a new command node to the end of the command list */
@@ -21,19 +33,19 @@ t_cmd	*append_new_cmd(t_cmd **head, t_arena **arena)
 	t_cmd	*node;
 	t_cmd	*iter;
 
-	node = create_cmd_node(arena);                 // allocate new command node
+	node = create_cmd_node(arena);
 	if (!node)
-		return (NULL);                             // allocation failed
-	if (!*head)                                    // first command in list
+		return (NULL);
+	if (!*head)
 	{
-		*head = node;                              // set head
-		return (*head);                             // return head
+		*head = node;
+		return (*head);
 	}
-	iter = *head;                                  // iterate to last node
+	iter = *head;
 	while (iter->next)
 		iter = iter->next;
-	iter->next = node;                             // append new node
-	return (*head);                                // return head
+	iter->next = node;
+	return (*head);
 }
 
 /* Add a word to the command's argv array */
@@ -45,49 +57,49 @@ int	add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena)
 	size_t	len;
 
 	if (!cmd || !word)
-		return (0);                                 // invalid input
-	count = count_argv(cmd->argv);                 // count existing argv entries
-	new_argv = arena_alloc(arena, sizeof(char *) * (count + 2)); // allocate new argv
+		return (0);
+	count = count_argv(cmd->argv);
+	new_argv = arena_alloc(arena, sizeof(char *) * (count + 2));
 	if (!new_argv)
-		return (0);                                 // allocation failed
+		return (0);
 	i = 0;
 	while (i < count)
 	{
-		new_argv[i] = cmd->argv[i];               // copy existing pointers
+		new_argv[i] = cmd->argv[i];
 		i++;
 	}
-	len = ft_strlen(word);                         // get length of new word
-	new_argv[i] = arena_alloc(arena, len + 1);    // allocate space for word
+	len = ft_strlen(word);
+	new_argv[i] = arena_alloc(arena, len + 1);
 	if (!new_argv[i])
-		return (0);                                 // allocation failed
-	ft_memcpy(new_argv[i], word, len + 1);        // copy word into argv
-	new_argv[i + 1] = NULL;                        // null-terminate argv
-	cmd->argv = new_argv;                           // update command argv
-	return (1);                                     // success
+		return (0);
+	ft_memcpy(new_argv[i], word, len + 1);
+	new_argv[i + 1] = NULL;
+	cmd->argv = new_argv;
+	return (1);
 }
 
 /* Check if token is a pipe '|' */
 int	is_pipe_token(const char *token_str)
 {
 	if (!token_str)
-		return (0);                             // NULL token
+		return (0);
 	if (!ft_strcmp(token_str, "|"))
-		return (1);                             // pipe token
-	return (0);                                 // not a pipe
+		return (1);
+	return (0);
 }
 
 /* Check if token is a redirection '<', '>', '>>', '<<' */
 int	is_redir_token(const char *token_str)
 {
 	if (!token_str)
-		return (0);                             // NULL token
+		return (0);
 	if (!ft_strcmp(token_str, "<"))
-		return (1);                             // input redirection
+		return (1);
 	if (!ft_strcmp(token_str, ">"))
-		return (1);                             // output redirection
+		return (1);
 	if (!ft_strcmp(token_str, ">>"))
-		return (1);                             // append redirection
+		return (1);
 	if (!ft_strcmp(token_str, "<<"))
-		return (1);                             // heredoc
-	return (0);                                 // not a redirection
+		return (1);
+	return (0);
 }

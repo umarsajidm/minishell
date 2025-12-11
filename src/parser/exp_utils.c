@@ -46,24 +46,27 @@ static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 {
 	size_t	start;
 	char	*key;
-	// size_t	len;
+	size_t	len;
 
-	start = *i; // record start of key
+	start = *i;
 	if (str[*i] == '?')
-		(*i)++; // skip '?'
+		(*i)++;
 	else if (ft_isalpha(str[*i]) || str[*i] == '_')
 	{
 		while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-			(*i)++; // consume valid chars
+			(*i)++;
 	}
 	else
 	{
-		return (arena_strdup(arena, "")); // Not a valid var, return empty
+		len = 0;
+		if (str[*i] == '$')
+			(*i)++;
+		return (append_char(NULL, &len, '$', arena));
 	}
-	key = arena_alloc(arena, *i - start + 1); // allocate key buffer
+	key = arena_alloc(arena, *i - start + 1);
 	if (!key)
 		return (NULL);
-	ft_strlcpy(key, str + start, *i - start + 1); // copy key
+	ft_strlcpy(key, str + start, *i - start + 1);
 	return (key);
 }
 
@@ -73,9 +76,6 @@ char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 {
 	char		*key;
 	const char	*val;
-	char		*res;
-	size_t		len;
-	size_t		j;
 
 	key = extract_env_key(str, i, arena); // get variable name
 	if (!key)
@@ -83,13 +83,7 @@ char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 	if (key[0] == '$' && key[1] == '\0')
 		return (key); // literal $
 	val = expand_env_value(key, shell, arena); // get env value
-	res = NULL;
-	len = 0;
-	j = 0;
-	while (val && val[j])
-	{
-		res = append_char(res, &len, val[j], arena); // append value chars
-		j++;
-	}
-	return (res);
+	if (!val)
+		return (arena_strdup(arena, ""));
+	return ((char *)val);
 }

@@ -45,14 +45,6 @@ int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 		}
         return (1);
     }
-	// ft_putstr_fd("this is me\n", 2);
-    // if (exec->envp != NULL)
-	// {
-	// 	freearray(exec->envp);
-	// 	exec->envp = NULL;
-    //     return (1);
-	// }
-    //need to make a function to putste and return value;
     return (0);
 }
 
@@ -106,9 +98,7 @@ int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *c
     {
         setup_child_signals();
         if (init_exec(exec, shell, command) != 0)
-        {
-            set_the_code_and_exit(shell, exec, 127);  
-        }
+            set_the_code_and_exit(shell, exec, 127);
         if (command->redirs)
         {
             if (applying_redir(command, &(exec->fd->in_fd), &(exec->fd->out_fd)) == 1)

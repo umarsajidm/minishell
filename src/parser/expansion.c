@@ -83,6 +83,7 @@ char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 		if (!state.res)
 			return (NULL); // Real alloc fail
 	}
+
 	return (state.res);
 }
 

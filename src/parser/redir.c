@@ -70,13 +70,14 @@ int	add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
 
 /* Handle a redirection token and its target */
 int	handle_redir_token(t_list **tokens_ref, t_cmd **cur,
-	t_cmd **head, t_arena **arena)
+	t_cmd **head, t_shell *shell, t_arena **arena)
 {
 	t_list		*next_node;
 	t_token		*tok;
 	t_token		*next_tok;
 	t_redir_type	type;
 	char		*heredoc_content;
+	char		*target;
 
 	tok = (*tokens_ref)->content;                // current token
 	next_node = (*tokens_ref)->next;             // next token node
@@ -95,8 +96,17 @@ int	handle_redir_token(t_list **tokens_ref, t_cmd **cur,
 		if (!heredoc_content)
 			return (0);                          // failed to read heredoc
 		(*cur)->heredoc = heredoc_content;       // store heredoc content
+		target = arena_strdup(arena, next_tok->token);
+		if (!target)
+			return (0);
 	}
-	if (!add_redirection(*cur, type, next_tok->token, arena))
+	else
+	{
+		target = expand_string(next_tok->token, shell, arena);
+		if (!target)
+			return (0);
+	}
+	if (!add_redirection(*cur, type, target, arena))
 		return (0);                              // failed to add redirection
 	*tokens_ref = next_node;                     // move token pointer
 	return (1);                                  // success

@@ -70,29 +70,29 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	exec = shell->exec;
 	// init_fd(exec->fd);
 
-	if (is_builtin(command) && !command->next)
+	if (is_parent_level_builtin(command) && !command->next)
 	{
 		// ft_putstr_fd("i am here", 2);
-		// int saved_stdin = -1;
-		// int saved_stdout = -1;
+		int saved_stdin = -1;
+		int saved_stdout = -1;
 		int rc = 0;
 
-		// saved_stdin = dup(STDIN_FILENO);
-		// saved_stdout = dup(STDOUT_FILENO);
-		// if (saved_stdin == -1 || saved_stdout == -1)
-		// {
-		// 	perror("minishell: dup failed");
-		// 	rc = -1;
-		// 	/* fallthrough to cleanup */
-		// }
-		// else if (rc == -1)
-		// {
-		// 	if (saved_stdin != -1)
-		// 		close(saved_stdin);
-		// 	if (saved_stdout != -1)
-		// 		close(saved_stdout);
-		// 	return ;
-		// }
+		saved_stdin = dup(STDIN_FILENO);
+		saved_stdout = dup(STDOUT_FILENO);
+		if (saved_stdin == -1 || saved_stdout == -1)
+		{
+			perror("minishell: dup failed");
+			rc = -1;
+			/* fallthrough to cleanup */
+		}
+		else if (rc == -1)
+		{
+			if (saved_stdin != -1)
+				close(saved_stdin);
+			if (saved_stdout != -1)
+				close(saved_stdout);
+			return ;
+		}
 
 		/* apply redirections (may set shell->exec->fd->in_fd/out_fd) */
 		if (rc == 0 && command->redirs)
@@ -105,23 +105,23 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 		}
 
 		/* if redirs set fds, dup them to std fds; if dup2 fails, set rc */
-		// if (rc == 0)
-		// {
-		// 	if (shell->exec->fd->in_fd != -1 && dup2(shell->exec->fd->in_fd, STDIN_FILENO) == -1)
-		// 		rc = -1;
-		// 	if (shell->exec->fd->out_fd != -1 && dup2(shell->exec->fd->out_fd, STDOUT_FILENO) == -1)
-		// 		rc = -1;
-		// }
+		if (rc == 0)
+		{
+			if (shell->exec->fd->in_fd != -1 && dup2(shell->exec->fd->in_fd, STDIN_FILENO) == -1)
+				rc = -1;
+			if (shell->exec->fd->out_fd != -1 && dup2(shell->exec->fd->out_fd, STDOUT_FILENO) == -1)
+				rc = -1;
+		}
 
 		if (rc == 0)
 			shell->exit_code = run_builtin(command, shell);
 
 		/* restore original fds (always attempt) */
-		// dup2(STDIN_FILENO, saved_stdin); /* ignore failure, we'll still close saved fds */
-		// close(saved_stdin);
+		dup2(saved_stdin, STDIN_FILENO); /* ignore failure, we'll still close saved fds */
+		close(saved_stdin);
 
-		// dup2(STDOUT_FILENO, saved_stdout);
-		// close(saved_stdout);
+		dup2(saved_stdout, STDOUT_FILENO);
+		close(saved_stdout);
 
 
 		/* Close any opened redir fds and the shell->exec->fd structure fds */
@@ -141,11 +141,7 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	}
 		// single or piped command execution path
 	validate_command(exec, shell, command);
-
-    
-
 	return ;
-
 }
 
 void waitstatus(pid_t pid,  t_shell *shell)

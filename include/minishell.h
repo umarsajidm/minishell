@@ -109,9 +109,9 @@ int		handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
 			t_shell *shell, t_arena **arena);
 int		handle_pipe_token(t_token *tok, t_cmd **cur);
 int		handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-			t_cmd **head, t_arena **arena);
+			t_cmd **head, t_shell *shell, t_arena **arena);
 int		handle_redir_token(t_list **tokens_ref, t_cmd **cur,
-			t_cmd **head, t_arena **arena);
+			t_cmd **head, t_shell *shell, t_arena **arena);
 int		is_pipe_token(const char *tok);
 int		is_redir_token(const char *tok);
 t_redir_type	get_redir_type(const char *tok);
@@ -129,6 +129,9 @@ char	*append_char(char *buf, size_t *len, char c, t_arena **arena);
 char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena);
 char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 			t_arena **arena);
+
+/* field_splitting.c */
+char	**field_split(const char *str, t_arena **arena);
 
 /* ===========================
 ** Builtins
