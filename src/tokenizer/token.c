@@ -15,8 +15,6 @@ int	process_token(char *input, int *i, t_list **tokens, t_arena **arena)
 
 	if (is_operator_char(input[*i]))                // operator | < >
 		ret = handle_operator(input, *i, tokens, arena);
-	else if (input[*i] == '\'' || input[*i] == '"') // quoted string
-		ret = handle_quote(input, *i, tokens, arena);
 	else                                            // normal word
 		ret = handle_word(input, *i, tokens, arena);
 

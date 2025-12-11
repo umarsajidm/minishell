@@ -21,48 +21,40 @@ int	handle_operator(char *s, int i, t_list **tokens, t_arena **arena)
 }
 
 /*
- * Handle ' and "
- */
-int	handle_quote(char *s, int i, t_list **tokens, t_arena **arena)
-{
-	int		start;
-	char	*sub;
-
-	start = i;                                  // save start
-	i++;                                        // skip opening quote
-	while (s[i] && s[i] != s[start])
-		i++;                                    // find closing quote
-	if (!s[i])
-	{
-		ft_printf("minishell: syntax error: unmatched quote\n");
-		return (-1);
-	}
-	i++;                                        // include closing quote
-	sub = dup_word(arena, s, start, i);         // alloc string
-	if (!sub || !create_token_node(arena, tokens, sub, T_QUOTE))
-		return (-1);                            // alloc or node failed
-	return (i);                                 // return next index
-}
-
-/*
- * Handle normal words
+ * Handle words, including those with quotes
  */
 int	handle_word(char *s, int i, t_list **tokens, t_arena **arena)
 {
 	int		start;
 	char	*sub;
+	char	quote;
 
-	start = i;                                  // save start
-	while (s[i] && !is_operator_char(s[i]) && s[i] != ' '
-		&& s[i] != '\t' && s[i] != '\'' && s[i] != '"'
-		&& s[i] != '\n')
-		i++;                                    // find end of word
-	if (i == start)
-		return (i);                             // empty word
-	sub = dup_word(arena, s, start, i);         // alloc string
-	if (!sub)
-		return (-1);                            // alloc failed
-	if (!create_token_node(arena, tokens, sub, T_WORD))
-		return (-1);                            // node creation failed
-	return (i);                                 // return next index
+	start = i;
+	quote = 0;
+	while (s[i])
+	{
+		if (quote)
+		{
+			if (s[i] == quote)
+				quote = 0;
+		}
+		else
+		{
+			if (s[i] == '\'' || s[i] == '"')
+				quote = s[i];
+			else if (is_operator_char(s[i]) || s[i] == ' ' || s[i] == '\t'
+				|| s[i] == '\n')
+				break ;
+		}
+		i++;
+	}
+	if (quote)
+	{
+		ft_printf("minishell: syntax error: unmatched quote\n");
+		return (-1);
+	}
+	sub = dup_word(arena, s, start, i);
+	if (!sub || !create_token_node(arena, tokens, sub, T_WORD))
+		return (-1);
+	return (i);
 }

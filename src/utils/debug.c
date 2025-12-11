@@ -25,7 +25,7 @@ static void print_redir(t_redir *r)
         else
             target = "(null)";
 
-        ft_printf("REDIR: %s -> %s\n", type_str, target);
+        ft_dprintf(2, "REDIR: %s -> %s\n", type_str, target);
         r = r->next;
     }
 }
@@ -41,7 +41,7 @@ void    dbg_print_tokens(t_list *tokens)
     char    *type_str;
 
     // Header width: 8 + 1 + 12 + 1 + 8 = 30 chars
-    ft_printf("\n-------- DEBUG TOKENS --------\n");
+    ft_dprintf(2, "\n-------- DEBUG TOKENS --------\n");
     i = 0;
     while (tokens)
     {
@@ -55,15 +55,15 @@ void    dbg_print_tokens(t_list *tokens)
             else
                 type_str = "OPERATOR";
 
-            ft_printf("[%d] \"%s\" (%s)\n", i, tok->token, type_str);
+            ft_dprintf(2, "[%d] \"%s\" (%s)\n", i, tok->token, type_str);
         }
         else
-            ft_printf("[%d] (null)\n", i);
+            ft_dprintf(2, "[%d] (null)\n", i);
 
         i++;
         tokens = tokens->next;
     }
-    ft_printf("------------------------------\n\n");
+    ft_dprintf(2, "------------------------------\n\n");
 }
 
 /* * Print all commands for debugging
@@ -76,29 +76,29 @@ void    dbg_print_cmds(t_cmd *cmd)
     int j;
 
     // Header width: 7 + 1 + 14 + 1 + 7 = 30 chars
-    ft_printf("------- DEBUG COMMANDS -------\n");
+    ft_dprintf(2, "------- DEBUG COMMANDS -------\n");
     i = 0;
     while (cmd)
     {
-        ft_printf("CMD[%d]:", i);
+        ft_dprintf(2, "CMD[%d]:", i);
         if (!cmd->argv || !cmd->argv[0])
-            ft_printf(" (empty)\n");
+            ft_dprintf(2, " (empty)\n");
         else
         {
             j = 0;
             while (cmd->argv[j])
             {
-                ft_printf(" '%s'", cmd->argv[j]);
+                ft_dprintf(2, " '%s'", cmd->argv[j]);
                 j++;
             }
-            ft_printf("\n");
+            ft_dprintf(2, "\n");
         }
 
         print_redir(cmd->redirs);
         i++;
         cmd = cmd->next;
     }
-    ft_printf("------------------------------\n\n");
+    ft_dprintf(2, "------------------------------\n\n");
 }
 
 /* * Print expanded argv of commands
@@ -116,7 +116,7 @@ void    dbg_print_expanded_argv(t_cmd *cmd)
         {
             while (cmd->argv[i])
             {
-                ft_printf("expanded argv[%d]: %s\n", i, cmd->argv[i]);
+                ft_dprintf(2, "expanded argv[%d]: %s\n", i, cmd->argv[i]);
                 i++;
             }
         }
@@ -130,7 +130,7 @@ void    dbg_print_expanded_argv(t_cmd *cmd)
 void    dbg_print_exit_code(int code)
 {
     // Header width: 6 + 1 + 15 + 1 + 7 = 30 chars
-    ft_printf("\n------ DEBUG EXIT CODE -------\n");
-    ft_printf("Exit code: %d\n", code);
-    ft_printf("------------------------------\n\n");
+    ft_dprintf(2, "\n------ DEBUG EXIT CODE -------\n");
+    ft_dprintf(2, "Exit code: %d\n", code);
+    ft_dprintf(2, "------------------------------\n\n");
 }

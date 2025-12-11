@@ -59,6 +59,7 @@ char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char	*ft_strrev(char *str);
 char	**ft_split(char const *s, char c);
 int		ft_printf(const char *format, ...);
+int		ft_dprintf(int fd, const char *format, ...);
 char	*get_next_line(int fd);
 
 /* ===========================
