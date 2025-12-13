@@ -54,7 +54,7 @@ int	fds_manipulation_and_execution(t_cmd *command, t_shell *shell, t_exec *exec)
 	if (exec->fd->out_fd != -1)
 		dup2(exec->fd->out_fd, STDOUT_FILENO);
 	close_fd(exec->fd);
-	if (execution(command, shell, exec) == 1) //execve is vc
+	if (execution(command, shell, exec) == 1)
 		exit_after_execve(shell, exec);
 	free(exec->path_to_exec);
 	if (exec->envp != NULL)
