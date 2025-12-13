@@ -44,7 +44,6 @@ void set_the_exit_code(t_shell *shell, char *command, char **envp)
 	ft_putstr_fd(": command not found (set the exit code)\n", 2);
     execution_cleanup(shell);
 	shell->exit_code = 127;
-	// exit(shell->exit_code);
 }
 
 void exit_after_execve(t_shell *shell, t_exec *exec)
