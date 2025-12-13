@@ -68,8 +68,6 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	t_exec	*exec;
 
 	exec = shell->exec;
-	// init_fd(exec->fd);
-
 	if (is_parent_level_builtin(command) && !command->next)
 	{
 		// ft_putstr_fd("i am here", 2);
