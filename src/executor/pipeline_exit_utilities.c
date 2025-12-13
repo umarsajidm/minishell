@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-// src/executor/pipeline_exit_utilities.c
-
 void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type)
 {
     // 1. Clean up temporary memory allocated in the path search or execve
