@@ -56,18 +56,5 @@ void exit_after_execve(t_shell *shell, t_exec *exec)
         set_the_code_and_exit(shell, exec, GENERAL_ERROR);
 }
 
-// void cleanup_pipeline(t_shell *shell, char **envp, pid_t last_pid)
-// {
-//     // 1. Close any remaining file descriptors in the parent shell
-//     if (shell->fd != NULL)
-//         close_fd(shell->fd);
 
-//     // 2. Wait for the last process to finish and set the exit code
-//     if (last_pid > 0)
-//         waitstatus(last_pid, shell);
-
-//     // 3. Free the environment copy allocated at the start of the function (FIXES LEAK)
-//     if (envp != NULL)
-//         freearray(envp);
-// }
 
