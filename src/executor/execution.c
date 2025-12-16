@@ -128,7 +128,7 @@ int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec)
 {
 	setup_execution_signals();
 	exec->pid = fork();
-	if (exec->pid < 0)
+	if (exec->pid < 0)// handle fork failing
 		return(ft_putstr_fd("forking failed in child process", 2), 1);
 	if (exec->pid == 0)
 	{
