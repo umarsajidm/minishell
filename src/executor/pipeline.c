@@ -104,6 +104,8 @@ void waitstatus(pid_t pid,  t_shell *shell)
 
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-    	shell->exit_code = WEXITSTATUS(status);
+    	shell->exit_code = WEXITSTATUS(status);\
+	else if (WIFSIGNALED(status))
+		shell->exit_code = WTERMSIG(status) + 128;
 }
 

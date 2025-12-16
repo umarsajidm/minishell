@@ -84,7 +84,7 @@ int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *comm
 int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *command)
 {
     pipe(exec->fd->fd);
-    setup_parent_waiting();
+    setup_execution_signals();
 
     exec->pid = fork();
     if (exec->pid < 0)

@@ -14,6 +14,8 @@ int	ft_exit(char **av, t_shell *shell, t_arena **arena)
 
 
 	ft_putstr_fd("exit\n", 1);
+	if (!av)
+		run_exit(shell);
 	if (!av[1])
 		run_exit(shell);
 	else if (get_ac(av) > 2)
