@@ -1,8 +1,5 @@
 #include "minishell.h"
 
-/* Global variable to store last received signal */
-int    g_signal = 0;
-
 /* Handle SIGINT (Ctrl-C)
  * - Update global signal variable
  * - Move cursor to new line
@@ -30,36 +27,20 @@ void    handle_sigquit(int sig)
     rl_redisplay();             // redisplay prompt
 }
 
-/* Setup signal handlers for interactive shell
- * - SIGINT handled by handle_sigint
- * - SIGQUIT handled by handle_sigquit
- */
-void    setup_parent_signals(void)
-{
-    signal(SIGINT, handle_sigint);    // Ctrl-C
-    signal(SIGQUIT, handle_sigquit);  // Ctrl-Slash
-}
-
-void    setup_parent_waiting(void)
-{
-    signal(SIGINT, SIG_IGN);
-    signal(SIGQUIT, SIG_IGN);
-}
-
-void    setup_child_signals(void)
-{
-    signal(SIGINT, SIG_DFL);
-    signal(SIGQUIT, SIG_DFL);
-}
-
-void    setup_hd_signals(void)
-{
-    signal(SIGINT, SIG_DFL);
-    signal(SIGQUIT, SIG_IGN);
-}
-
 void    handle_hd_signal(int sig)
 {
     g_signal = sig;
     write(1, "\n", 1);
+}
+
+void	exec_sigint(int sig)
+{
+	(void)sig;
+	write(STDOUT_FILENO, "\n", 1);
+}
+
+void	exec_sigquit(int sig)
+{
+	(void)sig;
+	write(STDOUT_FILENO, "\n", 1);
 }
