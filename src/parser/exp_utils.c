@@ -35,10 +35,15 @@ char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 	while (cur)
 	{
 		if (ft_strncmp(cur->key, key, ft_strlen(key) + 1) == 0)
-			return (arena_strdup(arena, cur->value)); // return value
-		cur = cur->next; // next env node
+        {
+            if (cur->value)
+			    return (arena_strdup(arena, cur->value));
+            else
+                return (arena_strdup(arena, ""));
+        }
+		cur = cur->next;
 	}
-	return (arena_strdup(arena, "")); // not found -> empty
+	return (NULL);
 }
 
 /* * Helper to extract key for expand_variable */
@@ -84,6 +89,6 @@ char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 		return (key); // literal $
 	val = expand_env_value(key, shell, arena); // get env value
 	if (!val)
-		return (arena_strdup(arena, ""));
+		return (NULL);
 	return ((char *)val);
 }

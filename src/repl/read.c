@@ -19,7 +19,10 @@ char	*read_input(t_arena **arena)
 	}
 	if (!line)
 		return (NULL);			// Ctrl-D returns NULL
-	return (arena_strdup(arena, line));	// duplicate line into arena
+
+	char *arena_line = arena_strdup(arena, line);
+	free(line);
+	return (arena_line);
 }
 
 /* Append a single line to heredoc content stored in arena

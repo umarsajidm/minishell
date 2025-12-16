@@ -33,7 +33,7 @@ t_env	*find_env_node(const char *str, t_env *head)
 		len = sign - str;
 	while (head)
 	{
-		if (ft_strncmp(str, head->key, len) == 0)
+		if (ft_strlen(head->key) == len && ft_strncmp(str, head->key, len) == 0)
 			return (head);
 		head = head->next;
 	}

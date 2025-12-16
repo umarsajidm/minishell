@@ -57,7 +57,11 @@ int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
 
     if (!add_arg)
     {
-        /* Do not create a command node for tokens removed by expansion */
+        if (!*cur)
+        {
+            if (!ensure_current_cmd(cur, head, arena))
+                return (0);
+        }
         return (1);
     }
 
