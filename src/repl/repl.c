@@ -22,7 +22,7 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
         shell->exit_code = 2;
         return ;
     }
-
+	// dbg_print_cmds(commands);
     if (commands && (commands->argv || commands->unexpanded_cmd))
         main_pipeline(shell, commands);
 }
