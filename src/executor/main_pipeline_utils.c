@@ -93,7 +93,7 @@ int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *c
     if (exec->pid == 0)
     {
         setup_child_signals();
-        if (init_exec(exec, shell, command) != 0)
+        if (!is_builtin(command) && init_exec(exec, shell, command) != 0)
             set_the_code_and_exit(shell, exec, 127);
         if (command->redirs)
         {
