@@ -63,6 +63,37 @@ int	fds_manipulation_and_execution(t_cmd *command, t_shell *shell, t_exec *exec)
 	exit(shell->exit_code);
 }
 
+static void handle_single_builtin(t_shell *shell, t_cmd *command)
+{
+    int original_stdout = -1;
+    int original_stdin = -1;
+
+    if (command->redirs)
+    {
+        if (applying_redir(command, &shell->exec->fd->in_fd, &shell->exec->fd->out_fd) == 1)
+        {
+            shell->exit_code = GENERAL_ERROR;
+            return;
+        }
+        if (shell->exec->fd->out_fd != -1)
+        {
+            original_stdout = dup(STDOUT_FILENO);
+            dup2(shell->exec->fd->out_fd, STDOUT_FILENO);
+        }
+        if (shell->exec->fd->in_fd != -1)
+        {
+            original_stdin = dup(STDIN_FILENO);
+            dup2(shell->exec->fd->in_fd, STDIN_FILENO);
+        }
+    }
+    shell->exit_code = run_builtin(command, shell);
+    if (original_stdout != -1)
+        dup2(original_stdout, STDOUT_FILENO);
+    if (original_stdin != -1)
+        dup2(original_stdin, STDIN_FILENO);
+    close_fd(shell->exec->fd);
+}
+
 void main_pipeline(t_shell *shell, t_cmd *command)
 {
 	t_exec	*exec;
@@ -70,32 +101,10 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	exec = shell->exec;
 	if (is_builtin(command) && !command->next)
 	{
-		if (command->redirs)
-		{
-			if (applying_redir(command, &shell->exec->fd->in_fd, &shell->exec->fd->out_fd) == 1)
-			{
-				shell->exit_code = GENERAL_ERROR;
-				return ;
-			}
-		}
-		shell->exit_code = run_builtin(command, shell);
-		/* Close any opened redir fds and the shell->exec->fd structure fds */
-		if (shell->exec->fd->in_fd != -1)
-		{
-			close(shell->exec->fd->in_fd);
-			shell->exec->fd->in_fd = -1;
-		}
-		if (shell->exec->fd->out_fd != -1)
-		{
-			close(shell->exec->fd->out_fd);
-			shell->exec->fd->out_fd = -1;
-		}
-		close_fd(shell->exec->fd);
+		handle_single_builtin(shell, command);
 		return;
 	}
-		// single or piped command execution path
 	validate_command(exec, shell, command);
-	return ;
 }
 
 void waitstatus(pid_t pid,  t_shell *shell)

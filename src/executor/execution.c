@@ -25,12 +25,34 @@ static  char    **get_path(char **envp_arr)
 }
 
 
-char    *pathtoexecute(char **cmd, t_exec *exec)
+static char *search_path_for_cmd(char *cmd_name, char **paths)
 {
-    char    **paths;
     char    *candidate;
     char    *join;
     int     i;
+
+    i = 0;
+    while (paths && paths[i])
+    {
+        join = ft_strjoin(paths[i], "/");
+        if (!join)
+            return (NULL);
+        candidate = ft_strjoin(join, cmd_name);
+        free(join);
+        if (!candidate)
+            return (NULL);
+        if (access(candidate, F_OK) == 0)
+            return (candidate);
+        free(candidate);
+        i++;
+    }
+    return (NULL);
+}
+
+char    *pathtoexecute(char **cmd, t_exec *exec)
+{
+    char    **paths;
+    char    *path_to_exec;
 
     if (!cmd || !cmd[0] || !cmd[0][0])
         return (NULL);
@@ -41,29 +63,10 @@ char    *pathtoexecute(char **cmd, t_exec *exec)
         return (NULL);
     }
     paths = get_path(exec->envp);
-    if (!paths)
-        return (NULL);
-
-    i = 0;
-    while (paths[i])
-    {
-        join = ft_strjoin(paths[i], "/");
-        if (!join)
-            break;
-        candidate = ft_strjoin(join, cmd[0]);
-        free(join);
-        if (!candidate)
-            break;
-        if (access(candidate, F_OK) == 0)
-        {
-            freearray(paths);
-            return (candidate);
-        }
-        free(candidate);
-        i++;
-    }
-    freearray(paths);
-    return (NULL);
+    path_to_exec = search_path_for_cmd(cmd[0], paths);
+    if (paths)
+        freearray(paths);
+    return (path_to_exec);
 }
 
 

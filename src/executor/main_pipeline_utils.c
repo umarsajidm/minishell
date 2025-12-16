@@ -69,10 +69,7 @@ int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *comm
         if (command->redirs)
         {
 			if (applying_redir(command,  &(exec->fd->in_fd), &(exec->fd->out_fd)) == 1)
-			{
-				shell->exit_code = GENERAL_ERROR;
-				return (1);
-			}
+			    return(err_if_redir_fails(exec, shell));
 		}
         child_process(command, shell, exec); //where am i handling the anomaly
     }
@@ -96,7 +93,7 @@ int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *c
     if (exec->pid == 0)
     {
         setup_child_signals();
-        if ((!is_builtin(command) && init_exec(exec, shell, command) != 0))
+        if (init_exec(exec, shell, command) != 0)
             set_the_code_and_exit(shell, exec, 127);
         if (command->redirs)
         {
@@ -118,10 +115,7 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
     if (!command->next)
     {
         if (intialize_and_process_single_child(exec, shell, command) == 0)
-        {
-            clean_exec(exec);
-            close_fd(exec->fd);
-        }
+            clean_close(exec);
         return;
     }
     while (command)
@@ -138,6 +132,5 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
         waitstatus(exec->pid, shell);
     while (waitpid(-1, NULL, 0) > 0)
         ;
-    close_fd(exec->fd);
-    clean_exec(exec);
+    clean_close(exec);
 }

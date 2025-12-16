@@ -30,7 +30,7 @@ elif [ "$1" == "fd" ]; then
 #with valgrind memleak and file descriptors
 
 elif [ "$1" == "fdl" ]; then
-	valgrind --track-origins=yes --leak-check=full --track-fds=yes --suppressions=readline.supp ./"$program_name"
+	valgrind --track-origins=yes --leak-check=full --track-fds=yes --trace-children=yes --suppressions=readline.supp ./"$program_name"
 
 
 else

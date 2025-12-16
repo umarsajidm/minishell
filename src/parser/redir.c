@@ -68,46 +68,47 @@ int	add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
 	return (1);                                     // success
 }
 
-/* Handle a redirection token and its target */
-int	handle_redir_token(t_list **tokens_ref, t_cmd **cur,
-	t_cmd **head, t_shell *shell, t_arena **arena)
+static char	*get_redir_target(t_redir_type type, t_token *next_tok,
+								t_shell *shell, t_cmd *cur, t_arena **arena)
 {
-	t_list		*next_node;
-	t_token		*tok;
-	t_token		*next_tok;
-	t_redir_type	type;
-	char		*heredoc_content;
-	char		*target;
+	char	*target;
 
-	tok = (*tokens_ref)->content;                // current token
-	next_node = (*tokens_ref)->next;             // next token node
-	if (!next_node)
-		return (-1);                             // missing target
-	next_tok = next_node->content;               // next token
-	if (!next_tok || !next_tok->token)
-		return (-1);                             // invalid target
-	if (!ensure_current_cmd(cur, head, arena))
-		return (0);                              // failed to create command
-
-	type = get_redir_type(tok->token);           // determine redir type
 	if (type == R_HEREDOC)
 	{
-		heredoc_content = handle_heredoc(*cur, arena, next_tok->token);
-		if (!heredoc_content)
-			return (0);                          // failed to read heredoc
-		(*cur)->heredoc = heredoc_content;       // store heredoc content
+		cur->heredoc = handle_heredoc(cur, arena, next_tok->token);
+		if (!cur->heredoc)
+			return (NULL);
 		target = arena_strdup(arena, next_tok->token);
-		if (!target)
-			return (0);
 	}
 	else
-	{
 		target = expand_string(next_tok->token, shell, arena);
-		if (!target)
-			return (0);
-	}
+	return (target);
+}
+
+int	handle_redir_token(t_list **tokens_ref, t_cmd **cur,
+						t_cmd **head, t_shell *shell, t_arena **arena)
+{
+	t_list			*next_node;
+	t_token			*tok;
+	t_token			*next_tok;
+	t_redir_type	type;
+	char			*target;
+
+	tok = (*tokens_ref)->content;
+	next_node = (*tokens_ref)->next;
+	if (!next_node)
+		return (-1);
+	next_tok = next_node->content;
+	if (!next_tok || !next_tok->token)
+		return (-1);
+	if (!ensure_current_cmd(cur, head, arena))
+		return (0);
+	type = get_redir_type(tok->token);
+	target = get_redir_target(type, next_tok, shell, *cur, arena);
+	if (!target)
+		return (0);
 	if (!add_redirection(*cur, type, target, arena))
-		return (0);                              // failed to add redirection
-	*tokens_ref = next_node;                     // move token pointer
-	return (1);                                  // success
+		return (0);
+	*tokens_ref = next_node;
+	return (1);
 }

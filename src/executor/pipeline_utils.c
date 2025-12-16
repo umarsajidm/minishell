@@ -38,13 +38,13 @@ static int	applying_input_redir(t_redir *r, int *in_fd)
 
 static int	applying_outside_redir(t_redir *r, int *out_fd)
 {
-	if (*out_fd >= 0)
-		close(*out_fd);
+	int	new_fd;
+
 	if (r->type == R_OUTPUT)
-		*out_fd = open(r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (r->type == R_APPEND)
-		*out_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (*out_fd < 0)
+		new_fd = open(r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else
+		new_fd = open(r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (new_fd < 0)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(r->target, 2);
@@ -53,6 +53,9 @@ static int	applying_outside_redir(t_redir *r, int *out_fd)
 		ft_putstr_fd("\n", 2);
 		return (1);
 	}
+	if (*out_fd >= 0)
+		close(*out_fd);
+	*out_fd = new_fd;
 	return (0);
 }
 
