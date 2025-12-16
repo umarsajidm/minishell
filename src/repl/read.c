@@ -10,7 +10,10 @@ char	*read_input(t_arena **arena)
 	char	*line;				// line from readline
 
 	if (isatty(STDIN_FILENO))
+	{
+		setup_parent_signals();
 		line = readline("minishell$ ");	// display prompt and read input
+	}
 	else
 	{
 		line = get_next_line(STDIN_FILENO);
@@ -48,10 +51,10 @@ static char	*append_heredoc_line(char *content, size_t *cur_len,
 /* Read a single heredoc line from user
 ** - Returns NULL if EOF reached
 */
-static char	*read_heredoc_line(void)
+static char	*read_heredoc_line(t_shell *shell)
 {
 	char	*line;
-
+	(void)shell;
 	line = readline("> ");			// prompt for heredoc line
 	if (!line)
 		return (NULL);			// EOF
@@ -62,16 +65,17 @@ static char	*read_heredoc_line(void)
 ** - Uses arena for memory management
 ** - Returns full heredoc content or NULL
 */
-char	*read_heredoc(t_arena **arena, const char *delimiter)
+char	*read_heredoc(t_shell *shell, const char *delimiter)
 {
+	printf("in read heredoc %i \n", shell->exit_code);
 	char	*line;			// current heredoc line
 	char	*content;		// accumulated content
 	size_t	cur_len;		// current total length
 
-	if (!arena || !delimiter)
+	if (!delimiter)
 		return (NULL);		// safety check
 
-	content = arena_alloc(arena, 1);	// start with empty string
+	content = arena_alloc(&shell->arena, 1);	// start with empty string
 	if (!content)
 		return (NULL);		// allocation failed
 	content[0] = '\0';		// initialize empty string
@@ -79,11 +83,11 @@ char	*read_heredoc(t_arena **arena, const char *delimiter)
 
 	while (true)
 	{
-		line = read_heredoc_line();	// get line from user
+		line = read_heredoc_line(shell);	// get line from user
 		if (!line || ft_strcmp(line, delimiter) == 0)
 			break;			// reached delimiter or EOF
 
-		content = append_heredoc_line(content, &cur_len, line, arena);
+		content = append_heredoc_line(content, &cur_len, line, &shell->arena);
 		if (!content)
 			return (NULL);	// realloc failed
 	}
@@ -93,10 +97,10 @@ char	*read_heredoc(t_arena **arena, const char *delimiter)
 /* Unified function to handle heredoc input
 ** - Returns pointer to heredoc content in arena
 */
-char	*handle_heredoc(t_cmd *cmd, t_arena **arena, const char *delimiter)
+char	*handle_heredoc(t_cmd *cmd, t_shell *shell, const char *delimiter)
 {
 	(void)cmd;			// unused here but allows future extensions
-	if (!delimiter || !arena)
+	if (!delimiter)
 		return (NULL);		// safety check
-	return (read_heredoc(arena, delimiter)); // delegate actual reading
+	return (read_heredoc(shell, delimiter)); // delegate actual reading
 }

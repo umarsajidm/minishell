@@ -83,7 +83,7 @@ int handle_pipe_token(t_token *tok, t_cmd **cur)
 
 /* Handle operators including pipes and redirections */
 int handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-    t_cmd **head, t_shell *shell, t_arena **arena)
+    t_cmd **head, t_shell *shell)
 {
     t_token *tok;
 
@@ -93,7 +93,7 @@ int handle_operator_token(t_list **tokens_ref, t_cmd **cur,
     if (is_redir_token(tok->token))
 	{
 		setup_hd_signals();
-        return (handle_redir_token(tokens_ref, cur, head, shell, arena));
+        return (handle_redir_token(tokens_ref, cur, head, shell));
 	}
     return (0);
 }
@@ -122,7 +122,7 @@ static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
     }
     else
     {
-        res = handle_operator_token(iterator, cur, head, shell, arena);
+        res = handle_operator_token(iterator, cur, head, shell);
         if (res == -1)
         {
             ft_printf("minishell: syntax error near '%s'\n", tok->token);
