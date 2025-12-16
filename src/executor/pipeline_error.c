@@ -13,3 +13,9 @@ void err_if_redir_fails_parent(t_exec *exec, t_shell *shell)
     shell->exit_code = GENERAL_ERROR;
     return;
 }
+
+void clean_close(t_exec *exec)
+{
+    clean_exec(exec);
+    close_fd(exec->fd);
+}

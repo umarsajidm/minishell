@@ -115,10 +115,7 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
     if (!command->next)
     {
         if (intialize_and_process_single_child(exec, shell, command) == 0)
-        {
-            clean_exec(exec);
-            close_fd(exec->fd);
-        }
+            clear_close(exec);
         return;
     }
     while (command)
@@ -135,6 +132,5 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
         waitstatus(exec->pid, shell);
     while (waitpid(-1, NULL, 0) > 0)
         ;
-    close_fd(exec->fd);
-    clean_exec(exec);
+    clear_close(exec);
 }
