@@ -22,7 +22,6 @@ typedef struct s_exec
     pid_t   pid;
     char    *path_to_exec;
     char    **envp;
-    int     jonatan;
 }   t_exec;
 
 /* ===========================

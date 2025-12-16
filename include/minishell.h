@@ -241,7 +241,9 @@ void set_the_exit_code(t_shell *shell, char *command, char **envp);
 int applying_redir(t_cmd *cmd, int *in_fd, int *out_fd);
 void waitstatus(pid_t pid,  t_shell *shell);
 
-
+//main_pipeline_utils.c
+int err_if_redir_fails(t_exec *exec, t_shell *shell);
+void err_if_redir_fails_parent(t_exec *exec, t_shell *shell);
 //builtin
 
 

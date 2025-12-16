@@ -1,4 +1,15 @@
- i find out $ character is not printing out before command not found
+1= leaks when redirection fails
 
-test number 136 and 141, i have to resolve it on school computer as chmod don't work on home statio
-n 
+2= cd | cd
+
+3= echo str | export
+
+4= without env shell running
+
+5= if path is unset, then look into CWD
+
+6= what if fork fails
+
+7= echo hi > q; cat q
+
+8= 

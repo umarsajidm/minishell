@@ -70,6 +70,9 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	exec = shell->exec;
 	if (is_builtin(command) && !command->next)
 	{
+		int original_stdout = -1;
+		int original_stdin = -1;
+
 		if (command->redirs)
 		{
 			if (applying_redir(command, &shell->exec->fd->in_fd, &shell->exec->fd->out_fd) == 1)
@@ -77,8 +80,28 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 				shell->exit_code = GENERAL_ERROR;
 				return ;
 			}
+			if (shell->exec->fd->out_fd != -1)
+			{
+				original_stdout = dup(STDOUT_FILENO);
+				dup2(shell->exec->fd->out_fd, STDOUT_FILENO);
+			}
+			if (shell->exec->fd->in_fd != -1)
+			{
+				original_stdin = dup(STDIN_FILENO);
+				dup2(shell->exec->fd->in_fd, STDIN_FILENO);
+			}
 		}
 		shell->exit_code = run_builtin(command, shell);
+		if (original_stdout != -1)
+		{
+			dup2(original_stdout, STDOUT_FILENO);
+			close(original_stdout);
+		}
+		if (original_stdin != -1)
+		{
+			dup2(original_stdin, STDIN_FILENO);
+			close(original_stdin);
+		}
 		/* Close any opened redir fds and the shell->exec->fd structure fds */
 		if (shell->exec->fd->in_fd != -1)
 		{
