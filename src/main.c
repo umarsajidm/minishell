@@ -17,17 +17,6 @@ int main(int argc, char **argv, char **envp)
         repl_loop(&shell, &shell.arena);
     else
         non_interactive_loop(&shell, &shell.arena);
-    /* Cleanup */
-    // rl_clear_history();
-    // free_env(shell.env);
-    // free_arena(&shell.arena);
-    // if (shell.exec && shell.exec->fd)
-    // {
-    //     close_fd(shell.exec->fd);
-    //     free(shell.exec->fd);
-    //     free(shell.exec);
-    // }
-
     shell_cleanup(&shell);
     return (shell.exit_code);
 }

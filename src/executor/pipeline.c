@@ -68,7 +68,7 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	t_exec	*exec;
 
 	exec = shell->exec;
-	if (is_parent_level_builtin(command) && !command->next)
+	if (is_builtin(command) && !command->next)
 	{
 		if (command->redirs)
 		{

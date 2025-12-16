@@ -13,12 +13,12 @@ int  init_shell_and_arena(t_shell *shell, t_arena **arena, char **envp)
         return (1);
     }
     shell->env = init_env(envp);
-    if (!shell->env)
-    {
-        ft_printf("minishell: failed to initialize environment\n");
-        free_arena(arena);
-        return (1);
-    }
+    // if (!shell->env)
+    // {
+    //     ft_printf("minishell: failed to initialize environment\n");
+    //     free_arena(arena);
+    //     return (1);
+    // }
     shell->exec = ft_calloc(1, sizeof(t_exec));
     if (!shell->exec)
     {
