@@ -110,7 +110,7 @@ int	execution(t_cmd *command, t_shell *shell, t_exec *exec)
 	if (is_builtin(command))
 	{
 		clean_exec(exec);
-		shell->exit_code = run_builtin(command, shell);
+		shell->exit_code = run_builtin(command, shell, true);
 		return (0);
 
 	}

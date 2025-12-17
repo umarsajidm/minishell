@@ -20,6 +20,8 @@ int	init_shell_and_arena(t_shell *shell, t_arena **arena, char **envp)
 	shell->env = NULL;
 	shell->exit_code = 0;
 	shell->running = true;
+	shell->exit_flow = FLOW_OK;
+	shell->should_print_exit_message = false;
 	*arena = init_arena(1024);
 	if (!*arena)
 	{
