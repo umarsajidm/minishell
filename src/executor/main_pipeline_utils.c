@@ -130,7 +130,7 @@ void validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
     }
     if (!error_in_pipeline && exec->pid > 0)
         waitstatus(exec->pid, shell);
-    while (waitpid(-1, NULL, 0) > 0)
-        ;
+    // while (waitpid(-1, NULL, 0) > 0)
+    //     ;
     clean_close(exec);
 }

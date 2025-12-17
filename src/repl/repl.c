@@ -36,7 +36,7 @@ void    repl_loop(t_shell *shell, t_arena **arena)
         input = read_input(arena);
         if (!input)
         {
-            ft_exit(NULL, shell, arena, false); // Pass false for is_child_process
+            ft_exit2(NULL, shell, arena); // Pass false for is_child_process
         }
 		if (g_signal != 0)
 		{

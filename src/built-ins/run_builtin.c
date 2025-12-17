@@ -25,7 +25,10 @@ int	run_builtin(t_cmd *cmds, t_shell *shell, bool is_child_process)
 	{
 		ret = ft_exit(cmds->argv, shell, &shell->arena, is_child_process);
 		if (is_child_process)
+		{
+			shell_cleanup(shell);
 			exit(shell->exit_code);
+		}
 	}
 	return (ret);
 }

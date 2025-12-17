@@ -163,7 +163,7 @@ void	sort_env(t_env ***arr);
 int		update_env_node(const char *str, t_shell *shell);
 int		add_env_node(const char *str, t_shell *shell);
 void	print_export(t_env **arr);
-void	test_builtin(t_cmd *commands, t_shell *shell);
+int		ft_exit2(char **av, t_shell *shell);
 
 /* ===========================
 ** Utils
