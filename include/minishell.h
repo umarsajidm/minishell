@@ -19,6 +19,7 @@
 # include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+#include <sys/stat.h>
 
 /* ===========================
 ** Custom Libraries
@@ -203,9 +204,15 @@ void execution_cleanup(t_shell *shell);
 void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type);
 void exit_after_execve(t_shell *shell, t_exec *exec);
 
-//execution.c
+//execution_1.c
+static char	**get_path(char **envp_arr);
+static char	*search_path_for_cmd(char *cmd_name, char **paths);
+static int	path_is_set(char **envp);
 char	*pathtoexecute(char **cmd, t_exec *exec);
+static void	checking(char *path, char *cmd);
+//execution_2.c
 int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec);
+
 
 //envp.c
 char	**envp_arr(t_shell *shell);
