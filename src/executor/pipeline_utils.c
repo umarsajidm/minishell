@@ -1,24 +1,35 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipeline_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/17 19:28:32 by musajid           #+#    #+#             */
+/*   Updated: 2025/12/17 19:55:37 by musajid          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static int write_heredoc_to_pipe(int *in_fd, char *content)
+static int	write_heredoc_to_pipe(int *in_fd, char *content)
 {
-    int fd[2];
+	int	fd[2];
 
-    if (pipe(fd) == -1)
-    {
-        perror("pipe");
-        exit(1);
-    }
-    if (content)
-    	ft_putstr_fd(content, fd[1]); // Write the stored content!
-
-    close(fd[1]); // Close write end so child sees EOF
-
-    if (*in_fd >= 0)
-        close(*in_fd);
-    *in_fd = fd[0]; // Set read end as input
+	if (pipe(fd) == -1)
+	{
+		perror("pipe");
+		exit(1);
+	}
+	if (content)
+		ft_putstr_fd(content, fd[1]);
+	close(fd[1]);
+	if (*in_fd >= 0)
+		close(*in_fd);
+	*in_fd = fd[0];
 	return (0);
 }
+
 static int	applying_input_redir(t_redir *r, int *in_fd)
 {
 	if (*in_fd >= 0)
@@ -59,33 +70,31 @@ static int	applying_outside_redir(t_redir *r, int *out_fd)
 	return (0);
 }
 
-int		applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
+// t_redir	*r;
+// r = cmd->redirs;
+int	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 {
-	t_redir	*r;
-
-	r = cmd->redirs;
-
-	while(r)
+	while (cmd->redirs)
 	{
-		if (r->target)
+		if (cmd->redirs->target)
 		{
-			if (r->type == R_INPUT)
+			if (cmd->redirs->type == R_INPUT)
 			{
-				if (applying_input_redir(r, in_fd) == 1)
+				if (applying_input_redir(cmd->redirs, in_fd) == 1)
 					return (1);
 			}
-			if (r->type == R_OUTPUT || r->type == R_APPEND)
+			if (cmd->redirs->type == R_OUTPUT || cmd->redirs->type == R_APPEND)
 			{
-				if (applying_outside_redir(r, out_fd) == 1)
+				if (applying_outside_redir(cmd->redirs, out_fd) == 1)
 					return (1);
 			}
-			if (r->type == R_HEREDOC)
+			if (cmd->redirs->type == R_HEREDOC)
 			{
 				if (write_heredoc_to_pipe(in_fd, cmd->heredoc) == 1)
 					return (1);
 			}
 		}
-		r = r->next;
+		cmd->redirs = cmd->redirs->next;
 	}
 	return (0);
 }

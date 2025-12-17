@@ -35,7 +35,7 @@ static int	setup_builtin_redirs(t_shell *shell, t_cmd *command,
 	return (0);
 }
 
-static void	estore_builtin_fds(int saved_stdin, int saved_stdout,
+static void	restore_builtin_fds(int saved_stdin, int saved_stdout,
 								t_fd *fd)
 {
 	if (saved_stdout != -1)
