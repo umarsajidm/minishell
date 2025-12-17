@@ -61,6 +61,8 @@ void    repl_loop(t_shell *shell, t_arena **arena)
 
 		if (input) // Only process line if input is not NULL
 			process_line(shell, arena, input);
+				if (g_signal)
+					g_signal = 0;
         arena_clear(arena);
 
 		// Check exit flow after processing the line
