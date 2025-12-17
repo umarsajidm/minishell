@@ -19,7 +19,10 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
     if (!commands)
     {
 		setup_parent_signals();
-        shell->exit_code = 2;
+		if (g_signal != 0)
+			return ;
+		else
+        	shell->exit_code = 2;
         return ;
     }
 
@@ -34,17 +37,18 @@ void    repl_loop(t_shell *shell, t_arena **arena)
     while (shell->running)
     {
         input = read_input(arena);
-        if (!input)
-            ft_exit(NULL, shell, arena);
 		if (g_signal != 0)
 		{
 			shell->exit_code = 128 + g_signal;
 			g_signal = 0;
 		}
+		if (!input)
+			ft_exit(NULL, shell, arena);
         if (*input)
             add_history(input);
-
         process_line(shell, arena, input);
+		if (g_signal != 0)
+			g_signal = 0;
         arena_clear(arena);
     }
 }

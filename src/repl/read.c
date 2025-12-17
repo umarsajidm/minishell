@@ -69,22 +69,16 @@ static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 
 	setup_hd_signals();
 	line = readline("> ");			// prompt for heredoc line
-	ft_putstr_fd("readline returned\n", 2);
 	setup_parent_signals();
 	if (g_signal != 0)
 	{
-		write(2, "[SIGNAL DETECTED: ", 18);
 		shell->exit_code = 128 + g_signal;
-		g_signal = 0;
 		if (line)
 			free(line);
 		return (NULL);
 	}
 	if (!line)
-	{
-		print_hd_err(delimiter);
 		return (print_hd_err(delimiter),  NULL);			// EOF
-	}
 	return (line);				// return user input
 }
 
@@ -94,7 +88,6 @@ static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 */
 char	*read_heredoc(t_shell *shell, const char *delimiter)
 {
-	printf("in read heredoc %i \n", shell->exit_code);
 	char	*line;			// current heredoc line
 	char	*content;		// accumulated content
 	size_t	cur_len;		// current total length

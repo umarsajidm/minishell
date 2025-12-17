@@ -130,7 +130,8 @@ static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
         }
         if (res == 0)
         {
-            ft_printf("minishell: parse error: alloc fail\n");
+			if (!g_signal)
+            	ft_printf("minishell: parse error: alloc fail\n");
             return (-1);
         }
     }
@@ -143,14 +144,20 @@ t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
     t_cmd   *head;
     t_cmd   *cur;
     t_list  *it;
+	int		saved_stdin = -1;
 
     head = NULL;
     cur = NULL;
     it = tokens;
+	saved_stdin = dup(STDIN_FILENO);
     while (it)
     {
         if (process_token(&it, &cur, &head, shell, arena) == -1)
+		{
+			dup2(saved_stdin, STDIN_FILENO);
+			close(saved_stdin);
             return (NULL);
+		}
         it = it->next;
     }
     return (head);

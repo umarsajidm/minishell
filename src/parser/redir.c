@@ -76,7 +76,7 @@ static char	*get_redir_target(t_redir_type type, t_token *next_tok,
 	if (type == R_HEREDOC)
 	{
 		cur->heredoc = handle_heredoc(cur, shell, next_tok->token);
-		if (!cur->heredoc)
+		if (!cur->heredoc || g_signal)
 			return (NULL);
 		target = arena_strdup(&shell->arena, next_tok->token);
 	}
