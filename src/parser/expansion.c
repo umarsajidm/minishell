@@ -39,8 +39,12 @@ static void	handle_dollar(const char *str, t_state *state)
 	j = 0;
 	while (tmp[j])
 	{
-		state->res = append_char(state->res, &state->len, tmp[j],
-				state->arena);
+		if (ft_isspace(tmp[j]) && state->quote == 0)
+			state->res = append_char(state->res, &state->len, FIELD_SEP,
+					state->arena);
+		else
+			state->res = append_char(state->res, &state->len, tmp[j],
+					state->arena);
 		j++;
 	}
 }

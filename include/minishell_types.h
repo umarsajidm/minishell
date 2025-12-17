@@ -22,6 +22,7 @@ typedef struct s_exec
     pid_t   pid;
     char    *path_to_exec;
     char    **envp;
+	int 	exit_flag;
 }   t_exec;
 
 /* ===========================
@@ -52,6 +53,12 @@ typedef struct s_env
 	struct s_env	*next;  /* next env node */
 }	t_env;
 
+typedef enum e_exec_flow
+{
+	FLOW_OK = 0,
+	FLOW_EXIT
+}	t_exec_flow;
+
 typedef struct s_shell
 {
 	t_env	*env;        /* environment variables linked list */
@@ -59,6 +66,8 @@ typedef struct s_shell
 	int		exit_code;   /* last exit code */
 	bool	running;     /* shell running flag */
 	t_exec	*exec;
+	t_exec_flow exit_flow;
+	bool should_print_exit_message;
 }	t_shell;
 
 /* ===========================

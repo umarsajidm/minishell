@@ -1,69 +1,48 @@
 #include "minishell.h"
 
-/* Handle word or quoted token */
-// int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
-//     t_shell *shell, t_arena **arena)
-// {
-//     char    *expanded;
-//     bool    add_arg;
-
-//     add_arg = true;
-//     if (!ensure_current_cmd(cur, head, arena))
-//         return (0);
-
-//     if ((*cur)->argv == NULL)
-//         (*cur)->unexpanded_cmd = tok->token;
-
-//     expanded = expand_string(tok->token, shell, arena);
-//     if (!expanded)
-//         return (0);
-
-//     if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
-//     {
-//         if (ft_strcmp(tok->token, "$") != 0)
-//             add_arg = false;
-//     }
-
-//     if (add_arg)
-//     {
-//         if (!add_word_to_argv(*cur, expanded, arena))
-//             return (0);
-//     }
-//     return (1);
-// }
-
-// src/parser/parse.c
-/* Replace the existing handle_word_token in src/parser/parse.c */
-static bool	should_add_arg(const char *expanded, const t_token *tok)
-{
-	if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
-	{
-		if (ft_strcmp(tok->token, "$") != 0)
-			return (false);
-	}
-	return (true);
-}
-
 int	handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
-						t_shell *shell, t_arena **arena)
+					t_shell *shell, t_arena **arena)
 {
 	char	*expanded;
+	bool	add_arg;
+	char	**words;
+	int		i;
 
+	add_arg = true;
 	expanded = expand_string(tok->token, shell, arena);
 	if (!expanded)
 		return (0);
-	if (!should_add_arg(expanded, tok))
+	if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
 	{
-		if (!*cur)
+		if (ft_strcmp(tok->token, "$") != 0)
+			add_arg = false;
+	}
+	if (!add_arg)
+	{
+		if (!*cur && !ensure_current_cmd(cur, head, arena))
+			return (0);
+		return (1);
+	}
+	if (ft_strchr(expanded, FIELD_SEP))
+	{
+		words = field_split(expanded, arena);
+		if (!words)
+			return (0);
+		i = 0;
+		while (words[i])
 		{
-			if (!ensure_current_cmd(cur, head, arena))
+			if (!ensure_current_cmd(cur, head, arena)
+				|| !add_word_to_argv(*cur, words[i], arena))
 				return (0);
+			if (!(*cur)->argv && i == 0)
+				(*cur)->unexpanded_cmd = tok->token;
+			i++;
 		}
 		return (1);
 	}
 	if (!ensure_current_cmd(cur, head, arena))
 		return (0);
-	if ((*cur)->argv == NULL)
+	if (!(*cur)->argv)
 		(*cur)->unexpanded_cmd = tok->token;
 	if (!add_word_to_argv(*cur, expanded, arena))
 		return (0);
