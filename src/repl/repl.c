@@ -36,18 +36,39 @@ void    repl_loop(t_shell *shell, t_arena **arena)
         input = read_input(arena);
         if (!input)
         {
-            ft_exit(NULL, shell, arena);
+            ft_exit(NULL, shell, arena, false); // Pass false for is_child_process
         }
 		if (g_signal != 0)
 		{
 			shell->exit_code = 128 + g_signal;
 			g_signal = 0;
 		}
-        if (*input)
+        if (input && *input) // Only add to history if input is not NULL and not empty
             add_history(input);
+		else if (!input && shell->exit_flow == FLOW_EXIT) // Handle Ctrl-D or non-interactive EOF
+		{
+			// Conditional print moved here
+			if (shell->should_print_exit_message && isatty(STDIN_FILENO))
+				ft_putstr_fd("exit\n", STDOUT_FILENO);
+			shell->should_print_exit_message = false; // Reset
+			shell->running = false;
+			shell->exit_flow = FLOW_OK; // Reset for next potential run, though shell will exit
+			break; // Exit loop immediately
+		}
 
-        process_line(shell, arena, input);
+		if (input) // Only process line if input is not NULL
+			process_line(shell, arena, input);
         arena_clear(arena);
+
+		// Check exit flow after processing the line
+		if (shell->exit_flow == FLOW_EXIT)
+		{
+			if (shell->should_print_exit_message && isatty(STDIN_FILENO))
+				ft_putstr_fd("exit\n", STDOUT_FILENO);
+			shell->should_print_exit_message = false; // Reset
+			shell->running = false;
+			shell->exit_flow = FLOW_OK; // Reset for next potential run, though shell will exit
+		}
     }
 }
 
@@ -65,5 +86,14 @@ void    non_interactive_loop(t_shell *shell, t_arena **arena)
             process_line(shell, arena, input);
 
         arena_clear(arena);
+		// Check exit flow after processing the line
+		if (shell->exit_flow == FLOW_EXIT)
+		{
+			if (shell->should_print_exit_message) // isatty check not needed here, non-interactive
+				ft_putstr_fd("exit\n", STDOUT_FILENO);
+			shell->should_print_exit_message = false; // Reset
+			shell->running = false;
+			shell->exit_flow = FLOW_OK; // Reset for next potential run, though shell will exit
+		}
     }
 }

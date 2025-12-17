@@ -86,7 +86,7 @@ static void handle_single_builtin(t_shell *shell, t_cmd *command)
             dup2(shell->exec->fd->in_fd, STDIN_FILENO);
         }
     }
-    shell->exit_code = run_builtin(command, shell);
+    shell->exit_code = run_builtin(command, shell, false);
     if (original_stdout != -1)
         dup2(original_stdout, STDOUT_FILENO);
     if (original_stdin != -1)
@@ -102,6 +102,10 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 	if (is_builtin(command) && !command->next)
 	{
 		handle_single_builtin(shell, command);
+		if (shell->exit_flow == FLOW_EXIT)
+		{
+			shell->running = false;
+		}
 		return;
 	}
 	validate_command(exec, shell, command);

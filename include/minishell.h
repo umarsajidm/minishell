@@ -1,6 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <stdbool.h>
 /* ===========================
 ** Standard Libraries
 ** =========================== */
@@ -145,12 +146,12 @@ char	**field_split(const char *str, t_arena **arena);
 ** =========================== */
 
 int		is_builtin(t_cmd *cmd);
-int		run_builtin(t_cmd *cmds, t_shell *shell);
+int		run_builtin(t_cmd *cmds, t_shell *shell, bool is_child_process);
 long	ft_atol(const char *s, int *error);
 int		ft_env(t_env *head);
 int		ft_echo(char **av);
 int		ft_pwd(void);
-int		ft_exit(char **av, t_shell *shell, t_arena **arena);
+int		ft_exit(char **av, t_shell *shell, t_arena **arena, bool is_child_process);
 int		ft_unset(t_cmd *cmd, t_shell *shell);
 int		ft_export(t_cmd *cmds, t_shell *shell);
 int		ft_cd(t_cmd *cmds, t_shell *shell);
