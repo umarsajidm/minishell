@@ -1,8 +1,8 @@
 #include "minishell.h"
 
-void waitstatus(pid_t pid,  t_shell *shell);
+void	waitstatus(pid_t pid, t_shell *shell);
 
-void init_fd(t_fd	*fd)
+void	init_fd(t_fd	*fd)
 {
 	fd->fd[0] = -1;
 	fd->fd[1] = -1;
@@ -11,7 +11,7 @@ void init_fd(t_fd	*fd)
 	fd->out_fd = -1;
 }
 
-void close_fd(t_fd *fd)
+void	close_fd(t_fd *fd)
 {
 	if (fd->fd[0] >= 0)
 		close(fd->fd[0]);
@@ -26,25 +26,20 @@ void close_fd(t_fd *fd)
 	init_fd(fd);
 }
 
-void parent_loop(t_cmd *cmd, t_fd *fd)
+void	parent_loop(t_cmd *cmd, t_fd *fd)
 {
-	//parent closes the prev
 	if (fd->prev_fd != -1)
-            close(fd->prev_fd);
-
-        // Keep current read end for next command
-    if (cmd->next != NULL)
-        fd->prev_fd = fd->fd[0];
-    else
-        fd->prev_fd = -1;
-        // Close write end in parent
-    close(fd->fd[1]);
+		close(fd->prev_fd);
+	if (cmd->next != NULL)
+		fd->prev_fd = fd->fd[0];
+	else
+		fd->prev_fd = -1;
+	close(fd->fd[1]);
 }
 
-
-int	fds_manipulation_and_execution(t_cmd *command, t_shell *shell, t_exec *exec)
+int	fds_manipulation_and_execution(t_cmd *command,
+	t_shell *shell, t_exec *exec)
 {
-	//if there is pipe, if not then go to the execution
 	if (exec->fd->prev_fd != -1)
 		dup2(exec->fd->prev_fd, STDIN_FILENO);
 	if (exec->fd->in_fd != -1)
@@ -63,38 +58,57 @@ int	fds_manipulation_and_execution(t_cmd *command, t_shell *shell, t_exec *exec)
 	exit(shell->exit_code);
 }
 
-static void handle_single_builtin(t_shell *shell, t_cmd *command)
+static int	setup_builtin_redirs(t_shell *shell, t_cmd *command,
+								int *saved_stdin, int *saved_stdout)
 {
-    int original_stdout = -1;
-    int original_stdin = -1;
+	if (!command->redirs)
+		return (0);
+	if (applying_redir(command, &shell->exec->fd->in_fd,
+				&shell->exec->fd->out_fd) == 1)
+		return (1);
 
-    if (command->redirs)
-    {
-        if (applying_redir(command, &shell->exec->fd->in_fd, &shell->exec->fd->out_fd) == 1)
-        {
-            shell->exit_code = GENERAL_ERROR;
-            return;
-        }
-        if (shell->exec->fd->out_fd != -1)
-        {
-            original_stdout = dup(STDOUT_FILENO);
-            dup2(shell->exec->fd->out_fd, STDOUT_FILENO);
-        }
-        if (shell->exec->fd->in_fd != -1)
-        {
-            original_stdin = dup(STDIN_FILENO);
-            dup2(shell->exec->fd->in_fd, STDIN_FILENO);
-        }
-    }
-    shell->exit_code = run_builtin(command, shell, false);
-    if (original_stdout != -1)
-        dup2(original_stdout, STDOUT_FILENO);
-    if (original_stdin != -1)
-        dup2(original_stdin, STDIN_FILENO);
-    close_fd(shell->exec->fd);
+	if (shell->exec->fd->out_fd != -1)
+	{
+		*saved_stdout = dup(STDOUT_FILENO);
+		dup2(shell->exec->fd->out_fd, STDOUT_FILENO);
+	}
+
+	if (shell->exec->fd->in_fd != -1)
+	{
+		*saved_stdin = dup(STDIN_FILENO);
+		dup2(shell->exec->fd->in_fd, STDIN_FILENO);
+	}
+
+	return (0);
 }
 
-void main_pipeline(t_shell *shell, t_cmd *command)
+static void restore_builtin_fds(int saved_stdin, int saved_stdout,
+								t_fd *fd)
+{
+	if (saved_stdout != -1)
+		dup2(saved_stdout, STDOUT_FILENO);
+	if (saved_stdin != -1)
+		dup2(saved_stdin, STDIN_FILENO);
+	close_fd(fd);
+}
+
+static void handle_single_builtin(t_shell *shell, t_cmd *command)
+{
+	int saved_stdout = -1;
+	int saved_stdin = -1;
+
+	if (setup_builtin_redirs(shell, command,
+			&saved_stdin, &saved_stdout) == 1)
+	{
+		shell->exit_code = GENERAL_ERROR;
+		return;
+	}
+
+	shell->exit_code = run_builtin(command, shell, false);
+	restore_builtin_fds(saved_stdin, saved_stdout, shell->exec->fd);
+}
+
+void	main_pipeline(t_shell *shell, t_cmd *command)
 {
 	t_exec	*exec;
 
@@ -106,19 +120,18 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 		{
 			shell->running = false;
 		}
-		return;
+		return ;
 	}
 	validate_command(exec, shell, command);
 }
 
-void waitstatus(pid_t pid,  t_shell *shell)
+void	waitstatus(pid_t pid, t_shell *shell)
 {
 	int	status;
 
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-    	shell->exit_code = WEXITSTATUS(status);\
+		shell->exit_code = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 		shell->exit_code = WTERMSIG(status) + 128;
 }
-
