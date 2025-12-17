@@ -2,15 +2,14 @@
 
 static char	*skip_whitespace(const char *s);
 static int	overflow(long result, int digit, int sign);
+static void	init_vars(int **error, int *sign, long *result);
 
 long	ft_atol(const char *s, int *error)
 {
 	long	result;
 	int		sign;
 
-	*error = 0;
-	sign = 1;
-	result = 0;
+	init_vars(&error, &sign, &result);
 	s = skip_whitespace(s);
 	if (*s == '+' || *s == '-')
 	{
@@ -55,4 +54,11 @@ static int	overflow(long result, int digit, int sign)
 			return (1);
 	}
 	return (0);
+}
+
+static void	init_vars(int **error, int *sign, long *result)
+{
+	*error = 0;
+	*sign = 1;
+	*result = 0;
 }
