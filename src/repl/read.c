@@ -48,16 +48,43 @@ static char	*append_heredoc_line(char *content, size_t *cur_len,
 	return (content);			// return updated content
 }
 
+/* Print heredoc EOF warning
+ * - Mimics bash behavior when heredoc ends with Ctrl+D
+ * - Shows which delimiter was expected
+ */
+void print_hd_err(const char *delimiter)
+{
+    ft_putstr_fd("minishell: warning: here-document delimited by ", 2);
+    ft_putstr_fd("end-of-file (wanted `", 2);
+    ft_putstr_fd((char *)delimiter, 2);
+    ft_putstr_fd("')\n", 2);
+}
+
 /* Read a single heredoc line from user
 ** - Returns NULL if EOF reached
 */
-static char	*read_heredoc_line(t_shell *shell)
+static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 {
 	char	*line;
-	(void)shell;
+
+	setup_hd_signals();
 	line = readline("> ");			// prompt for heredoc line
+	ft_putstr_fd("readline returned\n", 2);
+	setup_parent_signals();
+	if (g_signal != 0)
+	{
+		write(2, "[SIGNAL DETECTED: ", 18);
+		shell->exit_code = 128 + g_signal;
+		g_signal = 0;
+		if (line)
+			free(line);
+		return (NULL);
+	}
 	if (!line)
-		return (NULL);			// EOF
+	{
+		print_hd_err(delimiter);
+		return (print_hd_err(delimiter),  NULL);			// EOF
+	}
 	return (line);				// return user input
 }
 
@@ -83,7 +110,7 @@ char	*read_heredoc(t_shell *shell, const char *delimiter)
 
 	while (true)
 	{
-		line = read_heredoc_line(shell);	// get line from user
+		line = read_heredoc_line(shell, delimiter);	// get line from user
 		if (!line || ft_strcmp(line, delimiter) == 0)
 			break;			// reached delimiter or EOF
 
