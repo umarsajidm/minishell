@@ -190,6 +190,7 @@ void	dbg_print_expanded_argv(t_cmd *cmd);
 # define PERMISSION_DENIED 126
 # define EXECUTION_SUCESS 0
 # define GENERAL_ERROR 1
+# define FIELD_SEP 0x1F
 # define ENV_PATH_COULDNT_BE_FOUND 2
 # define ENVIRONMENT_COPY_FAILED 3
 # define FORK_FAILED 4
