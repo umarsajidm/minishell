@@ -61,8 +61,8 @@ void shell_cleanup(t_shell *shell);
 void	repl_loop(t_shell *shell, t_arena **arena);
 void	non_interactive_loop(t_shell *shell, t_arena **arena);
 char	*read_input(t_arena **arena);
-char	*read_heredoc(t_arena **arena, const char *delimiter);
-char	*handle_heredoc(t_cmd *cmd, t_arena **arena, const char *delimiter);
+char	*read_heredoc(t_shell *shell, const char *delimiter);
+char	*handle_heredoc(t_cmd *cmd, t_shell *shell, const char *delimiter);
 
 /* ===========================
 ** Signals
@@ -117,9 +117,9 @@ int		handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
 			t_shell *shell, t_arena **arena);
 int		handle_pipe_token(t_token *tok, t_cmd **cur);
 int		handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-			t_cmd **head, t_shell *shell, t_arena **arena);
+			t_cmd **head, t_shell *shell);
 int		handle_redir_token(t_list **tokens_ref, t_cmd **cur,
-			t_cmd **head, t_shell *shell, t_arena **arena);
+			t_cmd **head, t_shell *shell);
 int		is_pipe_token(const char *tok);
 int		is_redir_token(const char *tok);
 t_redir_type	get_redir_type(const char *tok);

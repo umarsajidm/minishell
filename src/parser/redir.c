@@ -69,24 +69,24 @@ int	add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
 }
 
 static char	*get_redir_target(t_redir_type type, t_token *next_tok,
-								t_shell *shell, t_cmd *cur, t_arena **arena)
+								t_shell *shell, t_cmd *cur)
 {
 	char	*target;
 
 	if (type == R_HEREDOC)
 	{
-		cur->heredoc = handle_heredoc(cur, arena, next_tok->token);
-		if (!cur->heredoc)
+		cur->heredoc = handle_heredoc(cur, shell, next_tok->token);
+		if (!cur->heredoc || g_signal)
 			return (NULL);
-		target = arena_strdup(arena, next_tok->token);
+		target = arena_strdup(&shell->arena, next_tok->token);
 	}
 	else
-		target = expand_string(next_tok->token, shell, arena);
+		target = expand_string(next_tok->token, shell, &shell->arena);
 	return (target);
 }
 
 int	handle_redir_token(t_list **tokens_ref, t_cmd **cur,
-						t_cmd **head, t_shell *shell, t_arena **arena)
+						t_cmd **head, t_shell *shell)
 {
 	t_list			*next_node;
 	t_token			*tok;
@@ -101,13 +101,13 @@ int	handle_redir_token(t_list **tokens_ref, t_cmd **cur,
 	next_tok = next_node->content;
 	if (!next_tok || !next_tok->token)
 		return (-1);
-	if (!ensure_current_cmd(cur, head, arena))
+	if (!ensure_current_cmd(cur, head, &shell->arena))
 		return (0);
 	type = get_redir_type(tok->token);
-	target = get_redir_target(type, next_tok, shell, *cur, arena);
+	target = get_redir_target(type, next_tok, shell, *cur);
 	if (!target)
 		return (0);
-	if (!add_redirection(*cur, type, target, arena))
+	if (!add_redirection(*cur, type, target, &shell->arena))
 		return (0);
 	*tokens_ref = next_node;
 	return (1);

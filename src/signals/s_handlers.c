@@ -30,7 +30,9 @@ void    handle_sigquit(int sig)
 void    handle_hd_signal(int sig)
 {
     g_signal = sig;
-    write(1, "\n", 1);
+    write(STDOUT_FILENO, "\n", 1);
+	rl_done = 1;
+	close(STDIN_FILENO);
 }
 
 void	exec_sigint(int sig)
