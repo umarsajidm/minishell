@@ -34,48 +34,40 @@
 
 // src/parser/parse.c
 /* Replace the existing handle_word_token in src/parser/parse.c */
-int handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
-    t_shell *shell, t_arena **arena)
+static bool	should_add_arg(const char *expanded, const t_token *tok)
 {
-    char    *expanded;
-    bool    add_arg;
+	if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
+	{
+		if (ft_strcmp(tok->token, "$") != 0)
+			return (false);
+	}
+	return (true);
+}
 
-    add_arg = true;
+int	handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
+						t_shell *shell, t_arena **arena)
+{
+	char	*expanded;
 
-    /* Expand first */
-    expanded = expand_string(tok->token, shell, arena);
-    if (!expanded)
-        return (0);
-
-    /* If expansion produced empty string and token was not quoted,
-       drop it (except the literal "$") */
-    if (expanded[0] == '\0' && tok->token[0] != '\'' && tok->token[0] != '"')
-    {
-        if (ft_strcmp(tok->token, "$") != 0)
-            add_arg = false;
-    }
-
-    if (!add_arg)
-    {
-        if (!*cur)
-        {
-            if (!ensure_current_cmd(cur, head, arena))
-                return (0);
-        }
-        return (1);
-    }
-
-    /* Now ensure there's a command node and set unexpanded_cmd if needed */
-    if (!ensure_current_cmd(cur, head, arena))
-        return (0);
-
-    if ((*cur)->argv == NULL)
-        (*cur)->unexpanded_cmd = tok->token;
-
-    if (!add_word_to_argv(*cur, expanded, arena))
-        return (0);
-
-    return (1);
+	expanded = expand_string(tok->token, shell, arena);
+	if (!expanded)
+		return (0);
+	if (!should_add_arg(expanded, tok))
+	{
+		if (!*cur)
+		{
+			if (!ensure_current_cmd(cur, head, arena))
+				return (0);
+		}
+		return (1);
+	}
+	if (!ensure_current_cmd(cur, head, arena))
+		return (0);
+	if ((*cur)->argv == NULL)
+		(*cur)->unexpanded_cmd = tok->token;
+	if (!add_word_to_argv(*cur, expanded, arena))
+		return (0);
+	return (1);
 }
 
 

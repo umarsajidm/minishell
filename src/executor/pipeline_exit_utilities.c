@@ -1,37 +1,44 @@
 #include "minishell.h"
 
-void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type)
+static void print_execution_error(int type)
 {
-    // 1. Clean up temporary memory allocated in the path search or execve
-    freearray(exec->envp);
-    if (exec->path_to_exec != NULL)
-        free(exec->path_to_exec);
-    close_fd(exec->fd);
     if (type == PERMISSION_DENIED)
-        perror("permission denied");
+        perror("minishell");
     else if (type == COMMAND_NOT_FOUND)
-        perror("command not found");
-    else if (type == ENV_PATH_COULDNT_BE_FOUND)
-        perror("retrievinig path from env failed");
-    else if (type == ENVIRONMENT_COPY_FAILED)
-        perror("copying env for child process failed");
+        perror("minishell");
     else if (type == FORK_FAILED)
-        perror("forking failed");
-    if (shell->env)
-        free_env(shell->env);
+        perror("minishell");
+}
+
+static void child_cleanup_and_exit(t_shell *shell, int type)
+{
     if (shell->arena)
         free_arena(&shell->arena);
-    if (shell->exec->fd)
-        free(shell->exec->fd);
+    if (shell->env)
+        free_env(shell->env);
     if (shell->exec)
+    {
+        if (shell->exec->fd)
+            free(shell->exec->fd);
         free(shell->exec);
+    }
     rl_clear_history();
     if (type == COMMAND_NOT_FOUND)
         exit(127);
     if (type == PERMISSION_DENIED)
         exit(126);
-
     exit(type);
+}
+
+void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type)
+{
+    if (exec->envp)
+        freearray(exec->envp);
+    if (exec->path_to_exec != NULL)
+        free(exec->path_to_exec);
+    close_fd(exec->fd);
+    print_execution_error(type);
+    child_cleanup_and_exit(shell, type);
 }
 
 void set_the_exit_code(t_shell *shell, char *command, char **envp)
