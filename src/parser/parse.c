@@ -160,5 +160,6 @@ t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
 		}
         it = it->next;
     }
+	close(saved_stdin);
     return (head);
 }
