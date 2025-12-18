@@ -1,14 +1,12 @@
 #include "minishell.h"
 #include <unistd.h>
 
-/* Read a single line of input from user and duplicate into arena
-** - Adds non-empty lines to history
-** - Returns pointer in arena memory
-*/
 char	*read_input(t_arena **arena)
 {
 	char	*line;
+	char	*arena_line;
 
+	line = NULL;
 	if (isatty(STDIN_FILENO))
 	{
 		setup_parent_signals();
@@ -21,16 +19,12 @@ char	*read_input(t_arena **arena)
 			line[ft_strlen(line) - 1] = '\0';
 	}
 	if (!line)
-		return (NULL);			// Ctrl-D returns NULL
-	char *arena_line = arena_strdup(arena, line);
+		return (NULL);
+	arena_line = arena_strdup(arena, line);
 	free(line);
 	return (arena_line);
 }
 
-/* Append a single line to heredoc content stored in arena
-** - Adds newline automatically
-** - Returns updated content or NULL on failure
-*/
 static char	*append_heredoc_line(char *content, size_t *cur_len,
 	char *line, t_arena **arena)
 {
@@ -47,21 +41,14 @@ static char	*append_heredoc_line(char *content, size_t *cur_len,
 	return (content);
 }
 
-/* Print heredoc EOF warning
- * - Mimics bash behavior when heredoc ends with Ctrl+D
- * - Shows which delimiter was expected
- */
-void print_hd_err(const char *delimiter)
+void	print_hd_err(const char *delimiter)
 {
-    ft_putstr_fd("minishell: warning: here-document delimited by ", 2);
-    ft_putstr_fd("end-of-file (wanted `", 2);
-    ft_putstr_fd((char *)delimiter, 2);
-    ft_putstr_fd("')\n", 2);
+	ft_putstr_fd("minishell: warning: here-document at line ", 2);
+	ft_putstr_fd("delimited by end-of-file (wanted `", 2);
+	ft_putstr_fd((char *)delimiter, 2);
+	ft_putstr_fd("')\n", 2);
 }
 
-/* Read a single heredoc line from user
-** - Returns NULL if EOF reached
-*/
 static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 {
 	char	*line;
@@ -77,14 +64,10 @@ static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 		return (NULL);
 	}
 	if (!line)
-		return (print_hd_err(delimiter),  NULL);
+		return (print_hd_err(delimiter), NULL);
 	return (line);
 }
 
-/* Read multiple lines for a heredoc until delimiter is reached
-** - Uses arena for memory management
-** - Returns full heredoc content or NULL
-*/
 char	*read_heredoc(t_shell *shell, const char *delimiter)
 {
 	char	*line;
@@ -98,12 +81,11 @@ char	*read_heredoc(t_shell *shell, const char *delimiter)
 		return (NULL);
 	content[0] = '\0';
 	cur_len = 0;
-	while (true)
+	while (1)
 	{
 		line = read_heredoc_line(shell, delimiter);
 		if (!line || ft_strcmp(line, delimiter) == 0)
-			break;
-
+			break ;
 		content = append_heredoc_line(content, &cur_len, line, &shell->arena);
 		if (!content)
 			return (NULL);
@@ -111,9 +93,6 @@ char	*read_heredoc(t_shell *shell, const char *delimiter)
 	return (content);
 }
 
-/* Unified function to handle heredoc input
-** - Returns pointer to heredoc content in arena
-*/
 char	*handle_heredoc(t_cmd *cmd, t_shell *shell, const char *delimiter)
 {
 	(void)cmd;

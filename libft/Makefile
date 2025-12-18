@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+         #
+#    By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/22 18:09:48 by achowdhu          #+#    #+#              #
-#    Updated: 2025/12/06 23:56:47 by musajid          ###   ########.fr        #
+#    Updated: 2025/12/18 14:57:34 by musajid          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,7 +52,7 @@ LIST_SRCS	:= ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c \
 			   ft_lstdelone.c ft_lstiter.c ft_lstlast.c ft_lstmap.c\
 			   ft_lstnew.c ft_lstsize.c
 
-CONV_SRCS   := ft_atoi.c ft_atoibool.c ft_itoa.c ft_printf.c ft_dprintf.c
+CONV_SRCS   := ft_atoi.c ft_atoibool.c ft_itoa.c ft_printf.c
 
 SRCS        := $(CHAR_SRCS) $(STR_SRCS) $(MEM_SRCS) $(FD_SRCS) $(LIST_SRCS) $(CONV_SRCS)
 OBJS        := $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))

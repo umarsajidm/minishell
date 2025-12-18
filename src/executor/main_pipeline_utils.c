@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/17 18:01:28 by musajid           #+#    #+#             */
-/*   Updated: 2025/12/17 19:53:23 by musajid          ###   ########.fr       */
+/*   Created: 2025/12/18 16:13:40 by musajid           #+#    #+#             */
+/*   Updated: 2025/12/18 16:48:51 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,38 @@ void	pre_init(t_exec *exec)
 		exec->envp = NULL;
 	}
 	exec->pid = -1;
+}
+
+void	clean_exec(t_exec *exec)
+{
+	if (exec->path_to_exec != NULL)
+	{
+		free(exec->path_to_exec);
+		exec->path_to_exec = NULL;
+	}
+	if (exec->envp != NULL)
+	{
+		freearray(exec->envp);
+		exec->envp = NULL;
+	}
+}
+
+
+static int	child_process_multiple_pipeline(t_exec *exec,
+			t_shell *shell, t_cmd *command)
+{
+	setup_child_signals();
+	if (!is_builtin(command) && init_exec(exec, shell, command) != 0)
+		set_the_code_and_exit(shell, exec, 127);
+	if (command->redirs)
+	{
+		if (applying_redir(command, &(exec->fd->in_fd),
+				&(exec->fd->out_fd)) == 1)
+			set_the_code_and_exit(shell, exec, GENERAL_ERROR);
+	}
+	if (fds_manipulation_and_execution(command, shell, exec) == 1)
+		set_the_code_and_exit(shell, exec, COMMAND_NOT_FOUND);
+	exit(0);
 }
 
 static void	handle_init_exec_error(t_exec *exec, t_shell *shell, t_cmd *command)
@@ -61,20 +93,6 @@ int	init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 		return (1);
 	}
 	return (0);
-}
-
-void	clean_exec(t_exec *exec)
-{
-	if (exec->path_to_exec != NULL)
-	{
-		free(exec->path_to_exec);
-		exec->path_to_exec = NULL;
-	}
-	if (exec->envp != NULL)
-	{
-		freearray(exec->envp);
-		exec->envp = NULL;
-	}
 }
 
 int	intialize_and_process_single_child(t_exec *exec,
@@ -119,18 +137,7 @@ int	initialize_and_process_multiple_child(t_exec *exec,
 	}
 	if (exec->pid == 0)
 	{
-		setup_child_signals();
-		if (!is_builtin(command) && init_exec(exec, shell, command) != 0)
-			set_the_code_and_exit(shell, exec, 127);
-		if (command->redirs)
-		{
-			if (applying_redir(command, &(exec->fd->in_fd),
-					&(exec->fd->out_fd)) == 1)
-				set_the_code_and_exit(shell, exec, GENERAL_ERROR);
-		}
-		if (fds_manipulation_and_execution(command, shell, exec) == 1)
-			set_the_code_and_exit(shell, exec, COMMAND_NOT_FOUND);
-		exit(0);
+		return (child_process_multiple_pipeline(exec, shell, command));
 	}
 	return (0);
 }
