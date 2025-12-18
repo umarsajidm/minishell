@@ -1,8 +1,5 @@
 #include "minishell.h"
 
-/*
- * Check if character is an operator
- */
 int	is_operator_char(char c)
 {
 	if (c == '|' || c == '<' || c == '>')
@@ -10,9 +7,6 @@ int	is_operator_char(char c)
 	return (0);
 }
 
-/*
- * Skip whitespace characters
- */
 int	skip_spaces(char *s, int i)
 {
 	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
@@ -20,9 +14,6 @@ int	skip_spaces(char *s, int i)
 	return (i);
 }
 
-/*
- * Duplicate a substring from start to end
- */
 char	*dup_word(t_arena **arena, const char *str, int start, int end)
 {
 	char	*word;
@@ -37,9 +28,6 @@ char	*dup_word(t_arena **arena, const char *str, int start, int end)
 	return (word);
 }
 
-/*
- * Helper: Append node to end of list
- */
 static void	list_append(t_list **tokens, t_list *node)
 {
 	t_list	*tmp;
@@ -55,10 +43,6 @@ static void	list_append(t_list **tokens, t_list *node)
 	}
 }
 
-/*
- * Allocate token struct, node, and add to list
- * - Updated to use t_token_type
- */
 int	create_token_node(t_arena **ar, t_list **toks, char *content, t_token_type type)
 {
 	t_token	*tok;

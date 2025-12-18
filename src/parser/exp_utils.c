@@ -1,52 +1,49 @@
 #include "minishell.h"
 
-/* * Append character to dynamically growing arena string */
 char	*append_char(char *buf, size_t *len, char c, t_arena **arena)
 {
 	char	*tmp;
 
-	tmp = arena_realloc(arena, buf, *len, *len + 2); // +1 for char, +1 for \0
+	tmp = arena_realloc(arena, buf, *len, *len + 2);
 	if (!tmp)
-		return (NULL); // alloc failed
-	tmp[*len] = c; // add character
-	tmp[*len + 1] = '\0'; // null-terminate
-	(*len)++; // update length
+		return (NULL);
+	tmp[*len] = c;
+	tmp[*len + 1] = '\0';
+	(*len)++;
 	return (tmp);
 }
 
-/* * Lookup key in shell environment or $? for expansion */
 char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 {
 	t_env	*cur;
 	char	*tmp;
 
 	if (!key)
-		return (arena_strdup(arena, "")); // safety check
+		return (arena_strdup(arena, ""));
 	if (key[0] == '?')
 	{
-		tmp = ft_itoa(shell->exit_code); // get exit code string
+		tmp = ft_itoa(shell->exit_code);
 		if (!tmp)
-			return (NULL); // malloc failed
-		cur = (t_env *)arena_strdup(arena, tmp); // copy to arena
-		free(tmp); // free standard malloc
-		return ((char *)cur); // return result
+			return (NULL);
+		cur = (t_env *)arena_strdup(arena, tmp);
+		free(tmp);
+		return ((char *)cur);
 	}
 	cur = shell->env;
 	while (cur)
 	{
 		if (ft_strncmp(cur->key, key, ft_strlen(key) + 1) == 0)
-        {
-            if (cur->value)
-			    return (arena_strdup(arena, cur->value));
-            else
-                return (arena_strdup(arena, ""));
-        }
+		{
+			if (cur->value)
+				return (arena_strdup(arena, cur->value));
+			else
+				return (arena_strdup(arena, ""));
+		}
 		cur = cur->next;
 	}
 	return (NULL);
 }
 
-/* * Helper to extract key for expand_variable */
 static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 {
 	size_t	start;
@@ -75,19 +72,18 @@ static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 	return (key);
 }
 
-/* * Identify and expand a single variable */
 char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 		t_arena **arena)
 {
 	char		*key;
 	const char	*val;
 
-	key = extract_env_key(str, i, arena); // get variable name
+	key = extract_env_key(str, i, arena);
 	if (!key)
 		return (NULL);
 	if (key[0] == '$' && key[1] == '\0')
-		return (key); // literal $
-	val = expand_env_value(key, shell, arena); // get env value
+		return (key);
+	val = expand_env_value(key, shell, arena);
 	if (!val)
 		return (NULL);
 	return ((char *)val);

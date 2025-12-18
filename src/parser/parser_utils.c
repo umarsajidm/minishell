@@ -12,7 +12,6 @@ void	add_argv_to_cmd(t_cmd *cmd, char **argv, t_arena **arena)
 	}
 }
 
-/* Create a new command node and initialize fields */
 t_cmd	*create_cmd_node(t_arena **arena)
 {
 	t_cmd	*cmd;
@@ -27,7 +26,6 @@ t_cmd	*create_cmd_node(t_arena **arena)
 	return (cmd);
 }
 
-/* Append a new command node to the end of the command list */
 t_cmd	*append_new_cmd(t_cmd **head, t_arena **arena)
 {
 	t_cmd	*node;
@@ -48,7 +46,6 @@ t_cmd	*append_new_cmd(t_cmd **head, t_arena **arena)
 	return (*head);
 }
 
-/* Add a word to the command's argv array */
 int	add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena)
 {
 	char	**new_argv;
@@ -78,7 +75,6 @@ int	add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena)
 	return (1);
 }
 
-/* Check if token is a pipe '|' */
 int	is_pipe_token(const char *token_str)
 {
 	if (!token_str)
@@ -88,7 +84,6 @@ int	is_pipe_token(const char *token_str)
 	return (0);
 }
 
-/* Check if token is a redirection '<', '>', '>>', '<<' */
 int	is_redir_token(const char *token_str)
 {
 	if (!token_str)

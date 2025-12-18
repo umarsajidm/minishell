@@ -1,12 +1,32 @@
 #include "minishell.h"
 
+static int	handle_field_splitting(char *expanded, t_cmd **cur, t_cmd **head,
+	t_token *tok, t_arena **arena)
+{
+	char	**words;
+	int		i;
+
+	words = field_split(expanded, arena);
+	if (!words)
+		return (0);
+	i = 0;
+	while (words[i])
+	{
+		if (!ensure_current_cmd(cur, head, arena)
+			|| !add_word_to_argv(*cur, words[i], arena))
+			return (0);
+		if (!(*cur)->argv && i == 0)
+			(*cur)->unexpanded_cmd = tok->token;
+		i++;
+	}
+	return (1);
+}
+
 int	handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
 					t_shell *shell, t_arena **arena)
 {
 	char	*expanded;
 	bool	add_arg;
-	char	**words;
-	int		i;
 
 	add_arg = true;
 	expanded = expand_string(tok->token, shell, arena);
@@ -24,22 +44,7 @@ int	handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
 		return (1);
 	}
 	if (ft_strchr(expanded, FIELD_SEP))
-	{
-		words = field_split(expanded, arena);
-		if (!words)
-			return (0);
-		i = 0;
-		while (words[i])
-		{
-			if (!ensure_current_cmd(cur, head, arena)
-				|| !add_word_to_argv(*cur, words[i], arena))
-				return (0);
-			if (!(*cur)->argv && i == 0)
-				(*cur)->unexpanded_cmd = tok->token;
-			i++;
-		}
-		return (1);
-	}
+		return (handle_field_splitting(expanded, cur, head, tok, arena));
 	if (!ensure_current_cmd(cur, head, arena))
 		return (0);
 	if (!(*cur)->argv)
@@ -49,96 +54,103 @@ int	handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
 	return (1);
 }
 
-
-/* Handle pipe token */
-int handle_pipe_token(t_token *tok, t_cmd **cur)
+int	handle_pipe_token(t_token *tok, t_cmd **cur)
 {
-    (void)tok;
-    if (!*cur || !(*cur)->argv || !(*cur)->argv[0]) // invalid pipe
-        return (-1);
-    *cur = NULL;
-    return (1);
+	(void)tok;
+	if (!*cur || !(*cur)->argv || !(*cur)->argv[0])
+		return (-1);
+	*cur = NULL;
+	return (1);
 }
 
-/* Handle operators including pipes and redirections */
-int handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-    t_cmd **head, t_shell *shell)
+int	handle_operator_token(t_list **tokens_ref, t_cmd **cur,
+	t_cmd **head, t_shell *shell)
 {
-    t_token *tok;
+	t_token	*tok;
 
-    tok = (*tokens_ref)->content;
-    if (is_pipe_token(tok->token))
-        return (handle_pipe_token(tok, cur));
-    if (is_redir_token(tok->token))
+	tok = (*tokens_ref)->content;
+	if (is_pipe_token(tok->token))
+		return (handle_pipe_token(tok, cur));
+	if (is_redir_token(tok->token))
 	{
 		setup_hd_signals();
-        return (handle_redir_token(tokens_ref, cur, head, shell));
+		return (handle_redir_token(tokens_ref, cur, head, shell));
 	}
-    return (0);
+	return (0);
 }
 
-/* Process a single token */
-static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
-    t_shell *shell, t_arena **arena)
+static int	process_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
+	t_shell *shell, t_arena **arena)
 {
-    int     res;
-    t_token *tok;
-
-    if (!iterator || !*iterator || !(*iterator)->content)
-    {
-        ft_printf("minishell: invalid token\n");
-        return (-1);
-    }
-    tok = (*iterator)->content;
-
-    if (tok->type == T_WORD || tok->type == T_QUOTE)
-    {
-        if (!handle_word_token(cur, head, tok, shell, arena))
-        {
-            ft_printf("minishell: parse error: alloc fail\n");
-            return (-1);
-        }
-    }
-    else
-    {
-        res = handle_operator_token(iterator, cur, head, shell);
-        if (res == -1)
-        {
-            ft_printf("minishell: syntax error near '%s'\n", tok->token);
-            return (-1);
-        }
-        if (res == 0)
-        {
-			if (!g_signal)
-            	ft_printf("minishell: parse error: alloc fail\n");
-            return (-1);
-        }
-    }
-    return (0);
+	if (!handle_word_token(cur, head, tok, shell, arena))
+	{
+		ft_printf("minishell: parse error: alloc fail\n");
+		return (-1);
+	}
+	return (0);
 }
 
-/* Parse token list into command list */
-t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
+static int	process_operator_token(t_list **iterator, t_cmd **cur,
+	t_cmd **head, t_shell *shell)
 {
-    t_cmd   *head;
-    t_cmd   *cur;
-    t_list  *it;
-	int		saved_stdin = -1;
+	int		res;
+	t_token	*tok;
 
-    head = NULL;
-    cur = NULL;
-    it = tokens;
+	tok = (*iterator)->content;
+	res = handle_operator_token(iterator, cur, head, shell);
+	if (res == -1)
+	{
+		ft_printf("minishell: syntax error near '%s'\n", tok->token);
+		return (-1);
+	}
+	if (res == 0)
+	{
+		if (!g_signal)
+			ft_printf("minishell: parse error: alloc fail\n");
+		return (-1);
+	}
+	return (0);
+}
+
+static int	process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
+	t_shell *shell, t_arena **arena)
+{
+	t_token	*tok;
+
+	if (!iterator || !*iterator || !(*iterator)->content)
+	{
+		ft_printf("minishell: invalid token\n");
+		return (-1);
+	}
+	tok = (*iterator)->content;
+	if (tok->type == T_WORD || tok->type == T_QUOTE)
+		return (process_word_token(cur, head, tok, shell, arena));
+	else
+		return (process_operator_token(iterator, cur, head, shell));
+}
+
+t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
+{
+	t_cmd	*head;
+	t_cmd	*cur;
+	t_list	*it;
+	int		saved_stdin;
+
+	head = NULL;
+	cur = NULL;
+	it = tokens;
+	saved_stdin = -1;
 	saved_stdin = dup(STDIN_FILENO);
-    while (it)
-    {
-        if (process_token(&it, &cur, &head, shell, arena) == -1)
+	while (it)
+	{
+		if (process_token(&it, &cur, &head, shell, arena) == -1)
 		{
 			dup2(saved_stdin, STDIN_FILENO);
 			close(saved_stdin);
-            return (NULL);
+			return (NULL);
 		}
-        it = it->next;
-    }
+		it = it->next;
+	}
 	close(saved_stdin);
-    return (head);
+	return (head);
 }
