@@ -1,7 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   handlers.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 14:51:36 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 14:51:58 by achowdhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-/*
- * Handle | < > << >>
+/* 
+ * Handle operators: |, <, >, <<, >>
+ * - Creates a token node for the operator
+ * - Returns next index after operator, -1 on failure
  */
 int	handle_operator(char *s, int i, t_list **tokens, t_arena **arena)
 {
@@ -20,6 +34,11 @@ int	handle_operator(char *s, int i, t_list **tokens, t_arena **arena)
 	return (i + len);
 }
 
+/* 
+ * Find the end index of a word in input string
+ * - Considers quotes and operators
+ * - Returns index of end, or -1 if unmatched quote
+ */
 static int	find_word_end(char *s, int i)
 {
 	char	quote;
@@ -46,6 +65,11 @@ static int	find_word_end(char *s, int i)
 	return (i);
 }
 
+/* 
+ * Handle a word token in input string
+ * - Finds word boundaries and creates token node
+ * - Returns index after word, -1 on failure
+ */
 int	handle_word(char *s, int i, t_list **tokens, t_arena **arena)
 {
 	int		start;

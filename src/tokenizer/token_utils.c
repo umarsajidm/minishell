@@ -1,5 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   token_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 14:51:18 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 14:51:19 by achowdhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
+/* 
+ * Return 1 if character is an operator: |, <, >
+ * - Otherwise returns 0
+ */
 int	is_operator_char(char c)
 {
 	if (c == '|' || c == '<' || c == '>')
@@ -7,6 +23,10 @@ int	is_operator_char(char c)
 	return (0);
 }
 
+/* 
+ * Skip spaces and tabs in string starting at index i
+ * - Returns index of first non-space character
+ */
 int	skip_spaces(char *s, int i)
 {
 	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
@@ -14,6 +34,10 @@ int	skip_spaces(char *s, int i)
 	return (i);
 }
 
+/* 
+ * Duplicate a substring from start to end into arena memory
+ * - Returns pointer inside arena or NULL on failure
+ */
 char	*dup_word(t_arena **arena, const char *str, int start, int end)
 {
 	char	*word;
@@ -28,6 +52,9 @@ char	*dup_word(t_arena **arena, const char *str, int start, int end)
 	return (word);
 }
 
+/* 
+ * Append a node to the end of the token list
+ */
 static void	list_append(t_list **tokens, t_list *node)
 {
 	t_list	*tmp;
@@ -43,7 +70,13 @@ static void	list_append(t_list **tokens, t_list *node)
 	}
 }
 
-int	create_token_node(t_arena **ar, t_list **toks, char *content, t_token_type type)
+/* 
+ * Create a token node and add it to the tokens list
+ * - Allocates t_token and t_list inside arena
+ * - Returns 1 on success, 0 on failure
+ */
+int	create_token_node(t_arena **ar, t_list **toks,
+			char *content, t_token_type type)
 {
 	t_token	*tok;
 	t_list	*node;

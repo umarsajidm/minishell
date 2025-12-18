@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_env.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jtarvain <jtarvain@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 13:10:30 by jtarvain          #+#    #+#             */
+/*   Updated: 2025/12/18 13:16:46 by jtarvain         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	ft_env(t_env *head)
@@ -7,7 +19,7 @@ int	ft_env(t_env *head)
 		if (!head->value)
 		{
 			head = head->next;
-			continue;
+			continue ;
 		}
 		ft_putstr_fd(head->key, STDOUT_FILENO);
 		if (head->value)
