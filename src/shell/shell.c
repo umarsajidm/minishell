@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+static int	add_pwd(t_shell *shell);
+
 static int	init_exec_struct(t_shell *shell)
 {
 	shell->exec = ft_calloc(1, sizeof(t_exec));
@@ -29,6 +31,9 @@ int	init_shell_and_arena(t_shell *shell, t_arena **arena, char **envp)
 		return (1);
 	}
 	shell->env = init_env(envp);
+	if (!shell->env)
+		if (!add_pwd(shell))
+			return (free_arena(arena), 1);
 	if (init_exec_struct(shell) != 0)
 	{
 		free_env(shell->env);
@@ -36,4 +41,27 @@ int	init_shell_and_arena(t_shell *shell, t_arena **arena, char **envp)
 		return (1);
 	}
 	return (0);
+}
+
+static int	add_pwd(t_shell *shell)
+{
+	char	*pwd_value;
+	t_env	*new;
+
+	new = (t_env *)malloc(sizeof(t_env));
+	if (!new)
+		return (0);
+	pwd_value = getcwd(NULL, 0);
+	if (!pwd_value)
+		return (free(new), 0);
+	new->key = ft_strdup("PWD");
+	if (!new->key)
+	{
+		free(pwd_value);
+		return (free(new), 0);
+	}
+	new->value = pwd_value;
+	new->next = NULL;
+	shell->env = new;
+	return (1);
 }

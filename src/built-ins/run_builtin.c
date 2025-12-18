@@ -1,5 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   run_builtin.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jtarvain <jtarvain@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 13:09:25 by jtarvain          #+#    #+#             */
+/*   Updated: 2025/12/18 13:09:32 by jtarvain         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <stdbool.h>
+
+static void	clean_exit(t_shell *shell);
 
 int	run_builtin(t_cmd *cmds, t_shell *shell, bool is_child_process)
 {
@@ -24,10 +38,13 @@ int	run_builtin(t_cmd *cmds, t_shell *shell, bool is_child_process)
 	{
 		ret = ft_exit(cmds->argv, shell, &shell->arena, is_child_process);
 		if (is_child_process)
-		{
-			shell_cleanup(shell);
-			exit(shell->exit_code);
-		}
+			clean_exit(shell);
 	}
 	return (ret);
+}
+
+static void	clean_exit(t_shell *shell)
+{
+	shell_cleanup(shell);
+	exit(shell->exit_code);
 }
