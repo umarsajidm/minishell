@@ -2,17 +2,18 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main_pipeline_utils.c                              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+      */
-/*   By: musajid <musajid@hive.student.fi>          +#+  :+:       +#+         */
-/*                                                 +#+#+#+#+#+   +#+            */
-/*    Created: 2025/12/17 18:01:28 by musajid           #+#    #+#              */
-/*   Updated: 2025/12/17 19:53:23 by musajid          ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 16:13:40 by musajid           #+#    #+#             */
+/*   Updated: 2025/12/18 16:13:51 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	child_process_multiple_pipeline(t_exec *exec, t_shell *shell, t_cmd *command)
+static int	child_process_multiple_pipeline(t_exec *exec,
+			t_shell *shell, t_cmd *command)
 {
 	setup_child_signals();
 	if (!is_builtin(command) && init_exec(exec, shell, command) != 0)
