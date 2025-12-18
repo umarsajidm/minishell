@@ -10,25 +10,18 @@ static t_env	*create_env_node(char *env_str)
 	t_env	*node;
 	char	*eq;
 
-	eq = ft_strchr(env_str, '=');                  // find '=' separator
+	eq = ft_strchr(env_str, '=');
 	if (!eq)
-		return (NULL);                             // invalid env string
-	node = malloc(sizeof(t_env));                  // allocate node struct
-	if (!node)
-		return (NULL);                             // malloc failed
-	node->next = NULL;                              // initialize next early
-	node->key = ft_substr(env_str, 0, eq - env_str); // copy key
-	node->value = ft_strdup(eq + 1);               // copy value
-	if (!node->key || !node->value)                // allocation failed
-	{
-		if (node->key)
-			free(node->key);                       // free key if allocated
-		if (node->value)
-			free(node->value);                     // free value if allocated
-		free(node);                                 // free node struct
 		return (NULL);
-	}
-	return (node);                                  // success
+	node = malloc(sizeof(t_env));
+	if (!node)
+		return (NULL);
+	node->next = NULL;
+	node->key = ft_substr(env_str, 0, eq - env_str);
+	node->value = ft_strdup(eq + 1);
+	if (!node->key || !node->value)
+		return (free_env_node(node), NULL);
+	return (node);
 }
 
 /* 
@@ -43,25 +36,22 @@ t_env	*init_env(char **envp)
 	t_env	*node;
 	int		i;
 
-	head = NULL;                                    // head of list
-	last = NULL;                                    // last node pointer
+	head = NULL;
+	last = NULL;
 	i = 0;
 	while (envp && envp[i])
 	{
-		node = create_env_node(envp[i]);           // create node
+		node = create_env_node(envp[i]);
 		if (!node)
-		{
-			free_env(head);                        // free partial list on failure
-			return (NULL);
-		}
+			return (free_env(head), NULL);
 		if (!head)
-			head = node;                           // first node becomes head
+			head = node;
 		else
-			last->next = node;                     // append to end
-		last = node;                               // update last
+			last->next = node;
+		last = node;
 		i++;
 	}
-	return (head);                                  // return head of list
+	return (head);
 }
 
 /* 
@@ -74,12 +64,12 @@ void	free_env(t_env *env)
 
 	while (env)
 	{
-		tmp = env->next;                            // store next node
+		tmp = env->next;
 		if (env->key)
-			free(env->key);                         // free key string
+			free(env->key);
 		if (env->value)
-			free(env->value);                       // free value string
-		free(env);                                  // free node struct
-		env = tmp;                                  // move to next node
+			free(env->value);
+		free(env);
+		env = tmp;
 	}
 }

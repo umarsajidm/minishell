@@ -66,7 +66,7 @@ static void	print_export_error(char *str)
 static int	valid_syntax(const char *str)
 {
 	int	i;
-	
+
 	i = 0;
 	if (!ft_isalpha(str[i]) && str[i] != '_')
 		return (0);

@@ -6,13 +6,13 @@
  * - Clear current readline buffer
  * - Redisplay prompt
  */
-void    handle_sigint(int sig)
+void	handle_sigint(int sig)
 {
-    g_signal = sig;             // store received signal
-    write(1, "\n", 1);          // move to new line
-    rl_on_new_line();           // notify readline of new line
-    rl_replace_line("", 0);     // clear current input
-    rl_redisplay();             // redisplay prompt
+	g_signal = sig;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
 /* Handle SIGQUIT (Ctrl-\)
@@ -20,17 +20,17 @@ void    handle_sigint(int sig)
  * - Ensure prompt is correctly displayed
  */
 
-void    handle_sigquit(int sig)
+void	handle_sigquit(int sig)
 {
-    (void)sig;
-    rl_on_new_line();           // ensure prompt is on new line
-    rl_redisplay();             // redisplay prompt
+	(void)sig;
+	rl_on_new_line();
+	rl_redisplay();
 }
 
-void    handle_hd_signal(int sig)
+void	handle_hd_signal(int sig)
 {
-    g_signal = sig;
-    write(STDOUT_FILENO, "\n", 1);
+	g_signal = sig;
+	write(STDOUT_FILENO, "\n", 1);
 	rl_done = 1;
 	close(STDIN_FILENO);
 }

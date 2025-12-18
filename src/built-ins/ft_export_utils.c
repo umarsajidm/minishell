@@ -2,7 +2,6 @@
 
 static t_env	*alloc_node(const char *str);
 static size_t	env_strlen(const char *str);
-static void		free_env_node(t_env *node);
 
 int	update_env_node(const char *str, t_shell *shell)
 {
@@ -21,7 +20,7 @@ int	update_env_node(const char *str, t_shell *shell)
 	}
 	match->value = ft_strdup(value);
 	if (!match->value)
-			return (0);
+		return (0);
 	return (1);
 }
 
@@ -83,7 +82,7 @@ static size_t	env_strlen(const char *str)
 	return (i);
 }
 
-static void	free_env_node(t_env *node)
+void	free_env_node(t_env *node)
 {
 	if (node)
 	{

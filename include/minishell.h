@@ -165,6 +165,7 @@ int		update_env_node(const char *str, t_shell *shell);
 int		add_env_node(const char *str, t_shell *shell);
 void	print_export(t_env **arr);
 int		ft_exit2(char **av, t_shell *shell);
+void	free_env_node(t_env *node);
 
 /* ===========================
 ** Utils

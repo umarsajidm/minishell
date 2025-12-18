@@ -8,7 +8,6 @@ int	run_builtin(t_cmd *cmds, t_shell *shell, bool is_child_process)
 
 	ret = 0;
 	command = cmds->argv[0];
-	// printf("in run_builtin()\n");
 	if (ft_strcmp(command, "echo") == 0)
 		ret = ft_echo(cmds->argv);
 	else if (ft_strcmp(command, "cd") == 0)
