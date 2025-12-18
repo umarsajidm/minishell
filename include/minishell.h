@@ -114,11 +114,6 @@ int		ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena);
 int		add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena);
 int		add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
 			t_arena **arena);
-int		handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
-			t_shell *shell, t_arena **arena);
-int		handle_pipe_token(t_token *tok, t_cmd **cur);
-int		handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-			t_cmd **head, t_shell *shell);
 int		handle_redir_token(t_list **tokens_ref, t_cmd **cur,
 			t_cmd **head, t_shell *shell);
 int		is_pipe_token(const char *tok);

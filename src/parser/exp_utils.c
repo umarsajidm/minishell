@@ -13,22 +13,27 @@ char	*append_char(char *buf, size_t *len, char c, t_arena **arena)
 	return (tmp);
 }
 
+static char	*handle_exit_code_expansion(t_shell *shell, t_arena **arena)
+{
+	char	*tmp;
+	char	*res;
+
+	tmp = ft_itoa(shell->exit_code);
+	if (!tmp)
+		return (NULL);
+	res = arena_strdup(arena, tmp);
+	free(tmp);
+	return (res);
+}
+
 char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 {
 	t_env	*cur;
-	char	*tmp;
 
 	if (!key)
 		return (arena_strdup(arena, ""));
 	if (key[0] == '?')
-	{
-		tmp = ft_itoa(shell->exit_code);
-		if (!tmp)
-			return (NULL);
-		cur = (t_env *)arena_strdup(arena, tmp);
-		free(tmp);
-		return ((char *)cur);
-	}
+		return (handle_exit_code_expansion(shell, arena));
 	cur = shell->env;
 	while (cur)
 	{
