@@ -62,7 +62,7 @@ int handle_pipe_token(t_token *tok, t_cmd **cur)
 
 /* Handle operators including pipes and redirections */
 int handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-    t_cmd **head, t_shell *shell, t_arena **arena)
+    t_cmd **head, t_shell *shell)
 {
     t_token *tok;
 
@@ -72,7 +72,7 @@ int handle_operator_token(t_list **tokens_ref, t_cmd **cur,
     if (is_redir_token(tok->token))
 	{
 		setup_hd_signals();
-        return (handle_redir_token(tokens_ref, cur, head, shell, arena));
+        return (handle_redir_token(tokens_ref, cur, head, shell));
 	}
     return (0);
 }
@@ -101,7 +101,7 @@ static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
     }
     else
     {
-        res = handle_operator_token(iterator, cur, head, shell, arena);
+        res = handle_operator_token(iterator, cur, head, shell);
         if (res == -1)
         {
             ft_printf("minishell: syntax error near '%s'\n", tok->token);
@@ -109,7 +109,8 @@ static int  process_token(t_list **iterator, t_cmd **cur, t_cmd **head,
         }
         if (res == 0)
         {
-            ft_printf("minishell: parse error: alloc fail\n");
+			if (!g_signal)
+            	ft_printf("minishell: parse error: alloc fail\n");
             return (-1);
         }
     }
@@ -122,15 +123,22 @@ t_cmd   *parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
     t_cmd   *head;
     t_cmd   *cur;
     t_list  *it;
+	int		saved_stdin = -1;
 
     head = NULL;
     cur = NULL;
     it = tokens;
+	saved_stdin = dup(STDIN_FILENO);
     while (it)
     {
         if (process_token(&it, &cur, &head, shell, arena) == -1)
+		{
+			dup2(saved_stdin, STDIN_FILENO);
+			close(saved_stdin);
             return (NULL);
+		}
         it = it->next;
     }
+	close(saved_stdin);
     return (head);
 }

@@ -148,6 +148,6 @@ typedef struct s_state
 /* ===========================
 ** Global Variables
 ** =========================== */
-extern int	g_signal; /* last received signal */
+extern volatile sig_atomic_t	g_signal; /* last received signal */
 
 #endif /* MINISHELL_TYPES_H */

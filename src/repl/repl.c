@@ -19,7 +19,10 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
     if (!commands)
     {
 		setup_parent_signals();
-        shell->exit_code = 2;
+		if (g_signal != 0)
+			return ;
+		else
+        	shell->exit_code = 2;
         return ;
     }
 
@@ -58,6 +61,8 @@ void    repl_loop(t_shell *shell, t_arena **arena)
 
 		if (input) // Only process line if input is not NULL
 			process_line(shell, arena, input);
+				if (g_signal)
+					g_signal = 0;
         arena_clear(arena);
 
 		// Check exit flow after processing the line
