@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 19:11:16 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/08/09 18:44:46 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/12/18 12:36:34 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 int	ft_putstr_fd(char *str, int fd)
 {
 	int	write_result;
-
 
 	if (!str || fd < 0)
 		return (0);
