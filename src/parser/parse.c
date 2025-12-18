@@ -1,79 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 15:53:56 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 16:59:52 by achowdhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static int	handle_field_splitting(char *expanded, t_parser_state *p)
-{
-	char	**words;
-	int		i;
-
-	words = field_split(expanded, p->arena);
-	if (!words)
-		return (0);
-	i = 0;
-	while (words[i])
-	{
-		if (!ensure_current_cmd(p->cur, p->head, p->arena)
-			|| !add_word_to_argv(*p->cur, words[i], p->arena))
-			return (0);
-		if (!(*p->cur)->argv && i == 0)
-			(*p->cur)->unexpanded_cmd = p->tok->token;
-		i++;
-	}
-	return (1);
-}
-
-static int	handle_word_token(t_parser_state *p)
-{
-	char	*expanded;
-	bool	add_arg;
-
-	add_arg = true;
-	expanded = expand_string(p->tok->token, p->shell, p->arena);
-	if (!expanded)
-		return (0);
-	if (expanded[0] == '\0' && p->tok->token[0] != '\''
-		&& p->tok->token[0] != '"')
-	{
-		if (ft_strcmp(p->tok->token, "$") != 0)
-			add_arg = false;
-	}
-	if (!add_arg)
-	{
-		if (!*p->cur && !ensure_current_cmd(p->cur, p->head, p->arena))
-			return (0);
-		return (1);
-	}
-	if (ft_strchr(expanded, FIELD_SEP))
-		return (handle_field_splitting(expanded, p));
-	if (!ensure_current_cmd(p->cur, p->head, p->arena))
-		return (0);
-	if (!(*p->cur)->argv)
-		(*p->cur)->unexpanded_cmd = p->tok->token;
-	if (!add_word_to_argv(*p->cur, expanded, p->arena))
-		return (0);
-	return (1);
-}
-
-static int	handle_pipe_token(t_parser_state *p)
-{
-	(void)p->tok;
-	if (!*p->cur || !(*p->cur)->argv || !(*p->cur)->argv[0])
-		return (-1);
-	*p->cur = NULL;
-	return (1);
-}
-
-static int	handle_operator_token(t_parser_state *p)
-{
-	if (is_pipe_token(p->tok->token))
-		return (handle_pipe_token(p));
-	if (is_redir_token(p->tok->token))
-	{
-		setup_hd_signals();
-		return (handle_redir_token(p->iterator, p->cur, p->head, p->shell));
-	}
-	return (0);
-}
-
+/* 
+ * Process a word token
+ * - Calls handle_word_token to expand and add the word
+ * - Returns -1 on allocation failure, 0 on success
+ */
 static int	process_word_token(t_parser_state *p)
 {
 	if (!handle_word_token(p))
@@ -84,9 +27,15 @@ static int	process_word_token(t_parser_state *p)
 	return (0);
 }
 
+/* 
+ * Process an operator token
+ * - Calls handle_operator_token to handle pipe or redirection
+ * - Returns -1 on syntax error or allocation failure
+ * - Returns 0 if the operator is unknown
+ */
 static int	process_operator_token(t_parser_state *p)
 {
-	int		res;
+	int	res;
 
 	res = handle_operator_token(p);
 	if (res == -1)
@@ -103,6 +52,12 @@ static int	process_operator_token(t_parser_state *p)
 	return (0);
 }
 
+/* 
+ * Process a single token from the iterator
+ * - Determines if token is a word/quote or operator
+ * - Calls the appropriate processing function
+ * - Returns -1 on invalid token or processing error, 0 on success
+ */
 static int	process_token(t_parser_state *p)
 {
 	if (!p->iterator || !*p->iterator || !(*p->iterator)->content)
@@ -117,35 +72,55 @@ static int	process_token(t_parser_state *p)
 		return (process_operator_token(p));
 }
 
+/* 
+ * Process all tokens in the list
+ * - Iterates through the tokens and calls process_token
+ * - Returns 1 on success, 0 on parse error
+ * - Restores STDIN on error
+ */
+static int	process_all_tokens(t_parser_state *p, t_list *tokens,
+				int saved_stdin)
+{
+	t_list	*it;
+
+	it = tokens;
+	while (it)
+	{
+		if (process_token(p) == -1)
+		{
+			dup2(saved_stdin, STDIN_FILENO);
+			close(saved_stdin);
+			return (0);
+		}
+		it = it->next;
+	}
+	return (1);
+}
+
+/* 
+ * Parse a list of tokens into a linked list of t_cmd
+ * - Allocates commands in the arena
+ * - Returns pointer to head of t_cmd list or NULL on failure
+ */
 t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
 {
 	t_parser_state	p;
-	int			saved_stdin;
-	t_cmd		*head;
-	t_cmd		*cur;
-	t_list		*it;
+	int				saved_stdin;
+	t_cmd			*head;
+	t_cmd			*cur;
 
 	head = NULL;
 	cur = NULL;
-	it = tokens;
 	p.cur = &cur;
 	p.head = &head;
 	p.shell = shell;
 	p.arena = arena;
-	p.iterator = &it;
-	saved_stdin = -1;
+	p.iterator = &tokens;
 	saved_stdin = dup(STDIN_FILENO);
-
-	while (it)
-	{
-		if (process_token(&p) == -1)
-		{
-			dup2(saved_stdin, STDIN_FILENO);
-			close(saved_stdin);
-			return (NULL);
-		}
-		it = it->next;
-	}
+	if (saved_stdin == -1)
+		return (NULL);
+	if (!process_all_tokens(&p, tokens, saved_stdin))
+		return (NULL);
 	close(saved_stdin);
 	return (head);
 }
