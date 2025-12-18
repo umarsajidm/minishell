@@ -5,29 +5,45 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/18 16:16:24 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 17:11:31 by achowdhu         ###   ########.fr       */
+/*   Created: 2025/12/18 19:38:14 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 21:11:20 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /* 
- * Handle adding an expanded word to the command
- * - Deals with empty strings and field splitting
- * - Returns 1 on success, 0 on failure
+ * Decide if an empty argument should be added
+ * - Returns true if argument should be added
  */
-int	handle_empty_or_split_word(char *expanded, t_parser_state *p)
+static bool	should_add_argument(char *expanded, char *original)
 {
-	if (expanded[0] == '\0' && p->tok->token[0] != '\''
-		&& p->tok->token[0] != '"')
+	if (expanded[0] == '\0' && original[0] != '\'' && original[0] != '"')
+		if (ft_strcmp(original, "$") != 0)
+			return (false);
+	return (true);
+}
+
+/* 
+ * Handle a word or quoted token
+ * - Expands variables
+ * - Handles empty results and field splitting
+ * - Appends result to current command argv
+ */
+int	handle_word_token(t_parser_state *p)
+{
+	char	*expanded;
+	bool	add_arg;
+
+	expanded = expand_string(p->tok->token, p->shell, p->arena);
+	if (!expanded)
+		return (0);
+	add_arg = should_add_argument(expanded, p->tok->token);
+	if (!add_arg)
 	{
-		if (ft_strcmp(p->tok->token, "$") != 0)
-		{
-			if (!*p->cur && !ensure_current_cmd(p->cur, p->head, p->arena))
-				return (0);
-			return (1);
-		}
+		if (!*p->cur && !ensure_current_cmd(p->cur, p->head, p->arena))
+			return (0);
+		return (1);
 	}
 	if (ft_strchr(expanded, FIELD_SEP))
 		return (handle_field_splitting(expanded, p));
@@ -40,39 +56,23 @@ int	handle_empty_or_split_word(char *expanded, t_parser_state *p)
 	return (1);
 }
 
-/* 
- * Handle a word token
- * - Expands the token string
- * - Calls helper to handle empty words or field splitting
- */
-int	handle_word_token(t_parser_state *p)
-{
-	char	*expanded;
-
-	expanded = expand_string(p->tok->token, p->shell, p->arena);
-	if (!expanded)
-		return (0);
-	return (handle_empty_or_split_word(expanded, p));
-}
-
-/* 
- * Handle a pipe token during parsing
- * - Checks for invalid pipe placement
- * - Ends current command by setting p->cur to NULL
- * - Returns 1 on success, -1 on syntax error
+/*
+ * Handle a pipe operator token
+ * - Validates pipe placement
+ * - Ends the current command
  */
 int	handle_pipe_token(t_parser_state *p)
 {
+	(void)p->tok;
 	if (!*p->cur || !(*p->cur)->argv || !(*p->cur)->argv[0])
 		return (-1);
 	*p->cur = NULL;
 	return (1);
 }
 
-/* 
- * Handle an operator token
- * - Calls the appropriate handler for pipe or redirection tokens
- * - Returns -1 on syntax error, 0 if unknown operator, 1 on success
+/*
+ * Dispatch operator token handling
+ * - Routes to pipe or redirection handler
  */
 int	handle_operator_token(t_parser_state *p)
 {
@@ -86,10 +86,10 @@ int	handle_operator_token(t_parser_state *p)
 	return (0);
 }
 
-/* 
- * Add a word to the command's argv array
- * - Allocates new argv array in arena and copies existing words
- * - Returns 1 on success, 0 on failure
+/*
+ * Append a word to a command argv array
+ * - Reallocates argv in arena
+ * - NULL-terminates argv
  */
 int	add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena)
 {

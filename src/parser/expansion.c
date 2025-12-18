@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.hive.fi>       +#+  +:+       +#+        */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/18 15:54:22 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 17:25:00 by achowdhu         ###   ########.fr       */
+/*   Created: 2025/12/18 20:15:46 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 21:12:05 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* 
- * Handle single and double quotes during expansion
- * - Updates state->quote to track quote context
- * - Appends quotes to result if inside the other quote type
+/*
+ * Handle single and double quote characters during expansion
+ * - Updates quote state (none, single, double)
+ * - Appends quote characters when inside opposite quote type
  */
 static void	handle_quotes(const char *str, t_state *state)
 {
@@ -42,10 +42,10 @@ static void	handle_quotes(const char *str, t_state *state)
 	state->i++;
 }
 
-/* 
- * Handle $variable expansion
- * - Calls expand_variable to get value
- * - Converts spaces to FIELD_SEP if outside quotes
+/*
+ * Handle environment variable expansion after `$`
+ * - Expands variable value
+ * - Replaces unquoted spaces with FIELD_SEP
  */
 static void	handle_dollar(const char *str, t_state *state)
 {
@@ -69,9 +69,9 @@ static void	handle_dollar(const char *str, t_state *state)
 	}
 }
 
-/* 
- * Process a single character in the input string
- * - Handles quotes, dollar expansions, or regular characters
+/*
+ * Process a single character during expansion
+ * - Dispatches to quote, dollar, or literal handlers
  */
 static void	process_char(const char *str, t_state *state)
 {
@@ -87,10 +87,10 @@ static void	process_char(const char *str, t_state *state)
 	}
 }
 
-/* 
- * Expand a string with environment variables and handle quotes
- * - Returns a new string allocated in the arena
- * - Returns NULL on allocation failure
+/*
+ * Expand variables and quotes in a string
+ * - Handles quotes, `$` expansion, and field splitting markers
+ * - Returns expanded string allocated in arena
  */
 char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 {
@@ -106,6 +106,8 @@ char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 	state.quote = 0;
 	state.shell = shell;
 	state.arena = arena;
+	if (!str)
+		return (NULL);
 	while (str[state.i])
 	{
 		process_char(str, &state);
@@ -115,9 +117,9 @@ char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 	return (state.res);
 }
 
-/* 
- * Expand all argv strings in a command
- * - Returns 1 on success, 0 on allocation failure
+/*
+ * Expand all argv entries of a command
+ * - Replaces each argument with its expanded version
  */
 int	expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena)
 {

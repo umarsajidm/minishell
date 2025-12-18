@@ -1,22 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redir_utils.c                                      :+:      :+:    :+:   */
+/*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/18 15:30:50 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 17:02:48 by achowdhu         ###   ########.fr       */
+/*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 21:11:31 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* 
- * Create a new t_cmd node
- * - Allocates memory for t_cmd using the arena
- * - Initializes all fields to NULL
- * - Returns pointer to the new node or NULL on allocation failure
+/*
+ * Allocate and initialize a new command node
  */
 t_cmd	*create_cmd_node(t_arena **arena)
 {
@@ -32,11 +29,9 @@ t_cmd	*create_cmd_node(t_arena **arena)
 	return (cmd);
 }
 
-/* 
- * Ensure there is a current command in the linked list
- * - If *cur is NULL, allocates a new t_cmd node and appends it to *head
- * - Updates *cur to point to the current command
- * - Returns 1 on success, 0 on allocation failure
+/*
+ * Ensure a current command exists
+ * - Creates and links a new command if needed
  */
 int	ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena)
 {
@@ -61,10 +56,8 @@ int	ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena)
 	return (1);
 }
 
-/* 
- * Check if a token string is a pipe operator "|"
- * - Returns 1 if true, 0 otherwise
- * - Returns 0 if token_str is NULL
+/*
+ * Check if token represents a pipe operator
  */
 int	is_pipe_token(const char *token_str)
 {
@@ -75,11 +68,8 @@ int	is_pipe_token(const char *token_str)
 	return (0);
 }
 
-/* 
- * Check if a token string represents a redirection operator
- * - Supported operators: "<", ">", ">>", "<<"
- * - Returns 1 if token_str is a redirection, 0 otherwise
- * - Returns 0 if token_str is NULL
+/*
+ * Check if token represents a redirection operator
  */
 int	is_redir_token(const char *token_str)
 {

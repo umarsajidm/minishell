@@ -5,17 +5,22 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/18 15:53:56 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 16:59:52 by achowdhu         ###   ########.fr       */
+/*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 20:59:34 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/*
+ * Process a word or quoted token
+ * - Delegates to word handler
+ * - Prints allocation error on failure
 /* 
  * Process a word token
  * - Calls handle_word_token to expand and add the word
  * - Returns -1 on allocation failure, 0 on success
+>
  */
 static int	process_word_token(t_parser_state *p)
 {
@@ -27,12 +32,7 @@ static int	process_word_token(t_parser_state *p)
 	return (0);
 }
 
-/* 
- * Process an operator token
- * - Calls handle_operator_token to handle pipe or redirection
- * - Returns -1 on syntax error or allocation failure
- * - Returns 0 if the operator is unknown
- */
+
 static int	process_operator_token(t_parser_state *p)
 {
 	int	res;
@@ -52,11 +52,8 @@ static int	process_operator_token(t_parser_state *p)
 	return (0);
 }
 
-/* 
- * Process a single token from the iterator
- * - Determines if token is a word/quote or operator
- * - Calls the appropriate processing function
- * - Returns -1 on invalid token or processing error, 0 on success
+/*
+ * Dispatch token processing based on token type
  */
 static int	process_token(t_parser_state *p)
 {
@@ -72,19 +69,14 @@ static int	process_token(t_parser_state *p)
 		return (process_operator_token(p));
 }
 
-/* 
- * Process all tokens in the list
- * - Iterates through the tokens and calls process_token
- * - Returns 1 on success, 0 on parse error
- * - Restores STDIN on error
+/*
+ * Helper: Iterates through tokens and processes them.
+ * - Handles error restoration internally to keep logic consistent.
+ * - Returns 0 on failure, 1 on success.
  */
-static int	process_all_tokens(t_parser_state *p, t_list *tokens,
-				int saved_stdin)
+static int	run_parser_loop(t_parser_state *p, int saved_stdin)
 {
-	t_list	*it;
-
-	it = tokens;
-	while (it)
+	while (*(p->iterator))
 	{
 		if (process_token(p) == -1)
 		{
@@ -92,15 +84,14 @@ static int	process_all_tokens(t_parser_state *p, t_list *tokens,
 			close(saved_stdin);
 			return (0);
 		}
-		it = it->next;
+		*(p->iterator) = (*(p->iterator))->next;
 	}
 	return (1);
 }
 
-/* 
- * Parse a list of tokens into a linked list of t_cmd
- * - Allocates commands in the arena
- * - Returns pointer to head of t_cmd list or NULL on failure
+/*
+ * Parse token list into a command list
+ * - Restores STDIN on failure
  */
 t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
 {
@@ -108,6 +99,7 @@ t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
 	int				saved_stdin;
 	t_cmd			*head;
 	t_cmd			*cur;
+	t_list			*it;
 
 	head = NULL;
 	cur = NULL;
@@ -115,11 +107,11 @@ t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
 	p.head = &head;
 	p.shell = shell;
 	p.arena = arena;
-	p.iterator = &tokens;
+	p.iterator = &it;
 	saved_stdin = dup(STDIN_FILENO);
 	if (saved_stdin == -1)
 		return (NULL);
-	if (!process_all_tokens(&p, tokens, saved_stdin))
+	if (!run_parser_loop(&p, saved_stdin))
 		return (NULL);
 	close(saved_stdin);
 	return (head);

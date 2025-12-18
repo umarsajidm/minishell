@@ -5,17 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/18 16:58:12 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 16:59:09 by achowdhu         ###   ########.fr       */
+/*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 20:39:42 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* 
- * Count the number of words in a string separated by FIELD_SEP
- * - Returns the number of words
- */
+
 static int	count_words(const char *s)
 {
 	int	count;
@@ -37,11 +34,7 @@ static int	count_words(const char *s)
 	return (count);
 }
 
-/* 
- * Allocate the result array for field splitting
- * - word_count is set to the number of words
- * - Returns NULL on allocation failure
- */
+
 static char	**allocate_result_array(const char *str, t_arena **arena,
 				int *word_count)
 {
@@ -49,12 +42,13 @@ static char	**allocate_result_array(const char *str, t_arena **arena,
 	return (arena_alloc(arena, sizeof(char *) * (*word_count + 1)));
 }
 
-/* 
- * Fill the result array with words from the string
- * - Each word is allocated in the arena
+/*
+ * Fill the allocated array with words split by FIELD_SEP
  */
-static void	fill_words(const char *str, char **result, t_arena **arena)
+static void	fill_words(const char *str, char **result, int word_count,
+		t_arena **arena)
 {
+	int			i;
 	const char	*word_start;
 	int			i;
 
@@ -68,18 +62,19 @@ static void	fill_words(const char *str, char **result, t_arena **arena)
 			word_start = str;
 			while (*str && *str != FIELD_SEP)
 				str++;
-			result[i++] = arena_strndup(arena, word_start, str - word_start);
+			result[i] = arena_strndup(arena, word_start, str - word_start);
+			if (!result[i])
+				return ;
+			i++;
 		}
 	}
 	result[i] = NULL;
 }
 
-/* 
- * Split a string into words separated by FIELD_SEP
- * - Allocates an array of strings in the arena
- * - Returns NULL on allocation failure
+/*
+ * Split a string by FIELD_SEP into a NULL-terminated array
  */
-static char	**field_split(const char *str, t_arena **arena)
+char	**field_split(const char *str, t_arena **arena)
 {
 	char	**result;
 	int		word_count;
@@ -89,14 +84,12 @@ static char	**field_split(const char *str, t_arena **arena)
 	result = allocate_result_array(str, arena, &word_count);
 	if (!result)
 		return (NULL);
-	fill_words(str, result, arena);
+	fill_words(str, result, word_count, arena);
 	return (result);
 }
 
-/* 
- * Handle field splitting for an expanded string
- * - Adds each word to the current command's argv
- * - Returns 1 on success, 0 on failure
+/*
+ * Handle field splitting after expansion and add words to argv
  */
 int	handle_field_splitting(char *expanded, t_parser_state *p)
 {
