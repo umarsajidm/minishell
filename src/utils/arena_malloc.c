@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   arena_malloc.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 14:34:20 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 14:34:24 by achowdhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-/* Initialize a new arena block with given size
+/* 
+ * Initialize a new arena block with given size
  * - Returns pointer to arena or NULL on allocation failure
  */
 t_arena	*init_arena(size_t size)
@@ -21,7 +34,8 @@ t_arena	*init_arena(size_t size)
 	return (arena);
 }
 
-/* Create a new bigger arena block and link it
+/* 
+ * Create a new bigger arena block and link it
  * - Returns pointer to new arena or NULL on failure
  */
 t_arena	*new_bigger_arena(t_arena *current, size_t size)
@@ -41,7 +55,8 @@ t_arena	*new_bigger_arena(t_arena *current, size_t size)
 	return (new_arena);
 }
 
-/* Allocate memory from arena; grow arena if needed
+/* 
+ * Allocate memory from arena; grow arena if needed
  * - Returns pointer to allocated memory or NULL on failure
  */
 void	*arena_alloc(t_arena **arena, size_t size)
@@ -52,15 +67,10 @@ void	*arena_alloc(t_arena **arena, size_t size)
 
 	if (!arena || !*arena || size == 0)
 		return (NULL);
-
-	// Align size to a multiple of sizeof(void*)
-	alignment_size = (size + sizeof(void*) - 1) & ~(sizeof(void*) - 1);
-
+	alignment_size = (size + sizeof(void *) - 1) & ~(sizeof(void *) - 1);
 	current = *arena;
-	// Find the last arena that might have space
 	while (current->next)
 		current = current->next;
-
 	if (alignment_size > (current->buffer - current->offset))
 	{
 		current = new_bigger_arena(current, alignment_size);
@@ -72,37 +82,12 @@ void	*arena_alloc(t_arena **arena, size_t size)
 	return (ptr);
 }
 
-// void	*arena_alloc(t_arena **arena, size_t size)
-// {
-// 	t_arena	*head;
-// 	t_arena	*current;
-// 	void	*ptr;
-
-// 	if (!arena || !*arena || size == 0)
-// 		return (NULL);
-// 	head = *arena;
-// 	current = head;
-// 	/* find last arena block */
-// 	while (current->next)
-// 		current = current->next;
-// 	/* if not enough space in last block, grow by appending a new block */
-// 	if (size > (current->buffer - current->offset))
-// 	{
-// 		current = new_bigger_arena(current, size);
-// 		if (!current)
-// 			return (NULL);
-// 		/* DON'T update *arena — keep head unchanged */
-// 	}
-// 	ptr = (char *)current->memory_block + current->offset;
-// 	current->offset += size;
-// 	return (ptr);
-// }
-
-
-/* Re-allocate an arena-allocated block to a larger size
+/* 
+ * Re-allocate an arena-allocated block to a larger size
  * - Copies old_size bytes from old_ptr into newly allocated arena memory
  */
-void	*arena_realloc(t_arena **arena, void *old_ptr, size_t old_size, size_t new_size)
+void	*arena_realloc(t_arena **arena, void *old_ptr,
+			size_t old_size, size_t new_size)
 {
 	void	*new_ptr;
 
