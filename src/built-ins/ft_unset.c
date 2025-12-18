@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 static void	unset_node(t_shell *shell, t_env *match);
-static void	free_env_node(t_env *node);
+// static void	free_env_node(t_env *node);
 
 int	ft_unset(t_cmd *cmd, t_shell *shell)
 {
@@ -63,7 +63,7 @@ static void	unset_node(t_shell *shell, t_env *match)
 	}
 }
 
-static void	free_env_node(t_env *node)
+void	free_env_node(t_env *node)
 {
 	if (node->key)
 		free(node->key);

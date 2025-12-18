@@ -58,7 +58,7 @@ static int	overflow(long result, int digit, int sign)
 
 static void	init_vars(int **error, int *sign, long *result)
 {
-	*error = 0;
+	**error = 0;
 	*sign = 1;
 	*result = 0;
 }
