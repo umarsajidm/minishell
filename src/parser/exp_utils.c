@@ -3,15 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   exp_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 16:16:12 by musajid           #+#    #+#             */
-/*   Updated: 2025/12/18 16:16:13 by musajid          ###   ########.fr       */
+/*   Updated: 2025/12/18 20:14:17 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/*
+ * Append a single character to a dynamically growing buffer
+ * - Reallocates buffer using arena
+ * - Updates length and keeps string NULL-terminated
+ * - Returns updated buffer or NULL on failure
+ */
 char	*append_char(char *buf, size_t *len, char c, t_arena **arena)
 {
 	char	*tmp;
@@ -25,6 +31,11 @@ char	*append_char(char *buf, size_t *len, char c, t_arena **arena)
 	return (tmp);
 }
 
+/*
+ * Expand special variable `$?`
+ * - Converts last exit code to string
+ * - Stores result in arena memory
+ */
 static char	*handle_exit_code_expansion(t_shell *shell, t_arena **arena)
 {
 	char	*tmp;
@@ -38,6 +49,12 @@ static char	*handle_exit_code_expansion(t_shell *shell, t_arena **arena)
 	return (res);
 }
 
+/*
+ * Retrieve the value of an environment variable
+ * - Handles `$?` separately
+ * - Returns empty string if variable exists but has no value
+ * - Returns NULL if variable does not exist
+ */
 char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 {
 	t_env	*cur;
@@ -61,6 +78,11 @@ char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 	return (NULL);
 }
 
+/*
+ * Extract an environment variable key after `$`
+ * - Supports `$?`, valid identifiers, and literal `$`
+ * - Advances parsing index accordingly
+ */
 static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 {
 	size_t	start;
@@ -89,6 +111,11 @@ static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 	return (key);
 }
 
+/*
+ * Expand a variable starting at `$` in the input string
+ * - Extracts key and resolves its value
+ * - Advances index past the variable name
+ */
 char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 		t_arena **arena)
 {

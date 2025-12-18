@@ -1,5 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 20:15:46 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 20:15:47 by achowdhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
+/*
+ * Handle single and double quote characters during expansion
+ * - Updates quote state (none, single, double)
+ * - Appends quote characters when inside opposite quote type
+ */
 static void	handle_quotes(const char *str, t_state *state)
 {
 	if (str[state->i] == '\'')
@@ -25,6 +42,11 @@ static void	handle_quotes(const char *str, t_state *state)
 	state->i++;
 }
 
+/*
+ * Handle environment variable expansion after `$`
+ * - Expands variable value
+ * - Replaces unquoted spaces with FIELD_SEP
+ */
 static void	handle_dollar(const char *str, t_state *state)
 {
 	char	*tmp;
@@ -35,7 +57,6 @@ static void	handle_dollar(const char *str, t_state *state)
 	if (!tmp)
 		return ;
 	j = 0;
-
 	while (tmp[j])
 	{
 		if (ft_isspace(tmp[j]) && state->quote == 0)
@@ -48,6 +69,10 @@ static void	handle_dollar(const char *str, t_state *state)
 	}
 }
 
+/*
+ * Process a single character during expansion
+ * - Dispatches to quote, dollar, or literal handlers
+ */
 static void	process_char(const char *str, t_state *state)
 {
 	if (str[state->i] == '\'' || str[state->i] == '"')
@@ -62,6 +87,11 @@ static void	process_char(const char *str, t_state *state)
 	}
 }
 
+/*
+ * Expand variables and quotes in a string
+ * - Handles quotes, `$` expansion, and field splitting markers
+ * - Returns expanded string allocated in arena
+ */
 char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 {
 	t_state	state;
@@ -76,17 +106,19 @@ char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 	state.arena = arena;
 	if (!str)
 		return (NULL);
-
 	while (str[state.i])
 	{
 		process_char(str, &state);
 		if (!state.res)
 			return (NULL);
 	}
-
 	return (state.res);
 }
 
+/*
+ * Expand all argv entries of a command
+ * - Replaces each argument with its expanded version
+ */
 int	expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena)
 {
 	int		i;
@@ -95,7 +127,6 @@ int	expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena)
 	if (!cmd || !cmd->argv)
 		return (1);
 	i = 0;
-
 	while (cmd->argv[i])
 	{
 		expanded = expand_string(cmd->argv[i], shell, arena);
