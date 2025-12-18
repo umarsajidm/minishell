@@ -41,6 +41,14 @@ static char	*append_heredoc_line(char *content, size_t *cur_len,
 	return (content);
 }
 
+void	print_hd_err(const char *delimiter)
+{
+	ft_putstr_fd("minishell: warning: here-document at line ", 2);
+	ft_putstr_fd("delimited by end-of-file (wanted `", 2);
+	ft_putstr_fd((char *)delimiter, 2);
+	ft_putstr_fd("')\n", 2);
+}
+
 static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 {
 	char	*line;
