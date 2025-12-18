@@ -6,7 +6,7 @@
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 16:16:12 by musajid           #+#    #+#             */
-/*   Updated: 2025/12/18 20:14:17 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/12/18 21:12:18 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,7 @@ char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 		{
 			if (cur->value)
 				return (arena_strdup(arena, cur->value));
-			else
-				return (arena_strdup(arena, ""));
+			return (arena_strdup(arena, ""));
 		}
 		cur = cur->next;
 	}

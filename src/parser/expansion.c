@@ -6,7 +6,7 @@
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 20:15:46 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 20:15:47 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/12/18 21:12:05 by achowdhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ static void	handle_quotes(const char *str, t_state *state)
 	if (str[state->i] == '\'')
 	{
 		if (state->quote == 2)
-			state->res = append_char(state->res, &state->len, str[state->i],
-					state->arena);
+			state->res = append_char(state->res, &state->len,
+					'\'', state->arena);
 		else if (state->quote == 1)
 			state->quote = 0;
 		else
@@ -32,8 +32,8 @@ static void	handle_quotes(const char *str, t_state *state)
 	else if (str[state->i] == '"')
 	{
 		if (state->quote == 1)
-			state->res = append_char(state->res, &state->len, str[state->i],
-					state->arena);
+			state->res = append_char(state->res, &state->len,
+					'"', state->arena);
 		else if (state->quote == 2)
 			state->quote = 0;
 		else
@@ -96,6 +96,8 @@ char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 {
 	t_state	state;
 
+	if (!str)
+		return (NULL);
 	state.res = arena_strdup(arena, "");
 	if (!state.res)
 		return (NULL);

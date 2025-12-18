@@ -5,15 +5,24 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+<<<<<<< HEAD
 /*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
 /*   Updated: 2025/12/18 20:50:16 by achowdhu         ###   ########.fr       */
+=======
+/*   Created: 2025/12/18 15:55:50 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 17:02:06 by achowdhu         ###   ########.fr       */
+>>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/*
- * Determine redirection type from token string
+/* 
+ * Determine the type of redirection based on token string
+ * - "<"  => R_INPUT
+ * - ">"  => R_OUTPUT
+ * - ">>" => R_APPEND
+ * - any other (default) => R_HEREDOC
  */
 static t_redir_type	get_redir_type(const char *token_str)
 {
