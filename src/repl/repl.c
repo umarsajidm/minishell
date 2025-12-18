@@ -6,7 +6,7 @@
 /*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 14:30:24 by musajid           #+#    #+#             */
-/*   Updated: 2025/12/18 14:30:25 by musajid          ###   ########.fr       */
+/*   Updated: 2025/12/18 22:38:27 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,4 +111,12 @@ void	non_interactive_loop(t_shell *shell, t_arena **arena)
 			shell->exit_flow = FLOW_OK;
 		}
 	}
+}
+
+char	*handle_heredoc(t_cmd *cmd, t_shell *shell, const char *delimiter)
+{
+	(void)cmd;
+	if (!delimiter)
+		return (NULL);
+	return (read_heredoc(shell, delimiter));
 }
