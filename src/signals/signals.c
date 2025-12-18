@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jtarvain <jtarvain@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 13:17:32 by jtarvain          #+#    #+#             */
+/*   Updated: 2025/12/18 13:32:03 by jtarvain         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /* Global variable to store last received signal */
@@ -29,6 +41,7 @@ void	setup_hd_signals(void)
 {
 	struct sigaction	sa;
 
+	ft_bzero(&sa, sizeof(sa));
 	sa.sa_handler = handle_hd_signal;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;

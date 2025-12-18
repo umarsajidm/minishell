@@ -19,7 +19,7 @@
 # include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-#include <sys/stat.h>
+# include <sys/stat.h>
 
 /* ===========================
 ** Custom Libraries
@@ -85,9 +85,6 @@ void	exec_sigquit(int sig);
 
 t_env	*init_env(char **envp);
 void	free_env(t_env *env);
-char	*get_env_value(t_env *env, const char *key);
-int		set_env_var(t_shell *shell, const char *key, const char *value);
-void	dbg_print_env(t_env *env);
 
 /* ===========================
 ** Tokenizer

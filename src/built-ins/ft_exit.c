@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_exit.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jtarvain <jtarvain@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 13:10:20 by jtarvain          #+#    #+#             */
+/*   Updated: 2025/12/18 13:13:01 by jtarvain         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <stdint.h>
 
@@ -50,4 +62,3 @@ static int	num_error(char *str)
 	ft_putstr_fd(" numeric argument required\n", 2);
 	return (2);
 }
-

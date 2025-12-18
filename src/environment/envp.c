@@ -1,9 +1,7 @@
 #include "minishell.h"
 
-
 static size_t sizeoflist(t_env *env);
 static char *copyfromlisttoarr(t_env *env);
-
 
 //making the envp from linked list of env for execve func
 char    **envp_arr(t_shell *shell)
