@@ -64,6 +64,7 @@ void	non_interactive_loop(t_shell *shell, t_arena **arena);
 char	*read_input(t_arena **arena);
 char	*read_heredoc(t_shell *shell, const char *delimiter);
 char	*handle_heredoc(t_cmd *cmd, t_shell *shell, const char *delimiter);
+void	print_hd_err(const char *delimiter);
 
 /* ===========================
 ** Signals
@@ -234,10 +235,13 @@ void cleanup_pipeline(t_shell *shell, char **envp, pid_t last_pid);
 
 int	execution(t_cmd *command, t_shell *shell, t_exec *exec);
 
+//exec_utils.c
+void pre_init(t_exec *exec);
+void clean_exec(t_exec *exec);
+
 //main_pipeline_utils.c
 int  init_exec(t_exec *exec, t_shell *shell, t_cmd *command);
 int is_parent_level_builtin(t_cmd *cmd);
-void clean_exec(t_exec *exec);
 
 int intialize_and_process_single_child(t_exec *exec, t_shell *shell, t_cmd *command);
 int initialize_and_process_multiple_child(t_exec *exec, t_shell *shell, t_cmd *cmd);

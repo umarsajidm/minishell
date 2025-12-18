@@ -96,7 +96,7 @@ int	handle_redir_token(t_list **tokens_ref, t_cmd **cur,
 	if (!next_node)
 		return (-1);
 	next_tok = next_node->content;
-	if (!next_tok || !next_tok->token)
+	if (!next_tok || !next_tok->token || next_tok->type == T_OPERATOR)
 		return (-1);
 	if (!ensure_current_cmd(cur, head, &shell->arena))
 		return (0);
