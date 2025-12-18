@@ -70,8 +70,30 @@ static int	applying_outside_redir(t_redir *r, int *out_fd)
 	return (0);
 }
 
-// t_redir	*r;
-// r = cmd->redirs;
+static int	process_single_redir(t_redir *r, t_cmd *cmd,
+	int *in_fd, int *out_fd)
+{
+	if (r->target)
+	{
+		if (r->type == R_INPUT)
+		{
+			if (applying_input_redir(r, in_fd) == 1)
+				return (1);
+		}
+		if (r->type == R_OUTPUT || r->type == R_APPEND)
+		{
+			if (applying_outside_redir(r, out_fd) == 1)
+				return (1);
+		}
+		if (r->type == R_HEREDOC)
+		{
+			if (write_heredoc_to_pipe(in_fd, cmd->heredoc) == 1)
+				return (1);
+		}
+	}
+	return (0);
+}
+
 int	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 {
 	t_redir	*r;
@@ -79,24 +101,8 @@ int	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 	r = cmd->redirs;
 	while (r)
 	{
-		if (r->target)
-		{
-			if (r->type == R_INPUT)
-			{
-				if (applying_input_redir(r, in_fd) == 1)
-					return (1);
-			}
-			if (r->type == R_OUTPUT || r->type == R_APPEND)
-			{
-				if (applying_outside_redir(r, out_fd) == 1)
-					return (1);
-			}
-			if (r->type == R_HEREDOC)
-			{
-				if (write_heredoc_to_pipe(in_fd, cmd->heredoc) == 1)
-					return (1);
-			}
-		}
+		if (process_single_redir(r, cmd, in_fd, out_fd) == 1)
+			return (1);
 		r = r->next;
 	}
 	return (0);

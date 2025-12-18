@@ -12,7 +12,6 @@
 
 #include "minishell.h"
 
-//need serparate function for absolute path
 static void	abs_path_execution(t_cmd *cmd, t_shell *shell, t_exec *exec)
 {
 	checking(cmd->argv[0], cmd->argv[0]);
@@ -53,7 +52,6 @@ int	execution(t_cmd *command, t_shell *shell, t_exec *exec)
 	return (0);
 }
 
-//handle the faiiling fork;
 int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec)
 {
 	setup_execution_signals();

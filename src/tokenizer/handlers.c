@@ -8,16 +8,16 @@ int	handle_operator(char *s, int i, t_list **tokens, t_arena **arena)
 	int		len;
 	char	*op_str;
 
-	len = 1;                                    // default length
+	len = 1;
 	if ((s[i] == '<' && s[i + 1] == '<')
 		|| (s[i] == '>' && s[i + 1] == '>'))
-		len = 2;                                // double char op
-	op_str = dup_word(arena, s, i, i + len);    // alloc string
+		len = 2;
+	op_str = dup_word(arena, s, i, i + len);
 	if (!op_str)
-		return (-1);                            // alloc failed
+		return (-1);
 	if (!create_token_node(arena, tokens, op_str, T_OPERATOR))
-		return (-1);                            // node creation failed
-	return (i + len);                           // return next index
+		return (-1);
+	return (i + len);
 }
 
 /*

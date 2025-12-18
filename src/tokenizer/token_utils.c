@@ -6,8 +6,8 @@
 int	is_operator_char(char c)
 {
 	if (c == '|' || c == '<' || c == '>')
-		return (1);                             // operator found
-	return (0);                                 // not an operator
+		return (1);
+	return (0);
 }
 
 /*
@@ -16,8 +16,8 @@ int	is_operator_char(char c)
 int	skip_spaces(char *s, int i)
 {
 	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
-		i++;                                    // advance index
-	return (i);                                 // return new index
+		i++;
+	return (i);
 }
 
 /*
@@ -29,11 +29,11 @@ char	*dup_word(t_arena **arena, const char *str, int start, int end)
 	int		len;
 
 	len = end - start;
-	word = arena_alloc(arena, len + 1);         // alloc string
+	word = arena_alloc(arena, len + 1);
 	if (!word)
-		return (NULL);                          // alloc failed
-	ft_memcpy(word, str + start, len);          // copy chars
-	word[len] = '\0';                           // null terminate
+		return (NULL);
+	ft_memcpy(word, str + start, len);
+	word[len] = '\0';
 	return (word);
 }
 
@@ -45,13 +45,13 @@ static void	list_append(t_list **tokens, t_list *node)
 	t_list	*tmp;
 
 	if (!*tokens)
-		*tokens = node;                         // set head
+		*tokens = node;
 	else
 	{
 		tmp = *tokens;
 		while (tmp->next)
-			tmp = tmp->next;                    // find tail
-		tmp->next = node;                       // link node
+			tmp = tmp->next;
+		tmp->next = node;
 	}
 }
 
@@ -64,17 +64,17 @@ int	create_token_node(t_arena **ar, t_list **toks, char *content, t_token_type t
 	t_token	*tok;
 	t_list	*node;
 
-	tok = arena_alloc(ar, sizeof(t_token));     // alloc struct
+	tok = arena_alloc(ar, sizeof(t_token));
 	if (!tok)
-		return (0);                             // alloc failed
-	tok->token = content;                       // set string
-	tok->type = type;                           // set type
-	tok->next = NULL;                           // (optional) init unused next
-	node = arena_alloc(ar, sizeof(t_list));     // alloc node
+		return (0);
+	tok->token = content;
+	tok->type = type;
+	tok->next = NULL;
+	node = arena_alloc(ar, sizeof(t_list));
 	if (!node)
-		return (0);                             // alloc failed
-	node->content = tok;                        // attach content
+		return (0);
+	node->content = tok;
 	node->next = NULL;
-	list_append(toks, node);                    // add to list
-	return (1);                                 // success
+	list_append(toks, node);
+	return (1);
 }

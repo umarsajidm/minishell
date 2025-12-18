@@ -29,10 +29,26 @@ void	pre_init(t_exec *exec)
 	exec->pid = -1;
 }
 
-int	init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
+static void	handle_init_exec_error(t_exec *exec, t_shell *shell, t_cmd *command)
 {
 	char	*cmd_name_for_error;
 
+	freearray(exec->envp);
+	exec->envp = NULL;
+	shell->exit_code = 127;
+	if (command->argv && command->argv[0] && command->argv[0][0])
+		cmd_name_for_error = command->argv[0];
+	else
+		cmd_name_for_error = command->unexpanded_cmd;
+	if (cmd_name_for_error)
+	{
+		ft_putstr_fd(cmd_name_for_error, 2);
+		ft_putstr_fd(": command not found\n", 2);
+	}
+}
+
+int	init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
+{
 	pre_init(exec);
 	exec->envp = envp_arr(shell);
 	if (!exec->envp)
@@ -41,18 +57,7 @@ int	init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 		exec->path_to_exec = pathtoexecute(command->argv, exec);
 	if (!exec->path_to_exec)
 	{
-		freearray(exec->envp);
-		exec->envp = NULL;
-		shell->exit_code = 127;
-		if (command->argv && command->argv[0] && command->argv[0][0])
-			cmd_name_for_error = command->argv[0];
-		else
-			cmd_name_for_error = command->unexpanded_cmd;
-		if (cmd_name_for_error)
-		{
-			ft_putstr_fd(cmd_name_for_error, 2);
-			ft_putstr_fd(": command not found\n", 2);
-		}
+		handle_init_exec_error(exec, shell, command);
 		return (1);
 	}
 	return (0);
@@ -83,7 +88,11 @@ int	intialize_and_process_single_child(t_exec *exec,
 					&(exec->fd->out_fd)) == 1)
 				return (err_if_redir_fails(exec, shell));
 		}
-		child_process(command, shell, exec);
+		if (child_process(command, shell, exec) != 0)
+		{
+			close_fd(exec->fd);
+			return (1);
+		}
 	}
 	else
 		return (1);
@@ -93,12 +102,18 @@ int	intialize_and_process_single_child(t_exec *exec,
 int	initialize_and_process_multiple_child(t_exec *exec,
 	t_shell *shell, t_cmd *command)
 {
-	pipe(exec->fd->fd);
+	if (pipe(exec->fd->fd) == -1)
+	{
+		perror("minishell: pipe");
+		return (1);
+	}
 	setup_execution_signals();
 	exec->pid = fork();
 	if (exec->pid < 0)
 	{
 		perror("fork failed in multiple child process");
+		close(exec->fd->fd[0]);
+		close(exec->fd->fd[1]);
 		setup_parent_signals();
 		return (1);
 	}
