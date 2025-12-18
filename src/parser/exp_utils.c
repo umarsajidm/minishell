@@ -12,6 +12,12 @@
 
 #include "minishell.h"
 
+/* 
+ * Append a character to a dynamically allocated buffer in the arena
+ * - Reallocates buffer with arena_realloc
+ * - Updates len
+ * - Returns updated buffer or NULL on failure
+ */
 char	*append_char(char *buf, size_t *len, char c, t_arena **arena)
 {
 	char	*tmp;
@@ -25,6 +31,11 @@ char	*append_char(char *buf, size_t *len, char c, t_arena **arena)
 	return (tmp);
 }
 
+/* 
+ * Return exit code as string from shell in arena
+ * - Used for $? expansion
+ * - Returns string allocated in arena or NULL on failure
+ */
 static char	*handle_exit_code_expansion(t_shell *shell, t_arena **arena)
 {
 	char	*tmp;
@@ -38,6 +49,12 @@ static char	*handle_exit_code_expansion(t_shell *shell, t_arena **arena)
 	return (res);
 }
 
+/* 
+ * Return the value of an environment variable
+ * - If key is NULL, returns empty string
+ * - If key is "?", returns exit code string
+ * - Allocates result in arena
+ */
 char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 {
 	t_env	*cur;
@@ -53,14 +70,19 @@ char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 		{
 			if (cur->value)
 				return (arena_strdup(arena, cur->value));
-			else
-				return (arena_strdup(arena, ""));
+			return (arena_strdup(arena, ""));
 		}
 		cur = cur->next;
 	}
 	return (NULL);
 }
 
+/* 
+ * Extract environment variable key from string at index i
+ * - Updates i to point after the key
+ * - Allocates key in arena
+ * - Returns NULL on failure
+ */
 static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 {
 	size_t	start;
@@ -89,6 +111,12 @@ static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 	return (key);
 }
 
+/* 
+ * Expand variable from string starting at index i
+ * - Uses extract_env_key to get key
+ * - Returns value from environment or special $? expansion
+ * - Allocates result in arena
+ */
 char	*expand_variable(const char *str, size_t *i, t_shell *shell,
 		t_arena **arena)
 {
