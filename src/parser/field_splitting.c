@@ -5,27 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-<<<<<<< HEAD
 /*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
 /*   Updated: 2025/12/18 20:39:42 by achowdhu         ###   ########.fr       */
-=======
-/*   Created: 2025/12/18 16:58:12 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 16:59:09 by achowdhu         ###   ########.fr       */
->>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-<<<<<<< HEAD
-/*
- * Count the number of words in a FIELD_SEP-separated string
-=======
-/* 
- * Count the number of words in a string separated by FIELD_SEP
- * - Returns the number of words
->>>>>>> main
- */
+
 static int	count_words(const char *s)
 {
 	int	count;
@@ -47,18 +34,7 @@ static int	count_words(const char *s)
 	return (count);
 }
 
-<<<<<<< HEAD
-/*
- * Allocate the result array for field splitting
- * - Computes word count
- * - Allocates NULL-terminated char**
-=======
-/* 
- * Allocate the result array for field splitting
- * - word_count is set to the number of words
- * - Returns NULL on allocation failure
->>>>>>> main
- */
+
 static char	**allocate_result_array(const char *str, t_arena **arena,
 				int *word_count)
 {

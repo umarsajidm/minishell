@@ -5,29 +5,22 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-<<<<<<< HEAD
 /*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
 /*   Updated: 2025/12/18 20:59:34 by achowdhu         ###   ########.fr       */
-=======
-/*   Created: 2025/12/18 15:53:56 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 16:59:52 by achowdhu         ###   ########.fr       */
->>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-<<<<<<< HEAD
 /*
  * Process a word or quoted token
  * - Delegates to word handler
  * - Prints allocation error on failure
-=======
 /* 
  * Process a word token
  * - Calls handle_word_token to expand and add the word
  * - Returns -1 on allocation failure, 0 on success
->>>>>>> main
+>
  */
 static int	process_word_token(t_parser_state *p)
 {
@@ -39,18 +32,7 @@ static int	process_word_token(t_parser_state *p)
 	return (0);
 }
 
-<<<<<<< HEAD
-/*
- * Process an operator token
- * - Handles syntax and allocation errors
-=======
-/* 
- * Process an operator token
- * - Calls handle_operator_token to handle pipe or redirection
- * - Returns -1 on syntax error or allocation failure
- * - Returns 0 if the operator is unknown
->>>>>>> main
- */
+
 static int	process_operator_token(t_parser_state *p)
 {
 	int	res;
