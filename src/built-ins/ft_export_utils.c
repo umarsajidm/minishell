@@ -82,14 +82,14 @@ static size_t	env_strlen(const char *str)
 	return (i);
 }
 
-void	free_env_node(t_env *node)
-{
-	if (node)
-	{
-		if (node->value)
-			free(node->value);
-		if (node->key)
-			free(node->key);
-		free(node);
-	}
-}
+// void	free_env_node(t_env *node)
+// {
+// 	if (node)
+// 	{
+// 		if (node->value)
+// 			free(node->value);
+// 		if (node->key)
+// 			free(node->key);
+// 		free(node);
+// 	}
+// }

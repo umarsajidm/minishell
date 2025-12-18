@@ -7,14 +7,12 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
 
     if (is_blank_line(input))
         return ;
-
     tokens = tokenize(input, arena);
     if (!tokens)
     {
         shell->exit_code = 2;
         return ;
     }
-
     commands = parse_tokens(tokens, shell, arena);
     if (!commands)
     {
@@ -25,7 +23,6 @@ static void process_line(t_shell *shell, t_arena **arena, char *input)
         	shell->exit_code = 2;
         return ;
     }
-
     if (commands && (commands->argv || commands->unexpanded_cmd))
         main_pipeline(shell, commands);
 }
@@ -39,7 +36,7 @@ void    repl_loop(t_shell *shell, t_arena **arena)
         input = read_input(arena);
         if (!input)
         {
-            ft_exit(NULL, shell, arena, false); // Pass false for is_child_process
+            ft_exit2(NULL, shell); // Pass false for is_child_process
         }
 		if (g_signal != 0)
 		{
@@ -64,7 +61,6 @@ void    repl_loop(t_shell *shell, t_arena **arena)
 				if (g_signal)
 					g_signal = 0;
         arena_clear(arena);
-
 		// Check exit flow after processing the line
 		if (shell->exit_flow == FLOW_EXIT)
 		{
@@ -91,14 +87,13 @@ void    non_interactive_loop(t_shell *shell, t_arena **arena)
             process_line(shell, arena, input);
 
         arena_clear(arena);
-		// Check exit flow after processing the line
 		if (shell->exit_flow == FLOW_EXIT)
 		{
-			if (shell->should_print_exit_message) // isatty check not needed here, non-interactive
+			if (shell->should_print_exit_message)
 				ft_putstr_fd("exit\n", STDOUT_FILENO);
-			shell->should_print_exit_message = false; // Reset
+			shell->should_print_exit_message = false;
 			shell->running = false;
-			shell->exit_flow = FLOW_OK; // Reset for next potential run, though shell will exit
+			shell->exit_flow = FLOW_OK;
 		}
     }
 }

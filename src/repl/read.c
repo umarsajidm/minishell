@@ -7,12 +7,12 @@
 */
 char	*read_input(t_arena **arena)
 {
-	char	*line;				// line from readline
+	char	*line;
 
 	if (isatty(STDIN_FILENO))
 	{
 		setup_parent_signals();
-		line = readline("minishell$ ");	// display prompt and read input
+		line = readline("minishell$ ");
 	}
 	else
 	{
@@ -22,7 +22,6 @@ char	*read_input(t_arena **arena)
 	}
 	if (!line)
 		return (NULL);			// Ctrl-D returns NULL
-
 	char *arena_line = arena_strdup(arena, line);
 	free(line);
 	return (arena_line);
@@ -35,17 +34,17 @@ char	*read_input(t_arena **arena)
 static char	*append_heredoc_line(char *content, size_t *cur_len,
 	char *line, t_arena **arena)
 {
-	size_t	len;				// length of the line
+	size_t	len;
 
-	len = ft_strlen(line);			// compute line length
-	content = arena_realloc(arena, content, *cur_len, *cur_len + len + 2); // +\n+\0
+	len = ft_strlen(line);
+	content = arena_realloc(arena, content, *cur_len, *cur_len + len + 2);
 	if (!content)
-		return (NULL);			// realloc failed
-	ft_memcpy(content + *cur_len, line, len);	// append line bytes
-	*cur_len += len;			// advance cursor
-	content[(*cur_len)++] = '\n';		// append newline
-	content[*cur_len] = '\0';		// null terminate
-	return (content);			// return updated content
+		return (NULL);
+	ft_memcpy(content + *cur_len, line, len);
+	*cur_len += len;
+	content[(*cur_len)++] = '\n';
+	content[*cur_len] = '\0';
+	return (content);
 }
 
 /* Print heredoc EOF warning
@@ -68,7 +67,7 @@ static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 	char	*line;
 
 	setup_hd_signals();
-	line = readline("> ");			// prompt for heredoc line
+	line = readline("> ");
 	setup_parent_signals();
 	if (g_signal != 0)
 	{
@@ -78,8 +77,8 @@ static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 		return (NULL);
 	}
 	if (!line)
-		return (print_hd_err(delimiter),  NULL);			// EOF
-	return (line);				// return user input
+		return (print_hd_err(delimiter),  NULL);
+	return (line);
 }
 
 /* Read multiple lines for a heredoc until delimiter is reached
@@ -88,30 +87,28 @@ static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 */
 char	*read_heredoc(t_shell *shell, const char *delimiter)
 {
-	char	*line;			// current heredoc line
-	char	*content;		// accumulated content
-	size_t	cur_len;		// current total length
+	char	*line;
+	char	*content;
+	size_t	cur_len;
 
 	if (!delimiter)
-		return (NULL);		// safety check
-
-	content = arena_alloc(&shell->arena, 1);	// start with empty string
+		return (NULL);
+	content = arena_alloc(&shell->arena, 1);
 	if (!content)
-		return (NULL);		// allocation failed
-	content[0] = '\0';		// initialize empty string
-	cur_len = 0;			// no bytes yet
-
+		return (NULL);
+	content[0] = '\0';
+	cur_len = 0;
 	while (true)
 	{
-		line = read_heredoc_line(shell, delimiter);	// get line from user
+		line = read_heredoc_line(shell, delimiter);
 		if (!line || ft_strcmp(line, delimiter) == 0)
-			break;			// reached delimiter or EOF
+			break;
 
 		content = append_heredoc_line(content, &cur_len, line, &shell->arena);
 		if (!content)
-			return (NULL);	// realloc failed
+			return (NULL);
 	}
-	return (content);			// return full heredoc in arena
+	return (content);
 }
 
 /* Unified function to handle heredoc input
@@ -119,8 +116,8 @@ char	*read_heredoc(t_shell *shell, const char *delimiter)
 */
 char	*handle_heredoc(t_cmd *cmd, t_shell *shell, const char *delimiter)
 {
-	(void)cmd;			// unused here but allows future extensions
+	(void)cmd;
 	if (!delimiter)
-		return (NULL);		// safety check
-	return (read_heredoc(shell, delimiter)); // delegate actual reading
+		return (NULL);
+	return (read_heredoc(shell, delimiter));
 }

@@ -115,6 +115,16 @@ typedef struct s_cmd
 	char			*unexpanded_cmd;
 }	t_cmd;
 
+typedef struct s_parser_state
+{
+	t_cmd	**cur;
+	t_cmd	**head;
+	t_shell	*shell;
+	t_arena	**arena;
+	t_token	*tok;
+	t_list	**iterator;
+}	t_parser_state;
+
 /* ===========================
 ** Expansion helper types
 ** =========================== */

@@ -18,7 +18,7 @@ NAME        := minishell
 
 # Compiler and Flags
 CC          := cc
-CFLAGS      := -Wall -Wextra -Werror -g
+CFLAGS		:= -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 #CFLAGS		:= -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 # Directories

@@ -19,6 +19,7 @@
 # include <errno.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+#include <sys/stat.h>
 
 /* ===========================
 ** Custom Libraries
@@ -113,11 +114,6 @@ int		ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena);
 int		add_word_to_argv(t_cmd *cmd, const char *word, t_arena **arena);
 int		add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
 			t_arena **arena);
-int		handle_word_token(t_cmd **cur, t_cmd **head, t_token *tok,
-			t_shell *shell, t_arena **arena);
-int		handle_pipe_token(t_token *tok, t_cmd **cur);
-int		handle_operator_token(t_list **tokens_ref, t_cmd **cur,
-			t_cmd **head, t_shell *shell);
 int		handle_redir_token(t_list **tokens_ref, t_cmd **cur,
 			t_cmd **head, t_shell *shell);
 int		is_pipe_token(const char *tok);
@@ -163,6 +159,7 @@ void	sort_env(t_env ***arr);
 int		update_env_node(const char *str, t_shell *shell);
 int		add_env_node(const char *str, t_shell *shell);
 void	print_export(t_env **arr);
+int		ft_exit2(char **av, t_shell *shell);
 void	free_env_node(t_env *node);
 
 /* ===========================
@@ -203,9 +200,15 @@ void execution_cleanup(t_shell *shell);
 void set_the_code_and_exit(t_shell *shell, t_exec *exec, int type);
 void exit_after_execve(t_shell *shell, t_exec *exec);
 
-//execution.c
+//execution_1.c
+char	**get_path(char **envp_arr);
+char	*search_path_for_cmd(char *cmd_name, char **paths);
+int	path_is_set(char **envp);
 char	*pathtoexecute(char **cmd, t_exec *exec);
+void	checking(char *path, char *cmd);
+//execution_2.c
 int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec);
+
 
 //envp.c
 char	**envp_arr(t_shell *shell);

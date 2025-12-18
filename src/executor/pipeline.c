@@ -1,100 +1,68 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipeline.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/17 19:03:08 by musajid           #+#    #+#             */
+/*   Updated: 2025/12/17 19:03:08 by musajid          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void waitstatus(pid_t pid,  t_shell *shell);
+void	waitstatus(pid_t pid, t_shell *shell);
 
-void init_fd(t_fd	*fd)
+static int	setup_builtin_redirs(t_shell *shell, t_cmd *command,
+								int *saved_stdin, int *saved_stdout)
 {
-	fd->fd[0] = -1;
-	fd->fd[1] = -1;
-	fd->prev_fd = -1;
-	fd->in_fd = -1;
-	fd->out_fd = -1;
+	if (!command->redirs)
+		return (0);
+	if (applying_redir(command, &shell->exec->fd->in_fd,
+			&shell->exec->fd->out_fd) == 1)
+		return (1);
+	if (shell->exec->fd->out_fd != -1)
+	{
+		*saved_stdout = dup(STDOUT_FILENO);
+		dup2(shell->exec->fd->out_fd, STDOUT_FILENO);
+	}
+	if (shell->exec->fd->in_fd != -1)
+	{
+		*saved_stdin = dup(STDIN_FILENO);
+		dup2(shell->exec->fd->in_fd, STDIN_FILENO);
+	}
+	return (0);
 }
 
-void close_fd(t_fd *fd)
+static void	restore_builtin_fds(int saved_stdin, int saved_stdout,
+								t_fd *fd)
 {
-	if (fd->fd[0] >= 0)
-		close(fd->fd[0]);
-	if (fd->fd[1] >= 0)
-		close(fd->fd[1]);
-	if (fd->prev_fd >= 0)
-		close(fd->prev_fd);
-	if (fd->in_fd >= 0)
-		close(fd->in_fd);
-	if (fd->out_fd >= 0)
-		close(fd->out_fd);
-	init_fd(fd);
+	if (saved_stdout != -1)
+		dup2(saved_stdout, STDOUT_FILENO);
+	if (saved_stdin != -1)
+		dup2(saved_stdin, STDIN_FILENO);
+	close_fd(fd);
 }
 
-void parent_loop(t_cmd *cmd, t_fd *fd)
+static void	handle_single_builtin(t_shell *shell, t_cmd *command)
 {
-	//parent closes the prev
-	if (fd->prev_fd != -1)
-            close(fd->prev_fd);
+	int	saved_stdout;
+	int	saved_stdin;
 
-        // Keep current read end for next command
-    if (cmd->next != NULL)
-        fd->prev_fd = fd->fd[0];
-    else
-        fd->prev_fd = -1;
-        // Close write end in parent
-    close(fd->fd[1]);
+	saved_stdout = -1;
+	saved_stdin = -1;
+	if (setup_builtin_redirs(shell, command,
+			&saved_stdin, &saved_stdout) == 1)
+	{
+		shell->exit_code = GENERAL_ERROR;
+		return ;
+	}
+	shell->exit_code = run_builtin(command, shell, false);
+	restore_builtin_fds(saved_stdin, saved_stdout, shell->exec->fd);
 }
 
-
-int	fds_manipulation_and_execution(t_cmd *command, t_shell *shell, t_exec *exec)
-{
-	//if there is pipe, if not then go to the execution
-	if (exec->fd->prev_fd != -1)
-		dup2(exec->fd->prev_fd, STDIN_FILENO);
-	if (exec->fd->in_fd != -1)
-		dup2(exec->fd->in_fd, STDIN_FILENO);
-	if (command->next != NULL && exec->fd->out_fd == -1)
-		dup2(exec->fd->fd[1], STDOUT_FILENO);
-	if (exec->fd->out_fd != -1)
-		dup2(exec->fd->out_fd, STDOUT_FILENO);
-	close_fd(exec->fd);
-	if (execution(command, shell, exec) == 1)
-		exit_after_execve(shell, exec);
-	free(exec->path_to_exec);
-	if (exec->envp != NULL)
-		freearray(exec->envp);
-	execution_cleanup(shell);
-	exit(shell->exit_code);
-}
-
-static void handle_single_builtin(t_shell *shell, t_cmd *command)
-{
-    int original_stdout = -1;
-    int original_stdin = -1;
-
-    if (command->redirs)
-    {
-        if (applying_redir(command, &shell->exec->fd->in_fd, &shell->exec->fd->out_fd) == 1)
-        {
-            shell->exit_code = GENERAL_ERROR;
-            return;
-        }
-        if (shell->exec->fd->out_fd != -1)
-        {
-            original_stdout = dup(STDOUT_FILENO);
-            dup2(shell->exec->fd->out_fd, STDOUT_FILENO);
-        }
-        if (shell->exec->fd->in_fd != -1)
-        {
-            original_stdin = dup(STDIN_FILENO);
-            dup2(shell->exec->fd->in_fd, STDIN_FILENO);
-        }
-    }
-    shell->exit_code = run_builtin(command, shell, false);
-    if (original_stdout != -1)
-        dup2(original_stdout, STDOUT_FILENO);
-    if (original_stdin != -1)
-        dup2(original_stdin, STDIN_FILENO);
-    close_fd(shell->exec->fd);
-}
-
-void main_pipeline(t_shell *shell, t_cmd *command)
+void	main_pipeline(t_shell *shell, t_cmd *command)
 {
 	t_exec	*exec;
 
@@ -106,19 +74,18 @@ void main_pipeline(t_shell *shell, t_cmd *command)
 		{
 			shell->running = false;
 		}
-		return;
+		return ;
 	}
 	validate_command(exec, shell, command);
 }
 
-void waitstatus(pid_t pid,  t_shell *shell)
+void	waitstatus(pid_t pid, t_shell *shell)
 {
 	int	status;
 
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-    	shell->exit_code = WEXITSTATUS(status);\
+		shell->exit_code = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 		shell->exit_code = WTERMSIG(status) + 128;
 }
-

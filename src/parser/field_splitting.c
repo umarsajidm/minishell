@@ -23,17 +23,23 @@ static int	count_words(const char *s)
 	return (count);
 }
 
+static char	**allocate_result_array(const char *str, t_arena **arena,
+	int *word_count)
+{
+	*word_count = count_words(str);
+	return (arena_alloc(arena, sizeof(char *) * (*word_count + 1)));
+}
+
 char	**field_split(const char *str, t_arena **arena)
 {
-	char	**result;
-	int		word_count;
-	int		i;
-	const char *word_start;
+	char		**result;
+	int			word_count;
+	int			i;
+	const char	*word_start;
 
 	if (!str)
 		return (NULL);
-	word_count = count_words(str);
-	result = arena_alloc(arena, sizeof(char *) * (word_count + 1));
+	result = allocate_result_array(str, arena, &word_count);
 	if (!result)
 		return (NULL);
 	i = 0;
