@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   arena_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 14:34:38 by achowdhu          #+#    #+#             */
+/*   Updated: 2025/12/18 14:34:39 by achowdhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-/* Duplicate a C string into arena memory
+/* 
+ * Duplicate a C string into arena memory
  * - Returns pointer inside arena or NULL on failure
  */
 char	*arena_strdup(t_arena **arena, const char *s)
@@ -26,15 +39,18 @@ char	*arena_strndup(t_arena **arena, const char *s, size_t n)
 {
 	char	*dst;
 
-	dst = arena_alloc(arena, n + 1);                 // allocate in arena
+	if (!s)
+		return (NULL);
+	dst = arena_alloc(arena, n + 1);
 	if (!dst)
 		return (NULL);
-	ft_memcpy(dst, s, n);                            // copy substring
-	dst[n] = '\0';                                   // null-terminate
+	ft_memcpy(dst, s, n);
+	dst[n] = '\0';
 	return (dst);
 }
 
-/* Free all arenas in the list
+/* 
+ * Free all arenas in the list
  * - Releases every buffer and arena struct
  */
 void	free_arena(t_arena **arena)
@@ -52,7 +68,8 @@ void	free_arena(t_arena **arena)
 	}
 }
 
-/* Clear all arena memory chunks
+/* 
+ * Clear all arena memory chunks
  * - Resets offset to 0 for reuse
  * - Does not free memory, keeps arena structure
  */
