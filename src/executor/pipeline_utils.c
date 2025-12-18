@@ -74,27 +74,30 @@ static int	applying_outside_redir(t_redir *r, int *out_fd)
 // r = cmd->redirs;
 int	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 {
-	while (cmd->redirs)
+	t_redir	*r;
+
+	r = cmd->redirs;
+	while (r)
 	{
-		if (cmd->redirs->target)
+		if (r->target)
 		{
-			if (cmd->redirs->type == R_INPUT)
+			if (r->type == R_INPUT)
 			{
-				if (applying_input_redir(cmd->redirs, in_fd) == 1)
+				if (applying_input_redir(r, in_fd) == 1)
 					return (1);
 			}
-			if (cmd->redirs->type == R_OUTPUT || cmd->redirs->type == R_APPEND)
+			if (r->type == R_OUTPUT || r->type == R_APPEND)
 			{
-				if (applying_outside_redir(cmd->redirs, out_fd) == 1)
+				if (applying_outside_redir(r, out_fd) == 1)
 					return (1);
 			}
-			if (cmd->redirs->type == R_HEREDOC)
+			if (r->type == R_HEREDOC)
 			{
 				if (write_heredoc_to_pipe(in_fd, cmd->heredoc) == 1)
 					return (1);
 			}
 		}
-		cmd->redirs = cmd->redirs->next;
+		r = r->next;
 	}
 	return (0);
 }
