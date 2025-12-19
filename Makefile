@@ -106,7 +106,7 @@ $(NAME): $(OBJS) $(LIBFT)
 	@$(CC) $(CFLAGS) $(INC) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME)
 	@echo "$(GREEN)✔ $(NAME) built successfully!$(RESET)"
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	@echo "$(GREEN)[Compiling]$(RESET) $<"
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
@@ -120,7 +120,7 @@ $(LIBFT):
 
 clean:
 	@echo "$(YELLOW)[Cleaning]$(RESET) object files"
-	@rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR)/*
 	@$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
@@ -134,5 +134,5 @@ re: fclean all
 #              Special Rules
 # ========================================
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus
 .SECONDARY:

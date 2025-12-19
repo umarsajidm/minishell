@@ -39,9 +39,15 @@ static void	restore_builtin_fds(int saved_stdin, int saved_stdout,
 								t_fd *fd)
 {
 	if (saved_stdout != -1)
+	{
 		dup2(saved_stdout, STDOUT_FILENO);
+		close(saved_stdout);
+	}
 	if (saved_stdin != -1)
+	{
 		dup2(saved_stdin, STDIN_FILENO);
+		close(saved_stdin);
+	}
 	close_fd(fd);
 }
 
