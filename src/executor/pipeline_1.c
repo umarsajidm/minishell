@@ -62,8 +62,11 @@ int	fds_manipulation_and_execution(t_cmd *command,
 	else if (command->next != NULL)
 		dup2(exec->fd->fd[1], STDOUT_FILENO);
 	close_fd(exec->fd);
-	if (execution(command, shell, exec) == 1)
-		exit_after_execve(shell, exec);
+	if (command->argv && command->argv[0])
+	{
+		if (execution(command, shell, exec) == 1)
+			exit_after_execve(shell, exec);
+	}
 	free(exec->path_to_exec);
 	if (exec->envp != NULL)
 		freearray(exec->envp);

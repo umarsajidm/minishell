@@ -16,16 +16,20 @@ static int	child_process_multiple_pipeline(t_exec *exec,
 			t_shell *shell, t_cmd *command)
 {
 	setup_child_signals();
-	if (!is_builtin(command) && init_exec(exec, shell, command) != 0)
-		set_the_code_and_exit(shell, exec, 127);
 	if (command->redirs)
 	{
 		if (applying_redir(command, &(exec->fd->in_fd),
 				&(exec->fd->out_fd)) == 1)
 			set_the_code_and_exit(shell, exec, GENERAL_ERROR);
 	}
-	if (fds_manipulation_and_execution(command, shell, exec) == 1)
-		set_the_code_and_exit(shell, exec, COMMAND_NOT_FOUND);
+	if (command->argv && command->argv[0])
+	{
+		if (!is_builtin(command) && init_exec(exec, shell, command) != 0)
+			set_the_code_and_exit(shell, exec, 127);
+	}
+	else
+		shell->exit_code = 0;
+	fds_manipulation_and_execution(command, shell, exec);
 	exit(0);
 }
 
@@ -66,32 +70,37 @@ int	init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 int	intialize_and_process_single_child(t_exec *exec,
 	t_shell *shell, t_cmd *command)
 {
-	if (init_exec(exec, shell, command) == 0)
+	if (command->redirs)
 	{
-		if (command->redirs)
-		{
-			if (applying_redir(command, &(exec->fd->in_fd),
-					&(exec->fd->out_fd)) == 1)
-				return (err_if_redir_fails(exec, shell));
-		}
-		if (child_process(command, shell, exec) != 0)
-		{
-			close_fd(exec->fd);
+		if (applying_redir(command, &(exec->fd->in_fd),
+				&(exec->fd->out_fd)) == 1)
+			return (err_if_redir_fails(exec, shell));
+	}
+	if (command->argv && command->argv[0])
+	{
+		if (init_exec(exec, shell, command) != 0)
 			return (1);
-		}
 	}
 	else
+		shell->exit_code = 0;
+	if (child_process(command, shell, exec) != 0)
+	{
+		close_fd(exec->fd);
 		return (1);
+	}
 	return (0);
 }
 
 int	initialize_and_process_multiple_child(t_exec *exec,
 	t_shell *shell, t_cmd *command)
 {
-	if (pipe(exec->fd->fd) == -1)
+	if (command->next)
 	{
-		perror("minishell: pipe");
-		return (1);
+		if (pipe(exec->fd->fd) == -1)
+		{
+			perror("minishell: pipe");
+			return (1);
+		}
 	}
 	setup_execution_signals();
 	exec->pid = fork();
