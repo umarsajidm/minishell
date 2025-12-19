@@ -43,7 +43,10 @@ void	parent_loop(t_cmd *cmd, t_fd *fd)
 	if (cmd->next != NULL)
 		fd->prev_fd = fd->fd[0];
 	else
+	{
+		close(fd->fd[0]);
 		fd->prev_fd = -1;
+	}
 	close(fd->fd[1]);
 }
 
