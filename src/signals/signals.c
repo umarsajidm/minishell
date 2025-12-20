@@ -6,7 +6,7 @@
 /*   By: jtarvain <jtarvain@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 13:17:32 by jtarvain          #+#    #+#             */
-/*   Updated: 2025/12/18 13:32:03 by jtarvain         ###   ########.fr       */
+/*   Updated: 2025/12/20 11:08:55 by jtarvain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ volatile sig_atomic_t	g_signal = 0;
 void	setup_parent_signals(void)
 {
 	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, handle_sigquit);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	setup_execution_signals(void)
