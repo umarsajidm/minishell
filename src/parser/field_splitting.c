@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   field_splitting.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 20:39:42 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/12/19 01:45:22 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
+/*
+ * Count the number of words in a FIELD_SEP-separated string
+ */
 static int	count_words(const char *s)
 {
 	int	count;
@@ -23,7 +25,9 @@ static int	count_words(const char *s)
 	while (*s)
 	{
 		if (*s == FIELD_SEP)
+		{
 			in_word = 0;
+		}
 		else if (!in_word)
 		{
 			in_word = 1;
@@ -34,9 +38,13 @@ static int	count_words(const char *s)
 	return (count);
 }
 
-
+/*
+ * Allocate the result array for field splitting
+ * - Computes word count
+ * - Allocates NULL-terminated char**
+ */
 static char	**allocate_result_array(const char *str, t_arena **arena,
-				int *word_count)
+	int *word_count)
 {
 	*word_count = count_words(str);
 	return (arena_alloc(arena, sizeof(char *) * (*word_count + 1)));
@@ -50,10 +58,9 @@ static void	fill_words(const char *str, char **result, int word_count,
 {
 	int			i;
 	const char	*word_start;
-	int			i;
 
 	i = 0;
-	while (*str)
+	while (*str && i < word_count)
 	{
 		while (*str && *str == FIELD_SEP)
 			str++;

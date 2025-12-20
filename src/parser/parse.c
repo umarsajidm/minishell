@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 16:16:12 by achowdhu          #+#    #+#             */
-/*   Updated: 2025/12/18 20:59:34 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/12/19 01:45:16 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,6 @@
  * Process a word or quoted token
  * - Delegates to word handler
  * - Prints allocation error on failure
-/* 
- * Process a word token
- * - Calls handle_word_token to expand and add the word
- * - Returns -1 on allocation failure, 0 on success
->
  */
 static int	process_word_token(t_parser_state *p)
 {
@@ -32,10 +27,13 @@ static int	process_word_token(t_parser_state *p)
 	return (0);
 }
 
-
+/*
+ * Process an operator token
+ * - Handles syntax and allocation errors
+ */
 static int	process_operator_token(t_parser_state *p)
 {
-	int	res;
+	int		res;
 
 	res = handle_operator_token(p);
 	if (res == -1)
@@ -103,6 +101,7 @@ t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
 
 	head = NULL;
 	cur = NULL;
+	it = tokens;
 	p.cur = &cur;
 	p.head = &head;
 	p.shell = shell;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: achowdhu <achowdhu@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 16:46:44 by mumar             #+#    #+#             */
-/*   Updated: 2025/12/18 20:47:24 by achowdhu         ###   ########.fr       */
+/*   Updated: 2025/12/18 22:36:29 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int		create_token_node(t_arena **ar, t_list **toks,
 char	*dup_word(t_arena **arena, const char *str, int start, int end);
 int		handle_operator(char *s, int i, t_list **tokens, t_arena **arena);
 int		handle_operator_token(t_parser_state *p);
-int 	handle_word_token(t_parser_state *p);
+int		handle_word_token(t_parser_state *p);
 int		handle_quote(char *s, int i, t_list **tokens, t_arena **arena);
 int		handle_word(char *s, int i, t_list **tokens, t_arena **arena);
 void	free_tokens(t_list **tokens);
@@ -93,7 +93,7 @@ int		handle_redir_token(t_list **tokens_ref, t_cmd **cur,
 int		is_pipe_token(const char *tok);
 int		is_redir_token(const char *tok);
 char	*get_redir_target(t_redir_type type, t_token *next_tok,
-								t_shell *shell, t_cmd *cur);
+			t_shell *shell, t_cmd *cur);
 
 char	*expand_string(const char *str, t_shell *shell, t_arena **arena);
 int		expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena);

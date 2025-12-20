@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   read.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/18 22:38:08 by musajid           #+#    #+#             */
+/*   Updated: 2025/12/18 22:38:21 by musajid          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <unistd.h>
 
@@ -91,12 +103,4 @@ char	*read_heredoc(t_shell *shell, const char *delimiter)
 			return (NULL);
 	}
 	return (content);
-}
-
-char	*handle_heredoc(t_cmd *cmd, t_shell *shell, const char *delimiter)
-{
-	(void)cmd;
-	if (!delimiter)
-		return (NULL);
-	return (read_heredoc(shell, delimiter));
 }
