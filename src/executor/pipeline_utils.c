@@ -6,7 +6,7 @@
 /*   By: musajid <musajid@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 19:28:32 by musajid           #+#    #+#             */
-/*   Updated: 2025/12/17 19:55:37 by musajid          ###   ########.fr       */
+/*   Updated: 2025/12/20 14:32:57 by musajid          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,13 @@ int	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 	while (r)
 	{
 		if (process_single_redir(r, cmd, in_fd, out_fd) == 1)
+		{
+			if (*in_fd > 0)
+				close (*in_fd);
+			if (*out_fd > 0)
+				close (*out_fd);
 			return (1);
+		}
 		r = r->next;
 	}
 	return (0);
