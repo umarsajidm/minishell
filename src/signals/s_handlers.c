@@ -6,7 +6,7 @@
 /*   By: jtarvain <jtarvain@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 13:17:08 by jtarvain          #+#    #+#             */
-/*   Updated: 2025/12/18 13:17:15 by jtarvain         ###   ########.fr       */
+/*   Updated: 2025/12/20 11:20:20 by jtarvain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,6 @@ void	handle_sigint(int sig)
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-/* Handle SIGQUIT (Ctrl-\)
- * - Shell ignores this signal
- * - Ensure prompt is correctly displayed
- */
-
-void	handle_sigquit(int sig)
-{
-	(void)sig;
-	rl_on_new_line();
 	rl_redisplay();
 }
 

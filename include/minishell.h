@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: musajid <musajid@hive.student.fi>          +#+  +:+       +#+        */
+/*   By: jtarvain <jtarvain@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 16:46:44 by mumar             #+#    #+#             */
-/*   Updated: 2025/12/18 22:36:29 by musajid          ###   ########.fr       */
+/*   Updated: 2025/12/20 11:20:38 by jtarvain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ void	setup_child_signals(void);
 void	setup_hd_signals(void);
 void	handle_hd_signal(int sig);
 void	handle_sigint(int sig);
-void	handle_sigquit(int sig);
 void	exec_sigint(int sig);
 void	exec_sigquit(int sig);
 
