@@ -12,6 +12,11 @@
 
 #include "minishell.h"
 
+/*
+** Pre-initializes the execution structure.
+** Frees any existing path or environment array and resets PID.
+** Ensures a clean state before new execution parameters are set.
+*/
 void	pre_init(t_exec *exec)
 {
 	if (!exec)
@@ -29,6 +34,10 @@ void	pre_init(t_exec *exec)
 	exec->pid = -1;
 }
 
+/*
+** Cleans up memory allocated within the execution structure.
+** Frees the executable path and environment array if they exist.
+*/
 void	clean_exec(t_exec *exec)
 {
 	if (exec->path_to_exec != NULL)
