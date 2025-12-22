@@ -12,6 +12,14 @@
 
 #include "minishell.h"
 
+/*
+** Handles the child process logic for a command within a pipeline.
+** 1. Sets up child signals.
+** 2. Applies redirections.
+** 3. Initializes execution (path resolution) if it's not a builtin.
+** 4. Executes the command or manipulates file descriptors.
+** Exits with appropriate status code.
+*/
 static int	child_process_multiple_pipeline(t_exec *exec,
 			t_shell *shell, t_cmd *command)
 {
@@ -33,6 +41,11 @@ static int	child_process_multiple_pipeline(t_exec *exec,
 	exit(0);
 }
 
+/*
+** Handles errors that occur during execution initialization.
+** Frees environment array, sets exit code to 127, and prints error message.
+** Used when path resolution fails or command is not found.
+*/
 static void	handle_init_exec_error(t_exec *exec, t_shell *shell, t_cmd *command)
 {
 	char	*cmd_name_for_error;
@@ -51,6 +64,13 @@ static void	handle_init_exec_error(t_exec *exec, t_shell *shell, t_cmd *command)
 	}
 }
 
+/*
+** Initializes the execution context for a command.
+** 1. Resets execution struct.
+** 2. Creates environment variable array.
+** 3. Resolves the executable path.
+** Returns 0 on success, 1 on failure.
+*/
 int	init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 {
 	pre_init(exec);
@@ -67,6 +87,13 @@ int	init_exec(t_exec *exec, t_shell *shell, t_cmd *command)
 	return (0);
 }
 
+/*
+** Orchestrates execution for a single command (no pipeline).
+** 1. Applies redirections.
+** 2. Initializes execution.
+** 3. Spawns child process to run command.
+** Returns 0 on success, 1 on failure.
+*/
 int	intialize_and_process_single_child(t_exec *exec,
 	t_shell *shell, t_cmd *command)
 {
@@ -91,6 +118,13 @@ int	intialize_and_process_single_child(t_exec *exec,
 	return (0);
 }
 
+/*
+** Orchestrates execution for a command that is part of a pipeline.
+** 1. Creates a pipe if there is a next command.
+** 2. Forks a new process.
+** 3. Child process calls child_process_multiple_pipeline().
+** Returns 0 on success (parent), 1 on failure (fork/pipe error).
+*/
 int	initialize_and_process_multiple_child(t_exec *exec,
 	t_shell *shell, t_cmd *command)
 {
