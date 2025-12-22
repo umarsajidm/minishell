@@ -14,6 +14,11 @@
 
 void	waitstatus(pid_t pid, t_shell *shell);
 
+/*
+** Sets up redirections for a single builtin command.
+** Saves the current stdin/stdout if redirections are applied.
+** Returns 0 on success, 1 on failure.
+*/
 static int	setup_builtin_redirs(t_shell *shell, t_cmd *command,
 								int *saved_stdin, int *saved_stdout)
 {
@@ -35,6 +40,10 @@ static int	setup_builtin_redirs(t_shell *shell, t_cmd *command,
 	return (0);
 }
 
+/*
+** Restores stdin/stdout to their original state after builtin execution.
+** Closes the duplicated FDs used for restoration and cleans up current FDs.
+*/
 static void	restore_builtin_fds(int saved_stdin, int saved_stdout,
 								t_fd *fd)
 {
@@ -51,6 +60,11 @@ static void	restore_builtin_fds(int saved_stdin, int saved_stdout,
 	close_fd(fd);
 }
 
+/*
+** Manages the execution of a single builtin command (not in a pipe).
+** Sets up redirections, executes the builtin, updates exit code,
+** and restores FDs.
+*/
 static void	handle_single_builtin(t_shell *shell, t_cmd *command)
 {
 	int	saved_stdout;
@@ -68,6 +82,11 @@ static void	handle_single_builtin(t_shell *shell, t_cmd *command)
 	restore_builtin_fds(saved_stdin, saved_stdout, shell->exec->fd);
 }
 
+/*
+** Primary entry point for executing a command line.
+** If the command is a single builtin, executes it directly.
+** Otherwise, proceeds to full pipeline validation and execution.
+*/
 void	main_pipeline(t_shell *shell, t_cmd *command)
 {
 	t_exec	*exec;
@@ -85,6 +104,11 @@ void	main_pipeline(t_shell *shell, t_cmd *command)
 	validate_command(exec, shell, command);
 }
 
+/*
+** Waits for a specific child process to finish.
+** Updates the shell's exit code based on the child's exit status
+** or the signal that terminated it.
+*/
 void	waitstatus(pid_t pid, t_shell *shell)
 {
 	int	status;
