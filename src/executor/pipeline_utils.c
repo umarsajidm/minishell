@@ -12,6 +12,14 @@
 
 #include "minishell.h"
 
+/*
+** Writes the heredoc content to a pipe.
+** 1. Creates a pipe.
+** 2. Writes the content to the write end of the pipe.
+** 3. Closes the write end.
+** 4. Updates input FD to point to the read end of the pipe.
+** Returns 0 on success.
+*/
 static int	write_heredoc_to_pipe(int *in_fd, char *content)
 {
 	int	fd[2];
@@ -30,6 +38,12 @@ static int	write_heredoc_to_pipe(int *in_fd, char *content)
 	return (0);
 }
 
+/*
+** Applies input redirection (<).
+** Opens the target file in read-only mode.
+** Updates the input FD.
+** Returns 0 on success, 1 on failure (prints error).
+*/
 static int	applying_input_redir(t_redir *r, int *in_fd)
 {
 	if (*in_fd >= 0)
@@ -47,6 +61,12 @@ static int	applying_input_redir(t_redir *r, int *in_fd)
 	return (0);
 }
 
+/*
+** Applies output redirection (> or >>).
+** Opens the target file with appropriate flags (truncate or append).
+** Updates the output FD.
+** Returns 0 on success, 1 on failure (prints error).
+*/
 static int	applying_outside_redir(t_redir *r, int *out_fd)
 {
 	int	new_fd;
@@ -70,6 +90,11 @@ static int	applying_outside_redir(t_redir *r, int *out_fd)
 	return (0);
 }
 
+/*
+** Processes a single redirection node.
+** Delegates to specific functions based on redirection type.
+** Returns 0 on success, 1 on failure.
+*/
 static int	process_single_redir(t_redir *r, t_cmd *cmd,
 	int *in_fd, int *out_fd)
 {
@@ -94,6 +119,12 @@ static int	process_single_redir(t_redir *r, t_cmd *cmd,
 	return (0);
 }
 
+/*
+** Iterates through the list of redirections for a command
+** and applies them sequentially.
+** Cleans up FDs if any redirection fails.
+** Returns 0 on success, 1 on failure.
+*/
 int	applying_redir(t_cmd *cmd, int *in_fd, int *out_fd)
 {
 	t_redir	*r;
