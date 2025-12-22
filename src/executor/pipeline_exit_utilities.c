@@ -12,6 +12,10 @@
 
 #include "minishell.h"
 
+/*
+** Prints an error message to stderr based on the error type.
+** Uses perror to print system error details.
+*/
 static void	print_execution_error(int type)
 {
 	if (type == PERMISSION_DENIED)
@@ -22,6 +26,12 @@ static void	print_execution_error(int type)
 		perror("minishell");
 }
 
+/*
+** Frees all shell resources and exits the child process.
+** Cleans up arena, env, exec struct, and readline history.
+** Exits with specific codes for command not found (127)
+** or permission denied (126), or the passed type for others.
+*/
 static void	child_cleanup_and_exit(t_shell *shell, int type)
 {
 	if (shell->arena)
@@ -42,6 +52,13 @@ static void	child_cleanup_and_exit(t_shell *shell, int type)
 	exit(type);
 }
 
+/*
+** Main exit handler for child process errors.
+** 1. Frees execution-specific resources (envp, path).
+** 2. Closes file descriptors.
+** 3. Prints error message.
+** 4. Calls full cleanup and exit.
+*/
 void	set_the_code_and_exit(t_shell *shell, t_exec *exec, int type)
 {
 	if (exec->envp)
@@ -53,6 +70,10 @@ void	set_the_code_and_exit(t_shell *shell, t_exec *exec, int type)
 	child_cleanup_and_exit(shell, type);
 }
 
+/*
+** Sets the exit code for a command not found error and cleans up.
+** Used in cases where we don't exit immediately but update state.
+*/
 void	set_the_exit_code(t_shell *shell, char *command, char **envp)
 {
 	if (envp != NULL)
@@ -63,6 +84,12 @@ void	set_the_exit_code(t_shell *shell, char *command, char **envp)
 	shell->exit_code = 127;
 }
 
+/*
+** Handles exit after a failed execve call.
+** Translates errno values (ENOENT, EACCES, EISDIR) into
+** appropriate internal error types (COMMAND_NOT_FOUND, PERMISSION_DENIED)
+** and calls the exit handler.
+*/
 void	exit_after_execve(t_shell *shell, t_exec *exec)
 {
 	if (errno == ENOENT)
