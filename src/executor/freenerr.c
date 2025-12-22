@@ -12,6 +12,10 @@
 
 #include "minishell.h"
 
+/*
+** Frees a NULL-terminated array of strings.
+** Iterates through the array freeing each string, then frees the array pointer.
+*/
 void	freearray(char **arr)
 {
 	int	i;
@@ -27,6 +31,12 @@ void	freearray(char **arr)
 	free(arr);
 }
 
+/*
+** Frees an array and a string, then exits with a specific status code.
+** Used for cleaning up before exiting due to an error.
+** Handles exit codes 126 (permission denied) and 127 (command not found).
+** Default exit is EXIT_FAILURE.
+*/
 void	freestrnarrexit(char **arr, char *str, int i)
 {
 	freearray(arr);
@@ -44,6 +54,9 @@ void	freestrnarrexit(char **arr, char *str, int i)
 	exit(EXIT_FAILURE);
 }
 
+/*
+** Frees an array if it exists, prints a system error message, and exits with 127.
+*/
 void	freeerror(char **arr)
 {
 	if (arr)
@@ -52,6 +65,10 @@ void	freeerror(char **arr)
 	exit(127);
 }
 
+/*
+** Frees resources and prints a "command not found" error message to stderr.
+** Frees the string array and the path string.
+*/
 void	freeall(char **arr, char *str, char *cmd)
 {
 	freearray(arr);
@@ -60,6 +77,10 @@ void	freeall(char **arr, char *str, char *cmd)
 	ft_putstr_fd(": command not found\n", 2);
 }
 
+/*
+** Frees an array, sets errno to ENOENT (No such file or directory),
+** and exits with EXIT_FAILURE.
+*/
 void	commandnotfound(char **arr)
 {
 	freearray(arr);
