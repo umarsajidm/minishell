@@ -12,6 +12,11 @@
 
 #include "minishell.h"
 
+/*
+** Extracts the PATH environment variable from the environment array.
+** Splits the PATH string by ':' into a string array.
+** Returns the array of paths or NULL if PATH is not found.
+*/
 char	**get_path(char **envp_arr)
 {
 	int		i;
@@ -36,6 +41,12 @@ char	**get_path(char **envp_arr)
 	return (NULL);
 }
 
+/*
+** Searches for a command executable in the given paths.
+** Iterates through each path, joins it with the command name,
+** and checks if the resulting path is executable using access().
+** Returns the full path to the executable if found, otherwise NULL.
+*/
 char	*search_path_for_cmd(char *cmd_name, char **paths)
 {
 	char	*candidate;
@@ -60,6 +71,10 @@ char	*search_path_for_cmd(char *cmd_name, char **paths)
 	return (NULL);
 }
 
+/*
+** Checks if the PATH environment variable is set in the environment array.
+** Returns 1 if PATH is found, 0 otherwise.
+*/
 int	path_is_set(char **envp)
 {
 	int	i;
@@ -76,6 +91,13 @@ int	path_is_set(char **envp)
 	return (0);
 }
 
+/*
+** Determines the full path to execute for a given command.
+** 1. If command contains '/', checks if it exists directly.
+** 2. If no '/', searches in PATH directories.
+** 3. If PATH is not set, checks if command exists in current directory.
+** Returns the resolved path or NULL if not found.
+*/
 char	*pathtoexecute(char **cmd, t_exec *exec)
 {
 	char	**paths;
@@ -105,6 +127,13 @@ char	*pathtoexecute(char **cmd, t_exec *exec)
 	return (NULL);
 }
 
+/*
+** Validates the path and command for execution errors.
+** Sets errno based on specific conditions:
+** - ENOENT if path is NULL or command contains '/' but doesn't exist.
+** - EISDIR if path points to a directory.
+** - EACCES if path is not executable.
+*/
 void	checking(char *path, char *cmd)
 {
 	struct stat	st;
