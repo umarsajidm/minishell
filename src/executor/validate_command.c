@@ -12,6 +12,16 @@
 
 #include "minishell.h"
 
+/*
+** Orchestrates the execution of a command line (single command or pipeline).
+** 1. Initializes FDs.
+** 2. If single command: delegates to single child handler.
+** 3. If pipeline: iterates through commands, spawning child processes for each.
+** 4. Manages parent pipe FDs in the loop.
+** 5. Waits for the last child to get the exit code.
+** 6. Waits for all other children to prevent zombies.
+** 7. Cleans up execution resources.
+*/
 void	validate_command(t_exec *exec, t_shell *shell, t_cmd *command)
 {
 	int	error_in_pipeline;
