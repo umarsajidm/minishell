@@ -12,6 +12,11 @@
 
 #include "minishell.h"
 
+/*
+** Handles execution of commands specified with an absolute path.
+** Validates the path using checking() and calls execve().
+** Exits with appropriate error status if execve fails.
+*/
 static void	abs_path_execution(t_cmd *cmd, t_shell *shell, t_exec *exec)
 {
 	checking(cmd->argv[0], cmd->argv[0]);
@@ -21,6 +26,12 @@ static void	abs_path_execution(t_cmd *cmd, t_shell *shell, t_exec *exec)
 	}
 }
 
+/*
+** Handles execution of commands that require path resolution.
+** Validates environment and command arguments.
+** Checks the resolved path using checking() and calls execve().
+** Exits with error status if execve fails.
+*/
 static int	relative_path_execution(t_shell *shell,
 	t_cmd *command, t_exec *exec)
 {
@@ -34,6 +45,13 @@ static int	relative_path_execution(t_shell *shell,
 	return (1);
 }
 
+/*
+** Main execution dispatcher.
+** 1. Checks if the command is a builtin and runs it if so.
+** 2. If command contains '/', executes as absolute path.
+** 3. Otherwise, delegates to relative path execution logic.
+** Returns 0 on successful execution dispatch, 1 on failure.
+*/
 int	execution(t_cmd *command, t_shell *shell, t_exec *exec)
 {
 	if (is_builtin(command))
@@ -52,6 +70,14 @@ int	execution(t_cmd *command, t_shell *shell, t_exec *exec)
 	return (0);
 }
 
+/*
+** Manages the creation of a child process for command execution.
+** 1. Sets up execution signals.
+** 2. Forks a new process.
+** 3. Child process: sets up child signals, manipulates FDs, and executes command.
+** 4. Parent process: waits for the specific child and handles process status.
+** Returns 1 if fork fails, 0 otherwise.
+*/
 int	child_process(t_cmd *cmd, t_shell *shell, t_exec *exec)
 {
 	setup_execution_signals();
