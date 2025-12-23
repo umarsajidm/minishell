@@ -16,6 +16,13 @@ static char	*skip_whitespace(const char *s);
 static int	overflow(long result, int digit, int sign);
 static void	init_vars(int **error, int *sign, long *result);
 
+/*
+** Converts a string to a long integer (ascii to long).
+** Handles signs (+/-), whitespace, and checks for numeric validity.
+** Detects overflow/underflow and invalid characters.
+** Sets the error flag if conversion fails.
+** Returns the converted long value or 0 on error.
+*/
 long	ft_atol(const char *s, int *error)
 {
 	long	result;
@@ -44,6 +51,10 @@ long	ft_atol(const char *s, int *error)
 	return (result * sign);
 }
 
+/*
+** Advances the string pointer past any leading whitespace.
+** Returns the new pointer position.
+*/
 static char	*skip_whitespace(const char *s)
 {
 	while (*s && (*s == ' ' || *s == '\t'))
@@ -51,6 +62,11 @@ static char	*skip_whitespace(const char *s)
 	return ((char *)s);
 }
 
+/*
+** Checks if adding a digit to the current result would cause an overflow.
+** Handles both positive and negative cases (LONG_MAX limits).
+** Returns 1 if overflow would occur, 0 otherwise.
+*/
 static int	overflow(long result, int digit, int sign)
 {
 	if (sign == 1)
@@ -68,6 +84,10 @@ static int	overflow(long result, int digit, int sign)
 	return (0);
 }
 
+/*
+** Initializes variables used in ft_atol.
+** Sets error flag to 0, sign to positive, and result to 0.
+*/
 static void	init_vars(int **error, int *sign, long *result)
 {
 	**error = 0;
