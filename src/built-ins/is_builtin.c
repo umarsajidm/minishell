@@ -12,6 +12,12 @@
 
 #include "minishell.h"
 
+/*
+** Checks if a command is a built-in function.
+** Compares the command name against known built-ins:
+** echo, cd, pwd, export, unset, env, exit.
+** Returns 1 if it is a built-in, 0 otherwise.
+*/
 int	is_builtin(t_cmd *cmd)
 {
 	char	*command;
@@ -36,6 +42,13 @@ int	is_builtin(t_cmd *cmd)
 	return (0);
 }
 
+/*
+** Checks if a command is a "parent-level" built-in.
+** These commands modify the shell state (env, cwd, etc.) and
+** must be executed in the parent process, not a child.
+** Includes: cd, export, unset, exit.
+** Returns 1 if true, 0 otherwise.
+*/
 int	is_parent_level_builtin(t_cmd *cmd)
 {
 	char	*command;
