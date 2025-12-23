@@ -15,6 +15,12 @@
 
 static void	clean_exit(t_shell *shell);
 
+/*
+** Dispatches execution to the appropriate built-in function.
+** Compares command name and calls the corresponding handler.
+** Handles 'exit' specifically to perform cleanup if running in a child process.
+** Returns the exit status of the built-in command.
+*/
 int	run_builtin(t_cmd *cmds, t_shell *shell, bool is_child_process)
 {
 	char	*command;
@@ -43,6 +49,10 @@ int	run_builtin(t_cmd *cmds, t_shell *shell, bool is_child_process)
 	return (ret);
 }
 
+/*
+** Performs full shell cleanup and exits.
+** Used when 'exit' is called within a child process (e.g., in a pipeline).
+*/
 static void	clean_exit(t_shell *shell)
 {
 	shell_cleanup(shell);
