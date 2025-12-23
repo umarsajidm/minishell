@@ -17,6 +17,15 @@ static int	cd_error(char *oldpwd, int mode);
 static int	update_env(char *oldpwd, t_shell *shell);
 static void	add_oldpwd(char *oldpwd, t_shell *shell);
 
+/*
+** Executes the 'cd' (change directory) built-in command.
+** 1. Saves the current working directory (OLDPWD).
+** 2. If no arguments or '--' is provided, changes to HOME.
+** 3. Checks for too many arguments.
+** 4. Changes to the specified directory.
+** 5. Updates PWD and OLDPWD environment variables on success.
+** Returns 0 on success, 1 on failure.
+*/
 int	ft_cd(t_cmd *cmds, t_shell *shell)
 {
 	char	*oldpwd;
@@ -43,6 +52,11 @@ int	ft_cd(t_cmd *cmds, t_shell *shell)
 	return (0);
 }
 
+/*
+** Updates PWD and OLDPWD environment variables after a successful cd.
+** If OLDPWD or PWD don't exist in the environment, they are created.
+** Frees memory allocated for paths during the process.
+*/
 static int	update_env(char *oldpwd, t_shell *shell)
 {
 	char	*newpwd;
@@ -69,6 +83,12 @@ static int	update_env(char *oldpwd, t_shell *shell)
 	return (0);
 }
 
+/*
+** Handles general errors for the cd command.
+** Prints specific messages for "HOME not set" or system errors (perror).
+** Frees the oldpwd string if it exists.
+** Returns 1 (error code).
+*/
 static int	cd_error(char *oldpwd, int mode)
 {
 	ft_putstr_fd("minishell: cd: ", 2);
@@ -81,6 +101,11 @@ static int	cd_error(char *oldpwd, int mode)
 	return (1);
 }
 
+/*
+** Handles the "too many arguments" error for cd.
+** Prints the error message and frees oldpwd.
+** Returns 1 (error code).
+*/
 static int	cd_av_error(char *oldpwd)
 {
 	ft_putstr_fd("minishell: cd: ", 2);
@@ -90,6 +115,10 @@ static int	cd_av_error(char *oldpwd)
 	return (1);
 }
 
+/*
+** Adds the OLDPWD variable to the environment if it doesn't exist.
+** Frees the oldpwd string after use.
+*/
 static void	add_oldpwd(char *oldpwd, t_shell *shell)
 {
 	add_pwd("OLDPWD", shell, oldpwd);
