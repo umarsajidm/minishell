@@ -17,6 +17,14 @@ static int	valid_syntax(const char *str);
 static void	print_export_error(char *str);
 static int	add_to_env(const char *str, t_shell *shell);
 
+/*
+** Executes the 'export' built-in command.
+** 1. If no arguments, prints environment variables sorted alphabetically.
+** 2. Iterates through arguments to export new variables.
+** 3. Validates syntax for each argument (must start with letter/_ and contain only alphanum/_).
+** 4. Adds or updates variables in the environment.
+** Returns 0 on success, 1 on error (syntax or malloc).
+*/
 int	ft_export(t_cmd *cmds, t_shell *shell)
 {
 	int	i;
@@ -46,6 +54,14 @@ int	ft_export(t_cmd *cmds, t_shell *shell)
 	return (ret);
 }
 
+/*
+** Prints exported environment variables sorted by key.
+** 1. Allocates an array of pointers to environment nodes.
+** 2. Sorts the array alphabetically.
+** 3. Prints the sorted variables in specific format (declare -x KEY="VALUE").
+** 4. Frees the temporary array.
+** Returns 0 on success, 1 on allocation failure.
+*/
 static int	print_export_vars(t_env *head)
 {
 	t_env	**env_strings;
@@ -68,6 +84,9 @@ static int	print_export_vars(t_env *head)
 	return (0);
 }
 
+/*
+** Prints a syntax error message for invalid export identifiers.
+*/
 static void	print_export_error(char *str)
 {
 	ft_putstr_fd("minishell: export: ", 2);
@@ -75,6 +94,12 @@ static void	print_export_error(char *str)
 	ft_putstr_fd(": not a valid indentifier\n", 2);
 }
 
+/*
+** Checks if a variable name has valid syntax.
+** - Must start with a letter or underscore.
+** - Can only contain alphanumeric characters or underscores up to the '='.
+** Returns 1 if valid, 0 otherwise.
+*/
 static int	valid_syntax(const char *str)
 {
 	int	i;
@@ -91,6 +116,13 @@ static int	valid_syntax(const char *str)
 	return (1);
 }
 
+/*
+** Adds or updates an environment variable.
+** 1. Checks if the variable already exists.
+** 2. Updates it if found.
+** 3. Adds a new node if not found.
+** Returns 1 on success, 0 on failure (malloc).
+*/
 static int	add_to_env(const char *str, t_shell *shell)
 {
 	if (!str || !*str)
