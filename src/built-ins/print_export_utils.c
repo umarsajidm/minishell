@@ -12,6 +12,10 @@
 
 #include "minishell.h"
 
+/*
+** Counts the number of nodes in the environment linked list.
+** Returns the count.
+*/
 int	get_env_length(t_env *head)
 {
 	int	len;
@@ -25,6 +29,11 @@ int	get_env_length(t_env *head)
 	return (len);
 }
 
+/*
+** Allocates an array of pointers to environment nodes.
+** Creates a linear array from the linked list to facilitate sorting.
+** Returns the allocated array or NULL on failure.
+*/
 t_env	**alloc_assign(int len, t_env *head)
 {
 	t_env	**strings;
@@ -44,6 +53,10 @@ t_env	**alloc_assign(int len, t_env *head)
 	return (strings);
 }
 
+/*
+** Sorts an array of environment variable pointers alphabetically by key.
+** Uses the bubble sort algorithm.
+*/
 void	sort_env(t_env ***arr)
 {
 	t_env	*temp;
@@ -69,6 +82,11 @@ void	sort_env(t_env ***arr)
 	}
 }
 
+/*
+** Prints environment variables in the format required by 'export' (no args).
+** Format: declare -x KEY="VALUE"
+** Handles empty values and unset values appropriately.
+*/
 void	print_export(t_env **arr)
 {
 	int	i;
