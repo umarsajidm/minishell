@@ -14,6 +14,11 @@
 
 static void	run_exit(t_shell *shell);
 
+/*
+** Prints "exit" and terminates the shell.
+** This variant is likely used when exit is called without arguments
+** or in specific contexts (like Ctrl+D).
+*/
 int	ft_exit2(char **av, t_shell *shell)
 {
 	ft_putstr_fd("exit\n", 1);
@@ -24,6 +29,10 @@ int	ft_exit2(char **av, t_shell *shell)
 	return (0);
 }
 
+/*
+** Performs final shell cleanup and exits the process.
+** Uses the stored exit code from the shell structure.
+*/
 static void	run_exit(t_shell *shell)
 {
 	long	exit_code;
