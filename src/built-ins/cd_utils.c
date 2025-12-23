@@ -12,6 +12,11 @@
 
 #include "minishell.h"
 
+/*
+** Updates the value of an environment variable node.
+** Frees the old value if it exists, assigns the new value,
+** and frees the temporary string passed as 'value'.
+*/
 void	update_cd_node(char *value, t_env *node)
 {
 	if (node->value)
