@@ -15,6 +15,13 @@
 static t_env	*alloc_node(const char *str);
 static size_t	env_strlen(const char *str);
 
+/*
+** Updates the value of an existing environment variable.
+** Finds the node matching the key in 'str'.
+** If 'str' contains '=', updates the value.
+** Frees the old value and allocates the new one.
+** Returns 1 on success, 0 on malloc failure.
+*/
 int	update_env_node(const char *str, t_shell *shell)
 {
 	t_env	*match;
@@ -36,6 +43,11 @@ int	update_env_node(const char *str, t_shell *shell)
 	return (1);
 }
 
+/*
+** Adds a new environment variable node to the end of the list.
+** Allocates the new node using alloc_node().
+** Returns 1 on success, 0 on malloc failure.
+*/
 int	add_env_node(const char *str, t_shell *shell)
 {
 	t_env	*current;
@@ -56,6 +68,13 @@ int	add_env_node(const char *str, t_shell *shell)
 	return (1);
 }
 
+/*
+** Allocates and initializes a new environment node.
+** Parses 'str' to extract key and value.
+** Key is substring up to '=' or end of string.
+** Value is substring after '=', or NULL if no '='.
+** Returns pointer to new node or NULL on malloc failure.
+*/
 static t_env	*alloc_node(const char *str)
 {
 	t_env	*new;
@@ -82,6 +101,11 @@ static t_env	*alloc_node(const char *str)
 	return (new);
 }
 
+/*
+** Calculates the length of the environment variable key.
+** Scans until it hits '=' or null terminator.
+** Returns the length.
+*/
 static size_t	env_strlen(const char *str)
 {
 	size_t	i;
