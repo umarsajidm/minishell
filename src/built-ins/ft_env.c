@@ -12,6 +12,13 @@
 
 #include "minishell.h"
 
+/*
+** Executes the 'env' built-in command.
+** Iterates through the linked list of environment variables.
+** Prints key=value pairs for variables that have a non-NULL value.
+** Skips variables without a value.
+** Returns 0.
+*/
 int	ft_env(t_env *head)
 {
 	while (head)
