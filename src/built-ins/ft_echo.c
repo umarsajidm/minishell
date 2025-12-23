@@ -14,6 +14,14 @@
 
 static int	is_flag(const char *s, int *newline);
 
+/*
+** Executes the 'echo' built-in command.
+** 1. Checks for arguments; prints newline if none.
+** 2. Parses '-n' flags to suppress the trailing newline.
+** 3. Prints remaining arguments separated by spaces.
+** 4. Prints a final newline unless suppressed.
+** Returns 0.
+*/
 int	ft_echo(char **av)
 {
 	int	i;
@@ -36,6 +44,11 @@ int	ft_echo(char **av)
 	return (0);
 }
 
+/*
+** Checks if a string is a valid '-n' flag (e.g., "-n", "-nn", "-nnn").
+** If valid, sets the newline pointer to 0 (false) and returns 1 (true).
+** Otherwise, returns 0 (false).
+*/
 static int	is_flag(const char *s, int *newline)
 {
 	int	i;
