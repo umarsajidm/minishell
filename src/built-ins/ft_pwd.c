@@ -12,6 +12,13 @@
 
 #include "minishell.h"
 
+/*
+** Executes the 'pwd' (print working directory) built-in command.
+** Retrieves the current working directory using getcwd().
+** Prints it to standard output followed by a newline.
+** Frees the allocated string.
+** Returns 0 on success, 1 on failure.
+*/
 int	ft_pwd(void)
 {
 	char	*pwd;
