@@ -14,6 +14,12 @@
 
 static void	unset_node(t_shell *shell, t_env *match);
 
+/*
+** Executes the 'unset' built-in command.
+** Iterates through arguments and removes corresponding environment variables.
+** Uses find_env_node to locate and unset_node to remove.
+** Returns 0.
+*/
 int	ft_unset(t_cmd *cmd, t_shell *shell)
 {
 	int		i;
@@ -32,6 +38,11 @@ int	ft_unset(t_cmd *cmd, t_shell *shell)
 	return (0);
 }
 
+/*
+** Searches for an environment variable node by key.
+** Compares keys matching the length up to '=' or end of string.
+** Returns pointer to the found node or NULL if not found.
+*/
 t_env	*find_env_node(const char *str, t_env *head)
 {
 	char	*sign;
@@ -51,6 +62,11 @@ t_env	*find_env_node(const char *str, t_env *head)
 	return (NULL);
 }
 
+/*
+** Removes a node from the environment linked list.
+** Adjusts pointers to bypass the removed node.
+** Frees the memory of the removed node.
+*/
 static void	unset_node(t_shell *shell, t_env *match)
 {
 	t_env	*prev;
@@ -74,6 +90,10 @@ static void	unset_node(t_shell *shell, t_env *match)
 	}
 }
 
+/*
+** Frees memory associated with an environment node.
+** Frees the key string, value string, and the node structure itself.
+*/
 void	free_env_node(t_env *node)
 {
 	if (node->key)
