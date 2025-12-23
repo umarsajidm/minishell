@@ -16,6 +16,15 @@
 static int	get_ac(char **av);
 static int	num_error(char *str);
 
+/*
+** Executes the 'exit' built-in command.
+** 1. Prints "exit" if run in the main shell (not child).
+** 2. If no arguments, returns current exit code and sets flow to exit.
+** 3. Checks for "too many arguments".
+** 4. Parses argument to integer, handling numeric errors.
+** 5. Sets shell exit code (modulo 256) and exit flow.
+** Returns the new exit code.
+*/
 int	ft_exit(char **av, t_shell *shell, t_arena **arena, bool is_child_process)
 {
 	long	exit_code;
@@ -45,6 +54,10 @@ int	ft_exit(char **av, t_shell *shell, t_arena **arena, bool is_child_process)
 	return (shell->exit_code);
 }
 
+/*
+** Counts the number of arguments in the null-terminated array.
+** Returns the count.
+*/
 static int	get_ac(char **av)
 {
 	int	i;
@@ -55,6 +68,11 @@ static int	get_ac(char **av)
 	return (i);
 }
 
+/*
+** Handles numeric argument errors for exit.
+** Prints specific error message for non-numeric input.
+** Returns 2 (standard exit code for syntax errors in exit).
+*/
 static int	num_error(char *str)
 {
 	ft_putstr_fd("minishell: exit:", 2);
