@@ -14,6 +14,12 @@
 
 /*
  * Append a single character to a dynamically growing buffer
+ * @param buf The current buffer (can be NULL)
+ * @param len Pointer to the current length of the buffer
+ * @param c The character to append
+ * @param arena The memory arena for reallocation
+ * @return The updated buffer with the new character or NULL on failure
+ *
  * - Reallocates buffer using arena
  * - Updates length and keeps string NULL-terminated
  * - Returns updated buffer or NULL on failure
@@ -33,6 +39,10 @@ char	*append_char(char *buf, size_t *len, char c, t_arena **arena)
 
 /*
  * Expand special variable `$?`
+ * @param shell The shell structure containing the last exit code
+ * @param arena The memory arena
+ * @return The string representation of the exit code or NULL
+ *
  * - Converts last exit code to string
  * - Stores result in arena memory
  */
@@ -51,6 +61,11 @@ static char	*handle_exit_code_expansion(t_shell *shell, t_arena **arena)
 
 /*
  * Retrieve the value of an environment variable
+ * @param key The key of the variable to find
+ * @param shell The shell structure
+ * @param arena The memory arena
+ * @return The value of the variable, empty string if not found, or NULL on error
+ *
  * - Handles `$?` separately
  * - Returns empty string if variable exists but has no value
  * - Returns NULL if variable does not exist
@@ -79,6 +94,11 @@ char	*expand_env_value(const char *key, t_shell *shell, t_arena **arena)
 
 /*
  * Extract an environment variable key after `$`
+ * @param str The input string
+ * @param i Pointer to the current index in the string
+ * @param arena The memory arena
+ * @return The extracted key or a literal `$` string
+ *
  * - Supports `$?`, valid identifiers, and literal `$`
  * - Advances parsing index accordingly
  */
@@ -112,6 +132,12 @@ static char	*extract_env_key(const char *str, size_t *i, t_arena **arena)
 
 /*
  * Expand a variable starting at `$` in the input string
+ * @param str The input string
+ * @param i Pointer to the current index (at the `$` character)
+ * @param shell The shell structure
+ * @param arena The memory arena
+ * @return The expanded value string or NULL on error
+ *
  * - Extracts key and resolves its value
  * - Advances index past the variable name
  */
