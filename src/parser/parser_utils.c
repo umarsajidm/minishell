@@ -14,6 +14,8 @@
 
 /*
  * Allocate and initialize a new command node
+ * @param arena The memory arena for allocation
+ * @return A pointer to the new command node or NULL on failure
  */
 t_cmd	*create_cmd_node(t_arena **arena)
 {
@@ -31,6 +33,11 @@ t_cmd	*create_cmd_node(t_arena **arena)
 
 /*
  * Ensure a current command exists
+ * @param cur Pointer to the current command pointer
+ * @param head Pointer to the head of the command list
+ * @param arena The memory arena
+ * @return 1 on success, 0 on failure
+ *
  * - Creates and links a new command if needed
  */
 int	ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena)
@@ -58,6 +65,8 @@ int	ensure_current_cmd(t_cmd **cur, t_cmd **head, t_arena **arena)
 
 /*
  * Check if token represents a pipe operator
+ * @param token_str The token string
+ * @return 1 if pipe, 0 otherwise
  */
 int	is_pipe_token(const char *token_str)
 {
@@ -70,6 +79,8 @@ int	is_pipe_token(const char *token_str)
 
 /*
  * Check if token represents a redirection operator
+ * @param token_str The token string
+ * @return 1 if redirection, 0 otherwise
  */
 int	is_redir_token(const char *token_str)
 {
