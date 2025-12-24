@@ -14,6 +14,9 @@
 
 /*
  * Handle single and double quote characters during expansion
+ * @param str The input string being processed
+ * @param state The current state of expansion
+ *
  * - Updates quote state (none, single, double)
  * - Appends quote characters when inside opposite quote type
  */
@@ -44,6 +47,9 @@ static void	handle_quotes(const char *str, t_state *state)
 
 /*
  * Handle environment variable expansion after `$`
+ * @param str The input string
+ * @param state The current state of expansion
+ *
  * - Expands variable value
  * - Replaces unquoted spaces with FIELD_SEP
  */
@@ -71,6 +77,9 @@ static void	handle_dollar(const char *str, t_state *state)
 
 /*
  * Process a single character during expansion
+ * @param str The input string
+ * @param state The current state of expansion
+ *
  * - Dispatches to quote, dollar, or literal handlers
  */
 static void	process_char(const char *str, t_state *state)
@@ -89,6 +98,11 @@ static void	process_char(const char *str, t_state *state)
 
 /*
  * Expand variables and quotes in a string
+ * @param str The string to expand
+ * @param shell The shell structure containing env variables
+ * @param arena The memory arena for allocation
+ * @return The expanded string or NULL on failure
+ *
  * - Handles quotes, `$` expansion, and field splitting markers
  * - Returns expanded string allocated in arena
  */
@@ -119,6 +133,11 @@ char	*expand_string(const char *str, t_shell *shell, t_arena **arena)
 
 /*
  * Expand all argv entries of a command
+ * @param cmd The command structure to expand
+ * @param shell The shell structure
+ * @param arena The memory arena
+ * @return 1 on success, 0 on failure
+ *
  * - Replaces each argument with its expanded version
  */
 int	expand_command_argv(t_cmd *cmd, t_shell *shell, t_arena **arena)
