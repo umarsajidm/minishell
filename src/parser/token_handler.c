@@ -14,6 +14,10 @@
 
 /* 
  * Decide if an empty argument should be added
+ * @param expanded The expanded string
+ * @param original The original token string
+ * @return True if argument should be added, false otherwise
+ *
  * - Returns true if argument should be added
  */
 static bool	should_add_argument(char *expanded, char *original)
@@ -26,6 +30,9 @@ static bool	should_add_argument(char *expanded, char *original)
 
 /* 
  * Handle a word or quoted token
+ * @param p The parser state
+ * @return 1 on success, 0 on failure
+ *
  * - Expands variables
  * - Handles empty results and field splitting
  * - Appends result to current command argv
@@ -58,6 +65,9 @@ int	handle_word_token(t_parser_state *p)
 
 /*
  * Handle a pipe operator token
+ * @param p The parser state
+ * @return 1 on success, -1 on syntax error
+ *
  * - Validates pipe placement
  * - Ends the current command
  */
@@ -72,6 +82,9 @@ int	handle_pipe_token(t_parser_state *p)
 
 /*
  * Dispatch operator token handling
+ * @param p The parser state
+ * @return 1 on success, 0 on failure, -1 on syntax error
+ *
  * - Routes to pipe or redirection handler
  */
 int	handle_operator_token(t_parser_state *p)
@@ -88,6 +101,11 @@ int	handle_operator_token(t_parser_state *p)
 
 /*
  * Append a word to a command argv array
+ * @param cmd The command to append to
+ * @param word The word string to append
+ * @param arena The memory arena
+ * @return 1 on success, 0 on failure
+ *
  * - Reallocates argv in arena
  * - NULL-terminates argv
  */
