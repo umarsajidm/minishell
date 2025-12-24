@@ -14,6 +14,9 @@
 
 /*
  * Process a word or quoted token
+ * @param p The parser state
+ * @return 0 on success, -1 on failure
+ *
  * - Delegates to word handler
  * - Prints allocation error on failure
  */
@@ -29,6 +32,9 @@ static int	process_word_token(t_parser_state *p)
 
 /*
  * Process an operator token
+ * @param p The parser state
+ * @return 0 on success, -1 on failure
+ *
  * - Handles syntax and allocation errors
  */
 static int	process_operator_token(t_parser_state *p)
@@ -52,6 +58,8 @@ static int	process_operator_token(t_parser_state *p)
 
 /*
  * Dispatch token processing based on token type
+ * @param p The parser state
+ * @return 0 on success, -1 on failure
  */
 static int	process_token(t_parser_state *p)
 {
@@ -69,8 +77,11 @@ static int	process_token(t_parser_state *p)
 
 /*
  * Helper: Iterates through tokens and processes them.
+ * @param p The parser state
+ * @param saved_stdin File descriptor to restore in case of failure
+ * @return 1 on success, 0 on failure
+ *
  * - Handles error restoration internally to keep logic consistent.
- * - Returns 0 on failure, 1 on success.
  */
 static int	run_parser_loop(t_parser_state *p, int saved_stdin)
 {
@@ -89,6 +100,11 @@ static int	run_parser_loop(t_parser_state *p, int saved_stdin)
 
 /*
  * Parse token list into a command list
+ * @param tokens The list of tokens to parse
+ * @param shell The shell structure
+ * @param arena The memory arena
+ * @return The head of the parsed command list or NULL
+ *
  * - Restores STDIN on failure
  */
 t_cmd	*parse_tokens(t_list *tokens, t_shell *shell, t_arena **arena)
