@@ -14,6 +14,9 @@
 
 /* 
  * Determine the type of redirection based on token string
+ * @param token_str The token string
+ * @return The redirection type enum
+ *
  * - "<"  => R_INPUT
  * - ">"  => R_OUTPUT
  * - ">>" => R_APPEND
@@ -32,6 +35,12 @@ static t_redir_type	get_redir_type(const char *token_str)
 
 /*
  * Resolve the target of a redirection
+ * @param type The redirection type
+ * @param next_tok The next token (target of redirection)
+ * @param shell The shell structure
+ * @param cur The current command being parsed
+ * @return The target string or NULL on failure
+ *
  * - Handles heredoc separately
  * - Expands target when needed
  */
@@ -54,6 +63,10 @@ char	*get_redir_target(t_redir_type type, t_token *next_tok,
 
 /* 
  * Create a redirection node
+ * @param type The redirection type
+ * @param target The target string
+ * @param arena The memory arena
+ * @return A new redirection node or NULL
  */
 static t_redir	*create_redirection_node(t_redir_type type, const char *target,
 	t_arena **arena)
@@ -78,6 +91,11 @@ static t_redir	*create_redirection_node(t_redir_type type, const char *target,
 
 /* 
  * Add a redirection node to the command
+ * @param cmd The command to attach redirection to
+ * @param type The redirection type
+ * @param target The target string
+ * @param arena The memory arena
+ * @return 1 on success, 0 on failure
  */
 int	add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
 	t_arena **arena)
@@ -104,6 +122,12 @@ int	add_redirection(t_cmd *cmd, t_redir_type type, const char *target,
 
 /*
  * Handle a redirection token during parsing
+ * @param tokens_ref Pointer to the current token list node
+ * @param cur Pointer to the current command
+ * @param head Pointer to the command list head
+ * @param shell The shell structure
+ * @return 1 on success, 0 on error, -1 on syntax error
+ *
  * - Validates next token
  * - Attaches redirection to current command
  */
