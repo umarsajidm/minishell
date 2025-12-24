@@ -14,6 +14,8 @@
 
 /*
  * Count the number of words in a FIELD_SEP-separated string
+ * @param s The input string containing field separators
+ * @return The number of words found
  */
 static int	count_words(const char *s)
 {
@@ -40,6 +42,11 @@ static int	count_words(const char *s)
 
 /*
  * Allocate the result array for field splitting
+ * @param str The string to split
+ * @param arena The memory arena
+ * @param word_count Pointer to store the calculated word count
+ * @return Pointer to the allocated array of strings or NULL
+ *
  * - Computes word count
  * - Allocates NULL-terminated char**
  */
@@ -52,6 +59,10 @@ static char	**allocate_result_array(const char *str, t_arena **arena,
 
 /*
  * Fill the allocated array with words split by FIELD_SEP
+ * @param str The source string
+ * @param result The allocated array to fill
+ * @param word_count The number of words to extract
+ * @param arena The memory arena
  */
 static void	fill_words(const char *str, char **result, int word_count,
 		t_arena **arena)
@@ -80,6 +91,9 @@ static void	fill_words(const char *str, char **result, int word_count,
 
 /*
  * Split a string by FIELD_SEP into a NULL-terminated array
+ * @param str The string to split
+ * @param arena The memory arena
+ * @return The array of split strings or NULL
  */
 char	**field_split(const char *str, t_arena **arena)
 {
@@ -97,6 +111,9 @@ char	**field_split(const char *str, t_arena **arena)
 
 /*
  * Handle field splitting after expansion and add words to argv
+ * @param expanded The expanded string potentially containing separators
+ * @param p The parser state
+ * @return 1 on success, 0 on failure
  */
 int	handle_field_splitting(char *expanded, t_parser_state *p)
 {
