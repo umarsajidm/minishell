@@ -70,6 +70,10 @@ static char	*append_heredoc_line(char *content, size_t *cur_len,
 	return (content);
 }
 
+/*
+ * Print a warning for heredoc delimited by EOF
+ * @param delimiter The expected delimiter string
+ */
 void	print_hd_err(const char *delimiter)
 {
 	ft_putstr_fd("minishell: warning: here-document at line ", 2);
@@ -78,6 +82,16 @@ void	print_hd_err(const char *delimiter)
 	ft_putstr_fd("')\n", 2);
 }
 
+/*
+ * Read a single line for heredoc
+ * @param shell The shell structure
+ * @param delimiter The delimiter string (for error message)
+ * @return The line read or NULL on signal/EOF
+ *
+ * - Sets up heredoc signals
+ * - Uses readline with "> " prompt
+ * - Handles signals (Ctrl-C)
+ */
 static char	*read_heredoc_line(t_shell *shell, const char *delimiter)
 {
 	char	*line;
