@@ -13,6 +13,15 @@
 #include "minishell.h"
 #include <unistd.h>
 
+/*
+ * Read a line of input from the user
+ * @param arena The memory arena
+ * @return The line read from input or NULL on EOF/error
+ *
+ * - Uses readline for interactive mode
+ * - Uses get_next_line for non-interactive mode
+ * - Duplicates the line into the arena
+ */
 char	*read_input(t_arena **arena)
 {
 	char	*line;
@@ -37,6 +46,14 @@ char	*read_input(t_arena **arena)
 	return (arena_line);
 }
 
+/*
+ * Append a line to the heredoc content buffer
+ * @param content The current content buffer
+ * @param cur_len Pointer to the current length of the content
+ * @param line The line to append
+ * @param arena The memory arena
+ * @return The updated content buffer or NULL on failure
+ */
 static char	*append_heredoc_line(char *content, size_t *cur_len,
 	char *line, t_arena **arena)
 {
