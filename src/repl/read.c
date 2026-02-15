@@ -31,7 +31,7 @@ char	*read_input(t_arena **arena)
 	if (isatty(STDIN_FILENO))
 	{
 		setup_parent_signals();
-		line = readline("minishell$ ");
+		line = readline(GREEN "minishell$ " RESET);
 	}
 	else
 	{
