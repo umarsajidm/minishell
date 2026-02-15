@@ -34,6 +34,10 @@
 # define BUFFER_SIZE_FOR_ARENA 1024
 # define FIELD_SEP 0x1F
 
+#define GREEN  "\001\033[1;32m\002"
+#define BLUE   "\001\033[1;34m\002"
+#define RESET  "\001\033[0m\002"
+
 void	*arena_alloc(t_arena **arena, size_t size);
 void	*arena_realloc(t_arena **arena, void *old_ptr, size_t old_size,
 			size_t new_size);
